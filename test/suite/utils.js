@@ -6,9 +6,9 @@ const join = (...lines) => lines.join('\n');
 
 module.exports.join = join;
 module.exports.inputs = [
-	join('- there', '- bear', '- sear', '- gear'),
-	join('- a', '- b', '- z', '- g', '- op'),
-	`- there
+    join('- there', '- bear', '- sear', '- gear'),
+    join('- a', '- b', '- z', '- g', '- op'),
+    `- there
 - hear
   - beta
   - zamma
@@ -17,7 +17,7 @@ module.exports.inputs = [
 - gear
   - dear
 - zer`,
-	`- there
+    `- there
 - hear
   - beta
   - zamma
@@ -33,7 +33,7 @@ module.exports.inputs = [
       - mama
       - aera
 - zer`,
-	`* Commands
+    `* Commands
   * Migrations
     * rake db: migrate - push all migrations to the database
     * 'STEP=3' - revert the last 3 migrations
@@ -65,9 +65,9 @@ module.exports.inputs = [
  * @param {string} [message]
  */
 module.exports.testString = function (t, actual, expected, message) {
-	t.equals(actual, expected, message);
+    t.equals(actual, expected, message);
 
-	if (actual !== expected) {
-		console.log(diffStringsUnified(expected, actual));
-	}
+    if (actual !== expected) {
+        console.log(diffStringsUnified(expected, actual));
+    }
 };

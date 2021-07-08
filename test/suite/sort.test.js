@@ -5,26 +5,26 @@ const sort = require('../../src/sort.js');
 const { inputs, join, testString } = require('./utils.js');
 
 test('non recursive, non reverse', (t) => {
-	const options = {};
+    const options = {};
 
-	testString(
-		t,
-		sort(inputs[0], options),
-		join('- bear', '- gear', '- sear', '- there'),
-		'simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[0], options),
+        join('- bear', '- gear', '- sear', '- there'),
+        'simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[1], options),
-		join('- a', '- b', '- g', '- op', '- z'),
-		'another simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[1], options),
+        join('- a', '- b', '- g', '- op', '- z'),
+        'another simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[2], options),
-		`- gear
+    testString(
+        t,
+        sort(inputs[2], options),
+        `- gear
   - dear
 - hear
   - beta
@@ -33,13 +33,13 @@ test('non recursive, non reverse', (t) => {
   - gamma
 - there
 - zer`,
-		'1 level deep nested list'
-	);
+        '1 level deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[3], options),
-		`- gear
+    testString(
+        t,
+        sort(inputs[3], options),
+        `- gear
   - dear
     - make do
     - sake so
@@ -55,13 +55,13 @@ test('non recursive, non reverse', (t) => {
   - gamma
 - there
 - zer`,
-		'multi deep nested list'
-	);
+        'multi deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[4], options),
-		`* Commands
+    testString(
+        t,
+        sort(inputs[4], options),
+        `* Commands
   * Migrations
     * rake db: migrate - push all migrations to the database
     * 'STEP=3' - revert the last 3 migrations
@@ -83,35 +83,35 @@ test('non recursive, non reverse', (t) => {
   |Install|Status|
   |Yes|Pending|
   ~~~`,
-		'descriptions in items'
-	);
+        'descriptions in items'
+    );
 
-	t.end();
+    t.end();
 });
 
 test('non recursive, reverse', (t) => {
-	const options = {
-		reverse: true,
-	};
+    const options = {
+        reverse: true,
+    };
 
-	testString(
-		t,
-		sort(inputs[0], options),
-		join('- there', '- sear', '- gear', '- bear'),
-		'simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[0], options),
+        join('- there', '- sear', '- gear', '- bear'),
+        'simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[1], options),
-		join('- z', '- op', '- g', '- b', '- a'),
-		'another simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[1], options),
+        join('- z', '- op', '- g', '- b', '- a'),
+        'another simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[2], options),
-		`- zer
+    testString(
+        t,
+        sort(inputs[2], options),
+        `- zer
 - there
 - hear
   - beta
@@ -120,13 +120,13 @@ test('non recursive, reverse', (t) => {
   - gamma
 - gear
   - dear`,
-		'1 level deep nested list'
-	);
+        '1 level deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[3], options),
-		`- zer
+    testString(
+        t,
+        sort(inputs[3], options),
+        `- zer
 - there
 - hear
   - beta
@@ -142,13 +142,13 @@ test('non recursive, reverse', (t) => {
       - gamma
       - mama
       - aera`,
-		'multi deep nested list'
-	);
+        'multi deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[4], options),
-		`* Package Upgrade Status:
+    testString(
+        t,
+        sort(inputs[4], options),
+        `* Package Upgrade Status:
   1. Install Package
   2. Attach Plugin
   3. Review Installation
@@ -170,35 +170,35 @@ test('non recursive, reverse', (t) => {
         Node.process_csv
     end
     \`\`\``,
-		'descriptions in items'
-	);
+        'descriptions in items'
+    );
 
-	t.end();
+    t.end();
 });
 
 test('recursive, non reverse', (t) => {
-	const options = {
-		recursive: true,
-	};
+    const options = {
+        recursive: true,
+    };
 
-	testString(
-		t,
-		sort(inputs[0], options),
-		join('- bear', '- gear', '- sear', '- there'),
-		'simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[0], options),
+        join('- bear', '- gear', '- sear', '- there'),
+        'simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[1], options),
-		join('- a', '- b', '- g', '- op', '- z'),
-		'another simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[1], options),
+        join('- a', '- b', '- g', '- op', '- z'),
+        'another simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[2], options),
-		`- gear
+    testString(
+        t,
+        sort(inputs[2], options),
+        `- gear
   - dear
 - hear
   - alpha
@@ -207,13 +207,13 @@ test('recursive, non reverse', (t) => {
   - zamma
 - there
 - zer`,
-		'1 level deep nested list'
-	);
+        '1 level deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[3], options),
-		`- gear
+    testString(
+        t,
+        sort(inputs[3], options),
+        `- gear
   - dear
     - aer do
     - here me
@@ -229,13 +229,13 @@ test('recursive, non reverse', (t) => {
   - zamma
 - there
 - zer`,
-		'multi deep nested list'
-	);
+        'multi deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[4], options),
-		`* Commands
+    testString(
+        t,
+        sort(inputs[4], options),
+        `* Commands
   * Migrations
     * 'STEP=3' - revert the last 3 migrations
     * rake db: migrate - push all migrations to the database
@@ -257,36 +257,36 @@ test('recursive, non reverse', (t) => {
   |Install|Status|
   |Yes|Pending|
   ~~~`,
-		'descriptions in items'
-	);
+        'descriptions in items'
+    );
 
-	t.end();
+    t.end();
 });
 
 test('recursive, reverse', (t) => {
-	const options = {
-		recursive: true,
-		reverse: true,
-	};
+    const options = {
+        recursive: true,
+        reverse: true,
+    };
 
-	testString(
-		t,
-		sort(inputs[0], options),
-		join('- there', '- sear', '- gear', '- bear'),
-		'simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[0], options),
+        join('- there', '- sear', '- gear', '- bear'),
+        'simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[1], options),
-		join('- z', '- op', '- g', '- b', '- a'),
-		'another simple non nested list'
-	);
+    testString(
+        t,
+        sort(inputs[1], options),
+        join('- z', '- op', '- g', '- b', '- a'),
+        'another simple non nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[2], options),
-		`- zer
+    testString(
+        t,
+        sort(inputs[2], options),
+        `- zer
 - there
 - hear
   - zamma
@@ -295,13 +295,13 @@ test('recursive, reverse', (t) => {
   - alpha
 - gear
   - dear`,
-		'1 level deep nested list'
-	);
+        '1 level deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[3], options),
-		`- zer
+    testString(
+        t,
+        sort(inputs[3], options),
+        `- zer
 - there
 - hear
   - zamma
@@ -317,13 +317,13 @@ test('recursive, reverse', (t) => {
       - gamma
       - aera
     - aer do`,
-		'multi deep nested list'
-	);
+        'multi deep nested list'
+    );
 
-	testString(
-		t,
-		sort(inputs[4], options),
-		`* Package Upgrade Status:
+    testString(
+        t,
+        sort(inputs[4], options),
+        `* Package Upgrade Status:
   1. Install Package
   2. Attach Plugin
   3. Review Installation
@@ -345,14 +345,14 @@ test('recursive, reverse', (t) => {
   * Migrations
     * rake db: migrate - push all migrations to the database
     * 'STEP=3' - revert the last 3 migrations`,
-		'descriptions in items'
-	);
+        'descriptions in items'
+    );
 
-	t.end();
+    t.end();
 });
 
 const duplicateInputs = [
-	`- There
+    `- There
 - there
 - make
 - so
@@ -360,7 +360,7 @@ const duplicateInputs = [
 - lol
 - there
 - THERE`,
-	`- There
+    `- There
 - there
 - make
 - so
@@ -377,23 +377,23 @@ const duplicateInputs = [
 ];
 
 test('unique', (t) => {
-	testString(
-		t,
-		sort(duplicateInputs[0], { unique: true }),
-		`- THERE
+    testString(
+        t,
+        sort(duplicateInputs[0], { unique: true }),
+        `- THERE
 - There
 - do
 - lol
 - make
 - so
 - there`,
-		'simple 1 level deep list'
-	);
+        'simple 1 level deep list'
+    );
 
-	testString(
-		t,
-		sort(duplicateInputs[1], { unique: true }),
-		`- THERE
+    testString(
+        t,
+        sort(duplicateInputs[1], { unique: true }),
+        `- THERE
 - THEre
 - There
 - do
@@ -406,13 +406,13 @@ test('unique', (t) => {
 - make
 - so
 - there`,
-		'simple 2 level deep list'
-	);
+        'simple 2 level deep list'
+    );
 
-	testString(
-		t,
-		sort(duplicateInputs[1], { unique: true, recursive: true }),
-		`- THERE
+    testString(
+        t,
+        sort(duplicateInputs[1], { unique: true, recursive: true }),
+        `- THERE
 - THEre
 - There
 - do
@@ -425,35 +425,35 @@ test('unique', (t) => {
 - make
 - so
 - there`,
-		'simple 2 level deep list, recursive'
-	);
+        'simple 2 level deep list, recursive'
+    );
 
-	testString(
-		t,
-		sort(
-			`- monkey
+    testString(
+        t,
+        sort(
+            `- monkey
 - ape
 - zea
 - zea
   - sea`,
-			{ unique: true }
-		),
-		`- ape
+            { unique: true }
+        ),
+        `- ape
 - monkey
 - zea
 - zea
   - sea`,
-		'duplicate with nested item'
-	);
+        'duplicate with nested item'
+    );
 
-	t.end();
+    t.end();
 });
 
 test('case insensitive', (t) => {
-	testString(
-		t,
-		sort(duplicateInputs[0], { caseInsensitive: true, unique: false }),
-		`- do
+    testString(
+        t,
+        sort(duplicateInputs[0], { caseInsensitive: true, unique: false }),
+        `- do
 - lol
 - make
 - so
@@ -461,13 +461,13 @@ test('case insensitive', (t) => {
 - there
 - there
 - THERE`,
-		'1 level deep list, case insensitive'
-	);
+        '1 level deep list, case insensitive'
+    );
 
-	testString(
-		t,
-		sort(duplicateInputs[1], { caseInsensitive: true }),
-		`- do
+    testString(
+        t,
+        sort(duplicateInputs[1], { caseInsensitive: true }),
+        `- do
   - there
   - THERE
   - do
@@ -481,13 +481,13 @@ test('case insensitive', (t) => {
 - THEre
 - THERE
 - There`,
-		'nested list, case insensitive'
-	);
+        'nested list, case insensitive'
+    );
 
-	testString(
-		t,
-		sort(duplicateInputs[1], { caseInsensitive: true, recursive: true }),
-		`- do
+    testString(
+        t,
+        sort(duplicateInputs[1], { caseInsensitive: true, recursive: true }),
+        `- do
   - do
   - grew
   - HEllo
@@ -501,32 +501,32 @@ test('case insensitive', (t) => {
 - THEre
 - THERE
 - There`,
-		'nested list, case insensitive, recursive'
-	);
+        'nested list, case insensitive, recursive'
+    );
 
-	t.end();
+    t.end();
 });
 
 test('combination of unique and case-insensitive', (t) => {
-	testString(
-		t,
-		sort(duplicateInputs[0], { caseInsensitive: true, unique: true }),
-		`- do
+    testString(
+        t,
+        sort(duplicateInputs[0], { caseInsensitive: true, unique: true }),
+        `- do
 - lol
 - make
 - so
 - There`,
-		'both, 1 level deep'
-	);
+        'both, 1 level deep'
+    );
 
-	testString(
-		t,
-		sort(duplicateInputs[1], {
-			caseInsensitive: true,
-			unique: true,
-			recursive: true,
-		}),
-		`- do
+    testString(
+        t,
+        sort(duplicateInputs[1], {
+            caseInsensitive: true,
+            unique: true,
+            recursive: true,
+        }),
+        `- do
   - do
   - grew
   - HEllo
@@ -534,13 +534,13 @@ test('combination of unique and case-insensitive', (t) => {
 - make
 - so
 - There`,
-		'both + recursive, nested list'
-	);
+        'both + recursive, nested list'
+    );
 
-	testString(
-		t,
-		sort(duplicateInputs[0], { caseInsensitive: false, unique: false }),
-		`- THERE
+    testString(
+        t,
+        sort(duplicateInputs[0], { caseInsensitive: false, unique: false }),
+        `- THERE
 - There
 - do
 - lol
@@ -548,8 +548,8 @@ test('combination of unique and case-insensitive', (t) => {
 - so
 - there
 - there`,
-		'simple 1 level deep list, neither'
-	);
+        'simple 1 level deep list, neither'
+    );
 
-	t.end();
+    t.end();
 });
