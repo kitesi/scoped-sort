@@ -51,7 +51,7 @@
                 },
                 "scoped-sort.recursive": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Decides if nested items will also be sorted."
                 },
                 "scoped-sort.unique": {
@@ -61,7 +61,7 @@
                 },
                 "scoped-sort.caseInsensitive": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Decides if sorting should be case insensitive, if unique is also provided, it will delete duplicate items regardless of their difference in casing."
                 }
             }
