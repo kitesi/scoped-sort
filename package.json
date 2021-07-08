@@ -1,10 +1,10 @@
 {
     "name": "scoped-sort",
     "displayName": "Scoped Sort",
-    "description": "Sort text in a scope (vs line by line)",
+    "description": "Sort text in a scope (vs line by line).",
     "version": "0.5.0",
     "publisher": "karizma",
-    "icon": "assets/logo.png",
+    "icon": "assets/scoped-sort-red-circle.png",
     "main": "./src/extension.js",
     "repository": {
         "type": "git",
