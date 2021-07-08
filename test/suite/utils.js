@@ -71,3 +71,28 @@ module.exports.testString = function (t, actual, expected, message) {
         console.log(diffStringsUnified(expected, actual));
     }
 };
+
+module.exports.duplicateInputs = [
+    `- There
+- there
+- make
+- so
+- do
+- lol
+- there
+- THERE`,
+    `- There
+- there
+- make
+- so
+- do
+  - there
+  - THERE
+  - do
+  - HEllo
+  - hello
+  - grew
+- THEre
+- THERE
+- There`,
+];

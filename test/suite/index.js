@@ -12,7 +12,9 @@ function run() {
             }
 
             files.forEach((f) => {
-                require(path.resolve(testsRoot, f));
+                if (!f.endsWith('sort.test.js')) {
+                    require(path.resolve(testsRoot, f));
+                }
             });
         });
     });

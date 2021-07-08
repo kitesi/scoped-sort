@@ -66,7 +66,7 @@ async function baseCommand(editor, _edit, args) {
         }
     }
 
-    editor.edit(async (edit) => {
+    return editor.edit((edit) => {
         for (const selection of editor.selections) {
             const text = editor.document.getText(selection);
             edit.replace(

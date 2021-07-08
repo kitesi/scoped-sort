@@ -2,7 +2,7 @@
 
 const test = require('tape');
 const sort = require('../../src/sort.js');
-const { inputs, join, testString } = require('./utils.js');
+const { inputs, duplicateInputs, join, testString } = require('./utils.js');
 
 test('non recursive, non reverse', (t) => {
     const options = {};
@@ -350,31 +350,6 @@ test('recursive, reverse', (t) => {
 
     t.end();
 });
-
-const duplicateInputs = [
-    `- There
-- there
-- make
-- so
-- do
-- lol
-- there
-- THERE`,
-    `- There
-- there
-- make
-- so
-- do
-  - there
-  - THERE
-  - do
-  - HEllo
-  - hello
-  - grew
-- THEre
-- THERE
-- There`,
-];
 
 test('unique', (t) => {
     testString(

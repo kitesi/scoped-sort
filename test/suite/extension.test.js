@@ -5,7 +5,8 @@ const test = require('tape');
 // as well as import your extension to test it
 const vscode = require('vscode');
 const sort = require('../../src/sort.js');
-const { inputs, testString } = require('./utils.js');
+const { inputs, duplicateInputs, testString } = require('./utils.js');
+
 // const myExtension = require('../extension');
 
 test.createStream().on('data', console.log);
@@ -45,7 +46,7 @@ function getAllText(document) {
 vscode.window.showInformationMessage('Start all tests.');
 const executeCommand = vscode.commands.executeCommand;
 
-test('Sample test', async (t) => {
+test('Extension Test', async (t) => {
     if (!vscode.window.activeTextEditor) {
         await executeCommand('workbench.action.files.newUntitledFile');
     }
@@ -55,12 +56,16 @@ test('Sample test', async (t) => {
     /**
      * @param {string} input
      * @param {string} commandStringArgs
-     * @param {Parameters<typeof sort>[1]} sortArgs
+     * @param {import("../../src/sort.js").Options} sortArgs
      */
     async function testSortCommand(input, commandStringArgs, sortArgs) {
         await changeAllText(editor, input);
         await selectAllText(editor);
         await executeCommand('scoped-sort.sort', commandStringArgs);
+        // await executeCommand should be suffecient since I return a promise
+        // on the command, but it doesn't work for some reason
+        await new Promise((res) => setTimeout(res, 200));
+
         testString(
             t,
             getAllText(editor.document).replace(/\r/g, ''),
@@ -68,21 +73,29 @@ test('Sample test', async (t) => {
         );
     }
 
-    // 	const duplicateTestString = `- monkey
-    // - ape
-    // - zea
-    // - zea
-    //   - sea`;
-
     await testSortCommand(inputs[4], 's', { reverse: false });
-    // The ones below don't work for some reason.
-    // await testSortCommand(inputs[4], 'S', { reverse: true });
-    // await testSortCommand(inputs[4], 'r', { recursive: true });
-    // await testSortCommand(inputs[4], 'R', { recursive: false });
-    // await testSortCommand(inputs[4], 'R', { recursive: false });
-    // await testSortCommand(inputs[4], 'Sr', { recursive: true, reverse: true });
-    // await testSortCommand(duplicateTestString, 'u', { unique: true });
-    // await testSortCommand(duplicateTestString, 'U', { unique: false });
+    await testSortCommand(inputs[4], 'S', { reverse: true });
+    await testSortCommand(inputs[4], 'r', { recursive: true });
+    await testSortCommand(inputs[4], 'R', { recursive: false });
+    await testSortCommand(duplicateInputs[1], 'u', { unique: true });
+    await testSortCommand(duplicateInputs[1], 'U', { unique: false });
+    await testSortCommand(duplicateInputs[1], 'i', { caseInsensitive: true });
+    await testSortCommand(duplicateInputs[1], 'I', { caseInsensitive: false });
+    await testSortCommand(inputs[4], 'sr', { reverse: false, recursive: true });
+    await testSortCommand(inputs[4], 'Sr', { reverse: true, recursive: true });
+    await testSortCommand(duplicateInputs[1], 'ur', {
+        unique: true,
+        recursive: true,
+    });
+    await testSortCommand(duplicateInputs[1], 'ui', {
+        unique: true,
+        caseInsensitive: true,
+    });
+    await testSortCommand(duplicateInputs[1], 'uir', {
+        unique: true,
+        caseInsensitive: true,
+        recursive: true,
+    });
 
     t.end();
 });
