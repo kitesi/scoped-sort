@@ -87,5 +87,10 @@ Would mean sort descendingly and recursively, and remove duplicates.
 
 # Contributing / Help
 
-If you want a feature you can make create an issue for it and/or make a pull
-request. If you still need help, feel free to create an issue.
+Contributions are very welcome and appreciated.
+
+If you need help with something, found a bug, or want to request a feature,
+feel free to make an issue.
+
+If you want to fix a bug or contribute a feature, first create an issue, and
+then you can work on a pull request.
