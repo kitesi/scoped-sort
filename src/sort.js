@@ -123,13 +123,18 @@ function sort(text, options) {
     const lines = text.trimEnd().split(/\r?\n/);
     let sections = [];
     let currentSection = [];
-    let currentIndentation = '';
+    /** @type {string} */
+    let currentIndentation;
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const match = line.match(getValuesRegex);
         const indentation = match?.groups?.indentation || '';
         const listChar = match?.groups?.char;
+
+        if (typeof currentIndentation === 'undefined') {
+            currentIndentation = indentation;
+        }
 
         if (currentSection.length && listChar) {
             if (indentation === currentIndentation) {
