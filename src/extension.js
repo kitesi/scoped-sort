@@ -22,7 +22,7 @@ async function baseCommand(editor, _edit, args) {
 
     if (shouldPrompt) {
         args = await vscode.window.showInputBox({
-            placeHolder: 'Arguments: sr, Sr, R, r, u, i, ...',
+            placeHolder: 'Arguments: sr, r, u, i, ...',
             value: defaultArgs,
         });
     }
@@ -33,28 +33,16 @@ async function baseCommand(editor, _edit, args) {
         for (const letter of letters) {
             switch (letter) {
                 case 's':
-                    options.reverse = false;
-                    break;
-                case 'S':
                     options.reverse = true;
                     break;
                 case 'r':
                     options.recursive = true;
                     break;
-                case 'R':
-                    options.recursive = false;
-                    break;
                 case 'u':
                     options.unique = true;
                     break;
-                case 'U':
-                    options.unique = false;
-                    break;
                 case 'i':
                     options.caseInsensitive = true;
-                    break;
-                case 'I':
-                    options.caseInsensitive = false;
                     break;
                 default:
                     vscode.window.showErrorMessage(

@@ -37,16 +37,12 @@ then give you a prompt that allows for arguments.
 These arguments are single letters. Here's all the arguments:
 
 <!-- prettier-ignore -->
-- `s` sort ascendingly
-- `S` sort descendingly
+- `s` sort descendingly
 - `r` sort recursively
-- `R` don't sort recursively
 - `u` remove duplicates
-- `U` don't remove duplicates
 - `i` case insensitive
-- `I` not case insensitive
 
-Example: `uSr` => get unique values, sort descendingly and recursively.
+Example: `usr` => get unique values, sort descendingly and recursively.
 
 ## Configuration
 
@@ -76,7 +72,7 @@ For example:
 {
     "key": "ctrl+shift+m",
     "command": "scoped-sort.sort",
-    "args": "Sur"
+    "args": "sur"
 }
 ```
 

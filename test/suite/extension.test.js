@@ -73,16 +73,11 @@ test('Extension Test', async (t) => {
         );
     }
 
-    await testSortCommand(inputs[4], 's', { reverse: false });
-    await testSortCommand(inputs[4], 'S', { reverse: true });
+    await testSortCommand(inputs[4], 's', { reverse: true });
     await testSortCommand(inputs[4], 'r', { recursive: true });
-    await testSortCommand(inputs[4], 'R', { recursive: false });
     await testSortCommand(duplicateInputs[1], 'u', { unique: true });
-    await testSortCommand(duplicateInputs[1], 'U', { unique: false });
     await testSortCommand(duplicateInputs[1], 'i', { caseInsensitive: true });
-    await testSortCommand(duplicateInputs[1], 'I', { caseInsensitive: false });
-    await testSortCommand(inputs[4], 'sr', { reverse: false, recursive: true });
-    await testSortCommand(inputs[4], 'Sr', { reverse: true, recursive: true });
+    await testSortCommand(inputs[4], 'sr', { reverse: true, recursive: true });
     await testSortCommand(duplicateInputs[1], 'ur', {
         unique: true,
         recursive: true,
