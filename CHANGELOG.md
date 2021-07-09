@@ -1,3 +1,24 @@
+# 0.7.0 (7/9/2021)
+
+<!-- prettier-ignore -->
+- Added feature: if nothing is selected, sort entire document
+- Allow indented lists whose parents either don't exist or aren't selected, to be sorted
+
+  Example:
+
+  ```text
+  - Animals
+    - Dog
+    - Cat
+    - Zebra
+    - Giraffe
+  - Places
+    - Something
+    - Otherthing
+  ```
+
+  If you selected the inner animals list (dog, cat, zebra, giraffe), and tried sorting it, nothing would happen.
+
 # 0.6.0 (7/9/2021)
 
 <!-- prettier-ignore -->
