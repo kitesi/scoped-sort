@@ -11,20 +11,19 @@ const sort = require('./sort.js');
  */
 async function baseCommand(editor, _edit, args) {
     const config = vscode.workspace.getConfiguration();
-    /** @type {Sort} */
-    const sortType = config.get('scoped-sort.sortType');
-    /** @type {boolean} */
-    let recursive = config.get('scoped-sort.recursive');
-    /** @type {boolean} */
-    let reverse = sortType === 'ascending' ? false : true;
-    /** @type {boolean} */
-    let unique = config.get('scoped-sort.unique');
-    /** @type {boolean} */
-    let caseInsensitive = config.get('scoped-sort.caseInsensitive');
+    /** @type {import("./sort.js").Options} */
+    const options = {};
+    const defaultArgs = config.get('scoped-sort.defaultArgs');
+    let shouldPrompt = !args && config.get('scoped-sort.prompt');
 
-    if (!args && config.get('scoped-sort.prompt')) {
+    if (defaultArgs) {
+        args = defaultArgs;
+    }
+
+    if (shouldPrompt) {
         args = await vscode.window.showInputBox({
             placeHolder: 'Arguments: sr, Sr, R, r, u, i, ...',
+            value: defaultArgs,
         });
     }
 
@@ -34,28 +33,28 @@ async function baseCommand(editor, _edit, args) {
         for (const letter of letters) {
             switch (letter) {
                 case 's':
-                    reverse = false;
+                    options.reverse = false;
                     break;
                 case 'S':
-                    reverse = true;
+                    options.reverse = true;
                     break;
                 case 'r':
-                    recursive = true;
+                    options.recursive = true;
                     break;
                 case 'R':
-                    recursive = false;
+                    options.recursive = false;
                     break;
                 case 'u':
-                    unique = true;
+                    options.unique = true;
                     break;
                 case 'U':
-                    unique = false;
+                    options.unique = false;
                     break;
                 case 'i':
-                    caseInsensitive = true;
+                    options.caseInsensitive = true;
                     break;
                 case 'I':
-                    caseInsensitive = false;
+                    options.caseInsensitive = false;
                     break;
                 default:
                     vscode.window.showErrorMessage(
@@ -69,10 +68,7 @@ async function baseCommand(editor, _edit, args) {
     return editor.edit((edit) => {
         for (const selection of editor.selections) {
             const text = editor.document.getText(selection);
-            edit.replace(
-                selection,
-                sort(text, { reverse, recursive, unique, caseInsensitive })
-            );
+            edit.replace(selection, sort(text, options));
         }
     });
 }

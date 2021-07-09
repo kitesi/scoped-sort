@@ -40,29 +40,10 @@
                     "default": true,
                     "description": "Decides if the program should always prompt/ask for options"
                 },
-                "scoped-sort.sortType": {
+                "scoped-sort.defaultArgs": {
                     "type": "string",
-                    "default": "ascending",
-                    "description": "The sorting type.",
-                    "enum": [
-                        "ascending",
-                        "descending"
-                    ]
-                },
-                "scoped-sort.recursive": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Decides if nested items will also be sorted."
-                },
-                "scoped-sort.unique": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Decides if duplicated items will be deleted."
-                },
-                "scoped-sort.caseInsensitive": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Decides if sorting should be case insensitive, if unique is also provided, it will delete duplicate items regardless of their difference in casing."
+                    "default": "",
+                    "description": "String of arguments which follow the prompt's rules."
                 }
             }
         },

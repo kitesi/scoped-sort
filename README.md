@@ -58,30 +58,13 @@ Decides if the program should always prompt/ask for options.
 
 Default: true
 
-`scoped-sort.sortType`: 'ascending' | 'descending'
+`scoped-sort.defaultArgs`: string
 
-The sorting type.
+This is a string of arguments which follow [#usage](#usage). If you have
+`scoped-sort.prompt` on, it will insert the string into the prompt, if you have
+it off, it will just execute the command with those arguments.
 
-Default: 'ascending'
-
-`scoped-sort.recursive`: boolean
-
-Decides if nested items will also be sorted.
-
-Default: false
-
-`scoped-sort.unique`: boolean
-
-Decides if duplicated items will be deleted.
-
-Default: false
-
-`scoped-sort.caseInsensitive`: boolean
-
-Decides if sorting should be case insensitive, if unique is also provided, it
-will delete duplicate items regardless of their difference in casing.
-
-Default: false
+Default: ''
 
 ## Adding Keybindings
 
