@@ -30,7 +30,7 @@ here so it doesn't load gifs unnecessarily.
 
 This command is exposed by the command `scoped-sort.sort`.
 
-To use this, first select the text you want to sort, go to your command pallete
+To use this, first select the text you want to sort, or don't and it'll sort the entire document. Next go to your command pallete
 (usually `ctrl+shift+p`), type 'scoped sort', and select the command. It will
 then give you a prompt that allows for arguments.
 

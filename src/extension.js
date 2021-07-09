@@ -45,18 +45,30 @@ async function baseCommand(editor, _edit, args) {
                     options.caseInsensitive = true;
                     break;
                 default:
-                    vscode.window.showErrorMessage(
+                    return vscode.window.showErrorMessage(
                         `Could not understand argument: "${letter}"`
                     );
-                    return;
             }
         }
     }
 
+    const document = editor.document;
+
     return editor.edit((edit) => {
-        for (const selection of editor.selections) {
-            const text = editor.document.getText(selection);
-            edit.replace(selection, sort(text, options));
+        if (editor.selections.length === 1 && editor.selections[0].isEmpty) {
+            const range = new vscode.Range(
+                0,
+                0,
+                document.lineCount - 1,
+                document.lineAt(document.lineCount - 1).text.length
+            );
+
+            edit.replace(range, sort(document.getText(range), options));
+        } else {
+            for (const selection of editor.selections) {
+                const text = document.getText(selection);
+                edit.replace(selection, sort(text, options));
+            }
         }
     });
 }
