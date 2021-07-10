@@ -1,6 +1,7 @@
 // @ts-check
 const vscode = require('vscode');
 const sort = require('./sort.js');
+const parseStringArugments = require('./parse-string-arguments.js');
 
 /** @typedef {"ascending" | "descending"} Sort */
 
@@ -12,7 +13,7 @@ const sort = require('./sort.js');
 async function baseCommand(editor, _edit, args) {
     const config = vscode.workspace.getConfiguration();
     /** @type {import("./sort.js").Options} */
-    const options = {};
+    let options = {};
     const defaultArgs = config.get('scoped-sort.defaultArgs');
     let shouldPrompt = !args && config.get('scoped-sort.prompt');
 
@@ -34,27 +35,13 @@ async function baseCommand(editor, _edit, args) {
     }
 
     if (args) {
-        const letters = args.split('');
-
-        for (const letter of letters) {
-            switch (letter) {
-                case 's':
-                    options.reverse = true;
-                    break;
-                case 'r':
-                    options.recursive = true;
-                    break;
-                case 'u':
-                    options.unique = true;
-                    break;
-                case 'i':
-                    options.caseInsensitive = true;
-                    break;
-                default:
-                    return vscode.window.showErrorMessage(
-                        `Could not understand argument: "${letter}"`
-                    );
-            }
+        try {
+            options = parseStringArugments(args);
+        } catch (err) {
+            /** @type {string} */
+            // @ts-ignore
+            const message = err.message;
+            return vscode.window.showErrorMessage(message);
         }
     }
 

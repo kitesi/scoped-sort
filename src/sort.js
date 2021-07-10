@@ -122,8 +122,9 @@ function sortInnerSection(lines, index, options) {
 function sort(text, options) {
     const lines = text.trimEnd().split(/\r?\n/);
     let sections = [];
+    /** @type {string[]} */
     let currentSection = [];
-    /** @type {string} */
+    /** @type {string | undefined} */
     let currentIndentation;
 
     for (let i = 0; i < lines.length; i++) {

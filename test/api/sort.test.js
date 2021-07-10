@@ -2,28 +2,24 @@
 
 const test = require('tape');
 const sort = require('../../src/sort.js');
-const { inputs, duplicateInputs, join, testString } = require('./utils.js');
+const { inputs, join, testString } = require('../utils.js');
 
-test('non recursive, non reverse', (t) => {
+/** @typedef {import("../../src/sort.js").Options} Options */
+
+test('normal sort', (t) => {
+    /** @type {Options} */
     const options = {};
 
     testString(
         t,
-        sort(inputs[0], options),
+        sort(inputs.simple, options),
         join('- bear', '- gear', '- sear', '- there'),
-        'simple non nested list'
+        'simple list'
     );
 
     testString(
         t,
-        sort(inputs[1], options),
-        join('- a', '- b', '- g', '- op', '- z'),
-        'another simple non nested list'
-    );
-
-    testString(
-        t,
-        sort(inputs[2], options),
+        sort(inputs.oneLevelDeepNestedList, options),
         `- gear
   - dear
 - hear
@@ -38,7 +34,7 @@ test('non recursive, non reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[3], options),
+        sort(inputs.multiNestedList, options),
         `- gear
   - dear
     - make do
@@ -60,7 +56,7 @@ test('non recursive, non reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[4], options),
+        sort(inputs.nestedListWithDescriptions, options),
         `* Commands
   * Migrations
     * rake db: migrate - push all migrations to the database
@@ -83,34 +79,28 @@ test('non recursive, non reverse', (t) => {
   |Install|Status|
   |Yes|Pending|
   ~~~`,
-        'descriptions in items'
+        'multi nested list with descriptions in items'
     );
 
     t.end();
 });
 
-test('non recursive, reverse', (t) => {
+test('reverse', (t) => {
+    /** @type {Options} */
     const options = {
         reverse: true,
     };
 
     testString(
         t,
-        sort(inputs[0], options),
+        sort(inputs.simple, options),
         join('- there', '- sear', '- gear', '- bear'),
-        'simple non nested list'
+        'simple list'
     );
 
     testString(
         t,
-        sort(inputs[1], options),
-        join('- z', '- op', '- g', '- b', '- a'),
-        'another simple non nested list'
-    );
-
-    testString(
-        t,
-        sort(inputs[2], options),
+        sort(inputs.oneLevelDeepNestedList, options),
         `- zer
 - there
 - hear
@@ -125,7 +115,7 @@ test('non recursive, reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[3], options),
+        sort(inputs.multiNestedList, options),
         `- zer
 - there
 - hear
@@ -147,7 +137,7 @@ test('non recursive, reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[4], options),
+        sort(inputs.nestedListWithDescriptions, options),
         `* Package Upgrade Status:
   1. Install Package
   2. Attach Plugin
@@ -170,7 +160,107 @@ test('non recursive, reverse', (t) => {
         Node.process_csv
     end
     \`\`\``,
-        'descriptions in items'
+        'multi nested list with descriptions in items'
+    );
+
+    t.end();
+});
+
+test('case insensitive', (t) => {
+    /** @type {Options} */
+    const options = {
+        caseInsensitive: true,
+    };
+
+    testString(
+        t,
+        sort(inputs.duplicates.simple, options),
+        `- do
+- lol
+- make
+- so
+- There
+- there
+- there
+- THERE`,
+        'simple list'
+    );
+
+    testString(
+        t,
+        sort(inputs.duplicates.oneLevelDeepNestedList, options),
+        `- do
+  - there
+  - THERE
+  - do
+  - HEllo
+  - hello
+  - grew
+- make
+- so
+- There
+- there
+- THEre
+- THERE
+- There`,
+        'one level deep nested list'
+    );
+
+    t.end();
+});
+
+test('unique', (t) => {
+    /** @type {Options} */
+    const options = { unique: true };
+
+    testString(
+        t,
+        sort(inputs.duplicates.simple, options),
+        `- THERE
+- There
+- do
+- lol
+- make
+- so
+- there`,
+        'simple list'
+    );
+
+    testString(
+        t,
+        sort(inputs.duplicates.oneLevelDeepNestedList, options),
+        `- THERE
+- THEre
+- There
+- do
+  - there
+  - THERE
+  - do
+  - HEllo
+  - hello
+  - grew
+- make
+- so
+- there`,
+        'one level deep list'
+    );
+
+    testString(
+        t,
+        sort(
+            `- monkey
+- ape
+- zea
+- zea
+  - sea`,
+            options
+        ),
+        `- ape
+- monkey
+- zea
+- zea
+  - sea`,
+        'duplicate with nested item'
     );
 
     t.end();
@@ -183,21 +273,14 @@ test('recursive, non reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[0], options),
+        sort(inputs.simple, options),
         join('- bear', '- gear', '- sear', '- there'),
-        'simple non nested list'
+        'simple list'
     );
 
     testString(
         t,
-        sort(inputs[1], options),
-        join('- a', '- b', '- g', '- op', '- z'),
-        'another simple non nested list'
-    );
-
-    testString(
-        t,
-        sort(inputs[2], options),
+        sort(inputs.oneLevelDeepNestedList, options),
         `- gear
   - dear
 - hear
@@ -207,12 +290,12 @@ test('recursive, non reverse', (t) => {
   - zamma
 - there
 - zer`,
-        '1 level deep nested list'
+        'one level deep nested list'
     );
 
     testString(
         t,
-        sort(inputs[3], options),
+        sort(inputs.multiNestedList, options),
         `- gear
   - dear
     - aer do
@@ -234,7 +317,7 @@ test('recursive, non reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[4], options),
+        sort(inputs.nestedListWithDescriptions, options),
         `* Commands
   * Migrations
     * 'STEP=3' - revert the last 3 migrations
@@ -257,7 +340,7 @@ test('recursive, non reverse', (t) => {
   |Install|Status|
   |Yes|Pending|
   ~~~`,
-        'descriptions in items'
+        'multi nested list with descriptions in items'
     );
 
     t.end();
@@ -271,21 +354,14 @@ test('recursive, reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[0], options),
+        sort(inputs.simple, options),
         join('- there', '- sear', '- gear', '- bear'),
-        'simple non nested list'
+        'simple list'
     );
 
     testString(
         t,
-        sort(inputs[1], options),
-        join('- z', '- op', '- g', '- b', '- a'),
-        'another simple non nested list'
-    );
-
-    testString(
-        t,
-        sort(inputs[2], options),
+        sort(inputs.oneLevelDeepNestedList, options),
         `- zer
 - there
 - hear
@@ -300,7 +376,7 @@ test('recursive, reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[3], options),
+        sort(inputs.multiNestedList, options),
         `- zer
 - there
 - hear
@@ -322,7 +398,7 @@ test('recursive, reverse', (t) => {
 
     testString(
         t,
-        sort(inputs[4], options),
+        sort(inputs.nestedListWithDescriptions, options),
         `* Package Upgrade Status:
   1. Install Package
   2. Attach Plugin
@@ -345,158 +421,48 @@ test('recursive, reverse', (t) => {
   * Migrations
     * rake db: migrate - push all migrations to the database
     * 'STEP=3' - revert the last 3 migrations`,
-        'descriptions in items'
+        'multi deep nested list with descriptions in items'
     );
 
     t.end();
 });
 
-test('unique', (t) => {
+test('unique, case insensitive, recursive', (t) => {
     testString(
         t,
-        sort(duplicateInputs[0], { unique: true }),
-        `- THERE
-- There
-- do
-- lol
-- make
-- so
-- there`,
-        'simple 1 level deep list'
-    );
-
-    testString(
-        t,
-        sort(duplicateInputs[1], { unique: true }),
-        `- THERE
-- THEre
-- There
-- do
-  - there
-  - THERE
-  - do
-  - HEllo
-  - hello
-  - grew
-- make
-- so
-- there`,
-        'simple 2 level deep list'
-    );
-
-    testString(
-        t,
-        sort(duplicateInputs[1], { unique: true, recursive: true }),
-        `- THERE
-- THEre
-- There
-- do
-  - HEllo
-  - THERE
-  - do
-  - grew
-  - hello
-  - there
-- make
-- so
-- there`,
-        'simple 2 level deep list, recursive'
-    );
-
-    testString(
-        t,
-        sort(
-            `- monkey
-- ape
-- zea
-- zea
-  - sea`,
-            { unique: true }
-        ),
-        `- ape
-- monkey
-- zea
-- zea
-  - sea`,
-        'duplicate with nested item'
-    );
-
-    t.end();
-});
-
-test('case insensitive', (t) => {
-    testString(
-        t,
-        sort(duplicateInputs[0], { caseInsensitive: true, unique: false }),
-        `- do
-- lol
-- make
-- so
-- There
-- there
-- there
-- THERE`,
-        '1 level deep list, case insensitive'
-    );
-
-    testString(
-        t,
-        sort(duplicateInputs[1], { caseInsensitive: true }),
-        `- do
-  - there
-  - THERE
-  - do
-  - HEllo
-  - hello
-  - grew
-- make
-- so
-- There
-- there
-- THEre
-- THERE
-- There`,
-        'nested list, case insensitive'
-    );
-
-    testString(
-        t,
-        sort(duplicateInputs[1], { caseInsensitive: true, recursive: true }),
-        `- do
-  - do
-  - grew
-  - HEllo
-  - hello
-  - there
-  - THERE
-- make
-- so
-- There
-- there
-- THEre
-- THERE
-- There`,
-        'nested list, case insensitive, recursive'
-    );
-
-    t.end();
-});
-
-test('combination of unique and case-insensitive', (t) => {
-    testString(
-        t,
-        sort(duplicateInputs[0], { caseInsensitive: true, unique: true }),
+        sort(inputs.duplicates.simple, { caseInsensitive: true, unique: true }),
         `- do
 - lol
 - make
 - so
 - There`,
-        'both, 1 level deep'
+        'both, simple list'
     );
 
     testString(
         t,
-        sort(duplicateInputs[1], {
+        sort(inputs.duplicates.nestedListWithDescriptions, {
+            caseInsensitive: true,
+            unique: true,
+        }),
+        `- do
+  - do
+
+   Once upon a time there was a blue whale.
+
+  - grew
+  - HEllo
+  - there
+- make
+- so
+- There
+`,
+        'both, nested list with descriptions list'
+    );
+
+    testString(
+        t,
+        sort(inputs.duplicates.oneLevelDeepNestedList, {
             caseInsensitive: true,
             unique: true,
             recursive: true,
@@ -509,12 +475,12 @@ test('combination of unique and case-insensitive', (t) => {
 - make
 - so
 - There`,
-        'both + recursive, nested list'
+        'both + recursive, one level deep nested list'
     );
 
     testString(
         t,
-        sort(duplicateInputs[0], { caseInsensitive: false, unique: false }),
+        sort(inputs.duplicates.simple, {}),
         `- THERE
 - There
 - do
@@ -523,7 +489,56 @@ test('combination of unique and case-insensitive', (t) => {
 - so
 - there
 - there`,
-        'simple 1 level deep list, neither'
+        'simple list, none'
+    );
+
+    t.end();
+});
+
+test('others with recursive', (t) => {
+    testString(
+        t,
+        sort(inputs.duplicates.oneLevelDeepNestedList, {
+            caseInsensitive: true,
+            recursive: true,
+        }),
+        `- do
+  - do
+  - grew
+  - HEllo
+  - hello
+  - there
+  - THERE
+- make
+- so
+- There
+- there
+- THEre
+- THERE
+- There`,
+        'one level nested list, case insensitive, recursive'
+    );
+
+    testString(
+        t,
+        sort(inputs.duplicates.oneLevelDeepNestedList, {
+            unique: true,
+            recursive: true,
+        }),
+        `- THERE
+- THEre
+- There
+- do
+  - HEllo
+  - THERE
+  - do
+  - grew
+  - hello
+  - there
+- make
+- so
+- there`,
+        'one level deep nested list, unique & recursive'
     );
 
     t.end();

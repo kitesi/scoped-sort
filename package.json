@@ -55,7 +55,7 @@
         ]
     },
     "scripts": {
-        "test": "node ./test/suite/sort.test.js",
+        "test": "tape ./test/api/**.js",
         "pretty": "npx prettier --write ."
     },
     "devDependencies": {
