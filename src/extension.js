@@ -21,10 +21,16 @@ async function baseCommand(editor, _edit, args) {
     }
 
     if (shouldPrompt) {
-        args = await vscode.window.showInputBox({
+        const promptResponse = await vscode.window.showInputBox({
             placeHolder: 'Arguments: sr, r, u, i, ...',
             value: defaultArgs,
         });
+
+        if (typeof promptResponse === 'undefined') {
+            return;
+        }
+
+        args = promptResponse;
     }
 
     if (args) {
