@@ -446,18 +446,40 @@ test('unique, case insensitive, recursive', (t) => {
             unique: true,
         }),
         `- do
+  - there
+  - THERE
   - do
 
-   Once upon a time there was a blue whale.
+    Once upon a time there was a blue whale.
+
+  - HEllo
+  - hello
+  - grew
+- make
+- so
+- There`,
+        'both, nested list with descriptions list'
+    );
+
+    testString(
+        t,
+        sort(inputs.duplicates.nestedListWithDescriptions, {
+            caseInsensitive: true,
+            unique: true,
+            recursive: true,
+        }),
+        `- do
+  - do
+
+    Once upon a time there was a blue whale.
 
   - grew
   - HEllo
   - there
 - make
 - so
-- There
-`,
-        'both, nested list with descriptions list'
+- There`,
+        'both, nested list with descriptions list, recursive'
     );
 
     testString(

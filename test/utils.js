@@ -87,7 +87,7 @@ module.exports.inputs = {
   - there
   - THERE
   - do
-     
+
     Once upon a time there was a blue whale.
 
   - HEllo
@@ -109,6 +109,8 @@ module.exports.testString = function (t, actual, expected, message) {
     t.equals(actual, expected, message);
 
     if (actual !== expected) {
+        // console.log(`EXPECTED:\n\n${expected}`);
+        // console.log(`ACTUAL:\n\n${actual}`);
         console.log(diffStringsUnified(expected, actual));
     }
 };
