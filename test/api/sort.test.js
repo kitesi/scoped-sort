@@ -274,10 +274,10 @@ test('sort numerically', (t) => {
         t,
         sort(inputs.numbers.simple, options),
         `- ama
+- -91mark3
 - 1
 - 7
 - 12
-- 91mark3
 - 213dark
 - 230`,
         'simple list'
@@ -289,12 +289,12 @@ test('sort numerically', (t) => {
         `- hello
   - my ex wife still misses me
   - but her aim is getting better
+- -92
 - 3
 - 7
 - 8aa
 - 21a6
-- 23
-- 92`,
+- 23`,
         'one level deep nested list'
     );
 

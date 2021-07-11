@@ -34,7 +34,7 @@ function caseInsensitiveSort(a, b) {
 
 /** @param {string} str */
 function getNumberPartFromString(str) {
-    return str.match(/\d+/);
+    return str.match(/-?\d+/);
 }
 
 /**

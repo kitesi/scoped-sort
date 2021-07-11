@@ -102,7 +102,7 @@ module.exports.inputs = {
 - 1
 - 230
 - 213dark
-- 91mark3
+- -91mark3
 - ama
 - 12`,
         oneLevelDeepNestedList: `- 23
@@ -113,7 +113,7 @@ module.exports.inputs = {
   - but her aim is getting better
 - 21a6
 - 3
-- 92`,
+- -92`,
     },
 };
 /**
