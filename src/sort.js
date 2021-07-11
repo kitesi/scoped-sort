@@ -7,13 +7,19 @@ const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])/;
  *  @property {boolean} [reverse]
  *  @property {boolean} [unique]
  *  @property {boolean} [caseInsensitive]
+ *  @property {boolean} [sortNumerically]
  */
+
+/** @param {string} str **/
+function calculateSpaceLength(str) {
+    return str.replace('\t', '    ').length;
+}
 
 /**
  * @param {string} a
  * @param {string} b
  */
-function stringSortCaseInsensitive(a, b) {
+function caseInsensitiveSort(a, b) {
     const lowerA = a.toLowerCase();
     const lowerB = b.toLowerCase();
 
@@ -26,9 +32,28 @@ function stringSortCaseInsensitive(a, b) {
     return 0;
 }
 
-/** @param {string} str **/
-function calculateSpaceLength(str) {
-    return str.replace('\t', '    ').length;
+/** @param {string} str */
+function getNumberPartFromString(str) {
+    return str.match(/\d+/);
+}
+
+/**
+ * @param {string} a
+ * @param {string} b
+ */
+function numericalSort(a, b) {
+    const numberA = getNumberPartFromString(a)?.[0];
+    const numberB = getNumberPartFromString(b)?.[0];
+
+    if (!numberB) {
+        return 1;
+    }
+
+    if (!numberA) {
+        return -1;
+    }
+
+    return parseInt(numberA) - parseInt(numberB);
 }
 
 /**
@@ -36,8 +61,10 @@ function calculateSpaceLength(str) {
  * @param {Options} options
  */
 function getModifiedSections(sections, options) {
-    if (options.caseInsensitive) {
-        sections.sort(stringSortCaseInsensitive);
+    if (options.sortNumerically) {
+        sections.sort(numericalSort);
+    } else if (options.caseInsensitive) {
+        sections.sort(caseInsensitiveSort);
     } else {
         sections.sort();
     }

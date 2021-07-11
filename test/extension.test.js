@@ -6,7 +6,7 @@ const test = require('tape');
 const vscode = require('vscode');
 const sort = require('../src/sort.js');
 const parseStringArguments = require('../src/parse-string-arguments.js');
-const { inputs, testString, allUniqueStringArguments } = require('./utils.js');
+const { inputs, testString, allowedArguments } = require('./utils.js');
 
 /** @typedef {import("../src/sort.js").Options} SortArgs */
 // const myExtension = require('../extension');
@@ -87,40 +87,28 @@ test('Extension Test', async (t) => {
         );
     }
 
-    for (const stringArguments of allUniqueStringArguments) {
+    for (const stringArguments of allowedArguments) {
         await testSortCommand(
             inputs.nestedListWithDescriptions,
             stringArguments,
             parseStringArguments(stringArguments),
-            stringArguments
+            stringArguments + ': nested list with description'
         );
 
         await testSortCommand(
             inputs.duplicates.nestedListWithDescriptions,
             stringArguments,
             parseStringArguments(stringArguments),
-            stringArguments
+            stringArguments + ': duplicates nested list w/desc'
+        );
+
+        await testSortCommand(
+            inputs.numbers.oneLevelDeepNestedList,
+            stringArguments,
+            parseStringArguments(stringArguments),
+            stringArguments + ': numbers one level deep nested list'
         );
     }
-
-    // await testSortCommand(inputs[4], 's', { reverse: true });
-    // await testSortCommand(inputs[4], 'r', { recursive: true });
-    // await testSortCommand(duplicateInputs[1], 'u', { unique: true });
-    // await testSortCommand(duplicateInputs[1], 'i', { caseInsensitive: true });
-    // await testSortCommand(inputs[4], 'sr', { reverse: true, recursive: true });
-    // await testSortCommand(duplicateInputs[1], 'ur', {
-    //     unique: true,
-    //     recursive: true,
-    // });
-    // await testSortCommand(duplicateInputs[1], 'ui', {
-    //     unique: true,
-    //     caseInsensitive: true,
-    // });
-    // await testSortCommand(duplicateInputs[1], 'uir', {
-    //     unique: true,
-    //     caseInsensitive: true,
-    //     recursive: true,
-    // });
 
     t.end();
 });

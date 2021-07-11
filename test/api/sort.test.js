@@ -266,6 +266,41 @@ test('unique', (t) => {
     t.end();
 });
 
+test('sort numerically', (t) => {
+    /** @type {Options} */
+    const options = { sortNumerically: true };
+
+    testString(
+        t,
+        sort(inputs.numbers.simple, options),
+        `- ama
+- 1
+- 7
+- 12
+- 91mark3
+- 213dark
+- 230`,
+        'simple list'
+    );
+
+    testString(
+        t,
+        sort(inputs.numbers.oneLevelDeepNestedList, options),
+        `- hello
+  - my ex wife still misses me
+  - but her aim is getting better
+- 3
+- 7
+- 8aa
+- 21a6
+- 23
+- 92`,
+        'one level deep nested list'
+    );
+
+    t.end();
+});
+
 test('recursive, non reverse', (t) => {
     const options = {
         recursive: true,

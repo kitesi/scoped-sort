@@ -97,6 +97,24 @@ module.exports.inputs = {
 - THERE
 - There`,
     },
+    numbers: {
+        simple: `- 7
+- 1
+- 230
+- 213dark
+- 91mark3
+- ama
+- 12`,
+        oneLevelDeepNestedList: `- 23
+- 7
+- 8aa
+- hello
+  - my ex wife still misses me
+  - but her aim is getting better
+- 21a6
+- 3
+- 92`,
+    },
 };
 /**
  *
@@ -115,20 +133,4 @@ module.exports.testString = function (t, actual, expected, message) {
     }
 };
 
-module.exports.allUniqueStringArguments = [
-    's',
-    'si',
-    'sr',
-    'su',
-    'siu',
-    'sir',
-    'sru',
-    'siur',
-    'u',
-    'ui',
-    'uir',
-    'ur',
-    'i',
-    'ir',
-    'r',
-];
+module.exports.allowedArguments = ['s', 'r', 'i', 'n', 'u'];

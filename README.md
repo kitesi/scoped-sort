@@ -41,6 +41,7 @@ These arguments are single letters. Here's all the arguments:
 - `r` sort recursively
 - `u` remove duplicates
 - `i` case insensitive
+- `n` sort by numbers
 
 Example: `usr` => get unique values, sort descendingly and recursively.
 

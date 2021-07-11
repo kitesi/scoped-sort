@@ -19,6 +19,9 @@ module.exports = function (args) {
             case 'i':
                 options.caseInsensitive = true;
                 break;
+            case 'n':
+                options.sortNumerically = true;
+                break;
             default:
                 throw new Error(`Could not understand argument: "${letter}"`);
         }
