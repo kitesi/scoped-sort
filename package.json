@@ -2,7 +2,7 @@
     "name": "scoped-sort",
     "displayName": "Scoped Sort",
     "description": "Sort text in a scope (vs line by line).",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
     "main": "./src/extension.js",
