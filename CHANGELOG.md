@@ -1,3 +1,8 @@
+# 0.8.2 (7/12/2021)
+
+<!-- prettier-ignore -->
+- Fix bug, command didn't work at all, due to call to dev-dependency library.
+
 # 0.8.1 (7/12/2021)
 
 <!-- prettier-ignore -->

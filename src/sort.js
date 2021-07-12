@@ -1,6 +1,5 @@
 // @ts-check
 const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])/;
-const inputs = require('../test/utils.js');
 
 /**
  *  @typedef {object} Options

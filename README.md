@@ -94,6 +94,9 @@ Example: `usr` => get unique values, sort descendingly and recursively.
 
 Example: `/title-/` => sort using the text after the text 'title-' in each section/item.
 
+Example: `u /c\w+/ p` => sort using the matched word that starts with c in each
+section/item and remove duplicates.
+
 # Configuration
 
 All of the configuration is under `scoped-sort`, visit your settings.json to change them.
