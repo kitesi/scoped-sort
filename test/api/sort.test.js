@@ -301,6 +301,58 @@ test('sort numerically', (t) => {
     t.end();
 });
 
+test('regex', (t) => {
+    testString(
+        t,
+        sort(inputs.regex.media, {
+            regex: /media/,
+        }),
+        `- the matched text isn't here
+- consume media 24/7
+- the media Decimated my life
+- media a
+- media hater
+- media lover
+- media more like __
+- media z`,
+        'regex: /media/ no m argument'
+    );
+
+    testString(
+        t,
+        sort(inputs.regex.media, {
+            regex: /media/,
+            useMatchedRegex: true,
+        }),
+        `- the matched text isn't here
+- media z
+- media a
+- media lover
+- media hater
+- consume media 24/7
+- media more like __
+- the media Decimated my life`,
+        'regex: /media/ with m argument'
+    );
+
+    testString(
+        t,
+        sort(inputs.regex.number, {
+            regex: /\d+/,
+            useMatchedRegex: true,
+        }),
+        `- the matched text isn't here
+- top 10 anime betrayals
+- It's been 18 years since I've felt the touch of a woman
+- An approximation of pi is 3.1415
+- King henry had 6 wives
+- 7's the game
+- Cats have 9 lives`
+    );
+
+    t.end();
+});
+
 test('recursive, non reverse', (t) => {
     const options = {
         recursive: true,

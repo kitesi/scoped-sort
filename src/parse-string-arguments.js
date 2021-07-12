@@ -1,12 +1,18 @@
 // @ts-check
+const argumentParserRegex = /\/[^\/]+\/|[^\s]/g;
+
 /** @param {string} args */
-module.exports = function (args) {
+module.exports.parseStringArguments = function (args) {
     /** @type {import("./sort.js").Options} */
     const options = {};
-    const letters = args.split('');
+    const parsedArgs = args.match(argumentParserRegex);
 
-    for (const letter of letters) {
-        switch (letter) {
+    if (!parsedArgs) {
+        return options;
+    }
+
+    for (const arg of parsedArgs) {
+        switch (arg) {
             case 's':
                 options.reverse = true;
                 break;
@@ -22,10 +28,38 @@ module.exports = function (args) {
             case 'n':
                 options.sortNumerically = true;
                 break;
+            case 'm':
+                options.useMatchedRegex = true;
+                break;
             default:
-                throw new Error(`Could not understand argument: "${letter}"`);
+                if (arg.startsWith('/') && arg.endsWith('/')) {
+                    try {
+                        const regex = new RegExp(arg.slice(1, arg.length - 1));
+                        options.regex = regex;
+                    } catch (e) {
+                        throw new Error(
+                            `Tried to parse "${arg}" as a regex, failed with: ` +
+                                e?.message
+                        );
+                    }
+                } else {
+                    throw new Error(`Could not understand argument: ${arg}`);
+                }
         }
     }
 
+    /* 
+        commented it out because there is a valid use case,
+        when users by default want to use the matched regex,
+        but of course they won't always be using regexs,
+        if this threw an error, they would have to manunally 
+        type 'm' each time.
+    */
+    // if (options.useMatchedRegex && !options.regex) {
+    //     throw new Error("You can't use the m argument without a regex pattern");
+    // }
+
     return options;
 };
+
+module.exports.argumentParserRegex = argumentParserRegex;

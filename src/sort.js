@@ -1,5 +1,6 @@
 // @ts-check
 const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])/;
+const inputs = require('../test/utils.js');
 
 /**
  *  @typedef {object} Options
@@ -8,28 +9,13 @@ const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])/;
  *  @property {boolean} [unique]
  *  @property {boolean} [caseInsensitive]
  *  @property {boolean} [sortNumerically]
+ *  @property {RegExp} [regex]
+ *  @property {boolean} [useMatchedRegex]
  */
 
 /** @param {string} str **/
 function calculateSpaceLength(str) {
     return str.replace('\t', '    ').length;
-}
-
-/**
- * @param {string} a
- * @param {string} b
- */
-function caseInsensitiveSort(a, b) {
-    const lowerA = a.toLowerCase();
-    const lowerB = b.toLowerCase();
-
-    if (lowerA < lowerB) {
-        return -1;
-    } else if (lowerA > lowerB) {
-        return 1;
-    }
-
-    return 0;
 }
 
 /** @param {string} str */
@@ -62,9 +48,50 @@ function numericalSort(a, b) {
  */
 function getModifiedSections(sections, options) {
     if (options.sortNumerically) {
+        // could replace with localeCompare but idk for now
         sections.sort(numericalSort);
+    } else if (options.regex) {
+        // need this for some reason, other wise typing says options.regex
+        // might be undefined inside of the sort callback
+        const regex = options.regex;
+
+        sections.sort((a, b) => {
+            const matchedA = a.match(regex);
+            const matchedB = b.match(regex);
+
+            if (!matchedB || typeof matchedB.index === 'undefined') {
+                return 1;
+            }
+
+            if (!matchedA || typeof matchedA.index === 'undefined') {
+                return -1;
+            }
+
+            let compareA = matchedA[0];
+            let compareB = matchedB[0];
+
+            if (!options.useMatchedRegex) {
+                compareA = a.slice(matchedA.index);
+                compareB = b.slice(matchedB.index);
+            }
+
+            if (options.caseInsensitive) {
+                compareA = compareA.toLowerCase();
+                compareB = compareB.toLowerCase();
+            }
+
+            if (compareA > compareB) {
+                return 1;
+            } else if (compareB > compareA) {
+                return -1;
+            }
+
+            return 0;
+        });
     } else if (options.caseInsensitive) {
-        sections.sort(caseInsensitiveSort);
+        // faster: https://stackoverflow.com/a/52369951/15021883
+        const collator = new Intl.Collator('en', { sensitivity: 'base' });
+        sections.sort((a, b) => collator.compare(a, b));
     } else {
         sections.sort();
     }

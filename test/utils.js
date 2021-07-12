@@ -115,6 +115,25 @@ module.exports.inputs = {
 - 3
 - -92`,
     },
+    regex: {
+        // /media/ is the tested regex
+        media: `- media z
+- media a
+- media lover
+- the matched text isn't here
+- media hater
+- consume media 24/7
+- media more like __
+- the media Decimated my life`,
+        // /\d+/ is the tested regex
+        number: `- top 10 anime betrayals
+- 7's the game
+- An approximation of pi is 3.1415
+- It's been 18 years since I've felt the touch of a woman
+- King henry had 6 wives
+- the matched text isn't here
+- Cats have 9 lives`,
+    },
 };
 /**
  *
@@ -127,10 +146,8 @@ module.exports.testString = function (t, actual, expected, message) {
     t.equals(actual, expected, message);
 
     if (actual !== expected) {
-        // console.log(`EXPECTED:\n\n${expected}`);
-        // console.log(`ACTUAL:\n\n${actual}`);
         console.log(diffStringsUnified(expected, actual));
     }
 };
 
-module.exports.allowedArguments = ['s', 'r', 'i', 'n', 'u'];
+module.exports.allowedArguments = ['s', 'r', 'i', 'n', 'u', 'm', '/\\d+/'];

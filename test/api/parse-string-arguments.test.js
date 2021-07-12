@@ -1,8 +1,73 @@
 // @ts-check
 
 const test = require('tape');
-const parseStringArguments = require('../../src/parse-string-arguments.js');
+const {
+    parseStringArguments,
+    argumentParserRegex,
+} = require('../../src/parse-string-arguments.js');
 const { allowedArguments } = require('../utils.js');
+
+test('argument parser regex', (t) => {
+    t.deepEquals('s'.match(argumentParserRegex), ['s']);
+    t.deepEquals('n'.match(argumentParserRegex), ['n']);
+    t.deepEquals('snur'.match(argumentParserRegex), ['s', 'n', 'u', 'r']);
+    t.deepEquals('snur /\\d+/'.match(argumentParserRegex), [
+        's',
+        'n',
+        'u',
+        'r',
+        '/\\d+/',
+    ]);
+
+    t.deepEquals('snur /\\d+/i'.match(argumentParserRegex), [
+        's',
+        'n',
+        'u',
+        'r',
+        '/\\d+/',
+        'i',
+    ]);
+
+    t.deepEquals('snur /\\d+/ i'.match(argumentParserRegex), [
+        's',
+        'n',
+        'u',
+        'r',
+        '/\\d+/',
+        'i',
+    ]);
+
+    t.deepEquals('snur /\\d+/m'.match(argumentParserRegex), [
+        's',
+        'n',
+        'u',
+        'r',
+        '/\\d+/',
+        'm',
+    ]);
+
+    t.deepEquals('snur /\\d+/ m'.match(argumentParserRegex), [
+        's',
+        'n',
+        'u',
+        'r',
+        '/\\d+/',
+        'm',
+    ]);
+
+    t.deepEquals('snur /\\d+/ m23'.match(argumentParserRegex), [
+        's',
+        'n',
+        'u',
+        'r',
+        '/\\d+/',
+        'm',
+        '2',
+        '3',
+    ]);
+
+    t.end();
+});
 
 test('main', (t) => {
     for (const stringArguments of allowedArguments) {
@@ -39,9 +104,44 @@ test('main', (t) => {
         unique: true,
     });
 
+    t.deepEquals(parseStringArguments('s /\\w/'), {
+        reverse: true,
+        regex: /\w/,
+    });
+
+    t.deepEquals(parseStringArguments('s /\\w/m'), {
+        reverse: true,
+        regex: /\w/,
+        useMatchedRegex: true,
+    });
+
+    t.deepEquals(parseStringArguments('s /\\w/ m'), {
+        reverse: true,
+        regex: /\w/,
+        useMatchedRegex: true,
+    });
+
     t.doesNotThrow(() => parseStringArguments(''));
-    t.throws(() => parseStringArguments('alskjdLKASJDLK'));
-    t.throws(() => parseStringArguments('{'));
+
+    t.doesNotThrow(
+        () => parseStringArguments('m'),
+        'throws error on m with no regex'
+    );
+
+    t.throws(
+        () => parseStringArguments('alskjdLKASJDLK'),
+        'throws error on random mess'
+    );
+
+    t.throws(
+        () => parseStringArguments('{'),
+        'throws error on random non alphanumerical character'
+    );
+
+    t.throws(
+        () => parseStringArguments('/[.++/'),
+        'throws error on invalid regex'
+    );
 
     t.end();
 });

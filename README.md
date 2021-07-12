@@ -34,7 +34,7 @@ To use this, first select the text you want to sort, or don't and it'll sort the
 (usually `ctrl+shift+p`), type 'scoped sort', and select the command. It will
 then give you a prompt that allows for arguments.
 
-These arguments are single letters. Here's all the arguments:
+Here's all the arguments:
 
 <!-- prettier-ignore -->
 - `s` sort descendingly
@@ -42,8 +42,18 @@ These arguments are single letters. Here's all the arguments:
 - `u` remove duplicates
 - `i` case insensitive
 - `n` sort by numbers
+- `m` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
+
+### Regexs
+
+You can also specify a regex, this will sort using the text _after_ the
+match. If you want it to use the matched text, use the argument `m`. Text that
+do not match will be left in place, and will be at the top (or bottom if reversed).
+Also worth noting, the regex language is **javascript**.
 
 Example: `usr` => get unique values, sort descendingly and recursively.
+
+Example: `/title-/` => sort using the text after the text 'title-' in each section/item.
 
 ## Configuration
 
@@ -77,12 +87,10 @@ For example:
 }
 ```
 
-Would mean sort descendingly and recursively, and remove duplicates.
-
 # Acknowledgements
 
 <!-- prettier-ignore -->
-- Inspired by vim's :sort
+- Inspired by vim's :sort, but isn't going trying/going be a complete 1:1
 - Font in banner is [Ordinary](https://www.dafont.com/ordinary.font)
 - Font in previews is [Cascadia Code](https://github.com/microsoft/cascadia-code)
 

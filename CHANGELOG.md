@@ -1,3 +1,11 @@
+# 0.8.0 (7/11/2021)
+
+<!-- prettier-ignore -->
+- Fix bug where if you escaped on the prompt, it still continued, just with blank arguments
+- Add `n` as possible argument (sort by number)
+- Add regexs as possible argument
+  - Add `m` as possible argument
+
 # 0.7.0 (7/9/2021)
 
 <!-- prettier-ignore -->

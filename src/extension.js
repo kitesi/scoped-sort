@@ -1,7 +1,7 @@
 // @ts-check
 const vscode = require('vscode');
 const sort = require('./sort.js');
-const parseStringArugments = require('./parse-string-arguments.js');
+const { parseStringArguments } = require('./parse-string-arguments.js');
 
 /** @typedef {"ascending" | "descending"} Sort */
 
@@ -36,7 +36,7 @@ async function baseCommand(editor, _edit, args) {
 
     if (args) {
         try {
-            options = parseStringArugments(args);
+            options = parseStringArguments(args);
         } catch (err) {
             /** @type {string} */
             // @ts-ignore

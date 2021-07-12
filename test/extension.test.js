@@ -5,7 +5,7 @@ const test = require('tape');
 // as well as import your extension to test it
 const vscode = require('vscode');
 const sort = require('../src/sort.js');
-const parseStringArguments = require('../src/parse-string-arguments.js');
+const { parseStringArguments } = require('../src/parse-string-arguments.js');
 const { inputs, testString, allowedArguments } = require('./utils.js');
 
 /** @typedef {import("../src/sort.js").Options} SortArgs */
@@ -87,6 +87,7 @@ test('Extension Test', async (t) => {
         );
     }
 
+    // todo: maybe make better integration tests
     for (const stringArguments of allowedArguments) {
         await testSortCommand(
             inputs.nestedListWithDescriptions,
