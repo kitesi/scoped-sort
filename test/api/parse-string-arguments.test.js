@@ -37,31 +37,31 @@ test('argument parser regex', (t) => {
         'i',
     ]);
 
-    t.deepEquals('snur /\\d+/m'.match(argumentParserRegex), [
+    t.deepEquals('snur /\\d+/p'.match(argumentParserRegex), [
         's',
         'n',
         'u',
         'r',
         '/\\d+/',
-        'm',
+        'p',
     ]);
 
-    t.deepEquals('snur /\\d+/ m'.match(argumentParserRegex), [
+    t.deepEquals('snur /\\d+/ p'.match(argumentParserRegex), [
         's',
         'n',
         'u',
         'r',
         '/\\d+/',
-        'm',
+        'p',
     ]);
 
-    t.deepEquals('snur /\\d+/ m23'.match(argumentParserRegex), [
+    t.deepEquals('snur /\\d+/ p23'.match(argumentParserRegex), [
         's',
         'n',
         'u',
         'r',
         '/\\d+/',
-        'm',
+        'p',
         '2',
         '3',
     ]);
@@ -109,13 +109,13 @@ test('main', (t) => {
         regex: /\w/,
     });
 
-    t.deepEquals(parseStringArguments('s /\\w/m'), {
+    t.deepEquals(parseStringArguments('s /\\w/p'), {
         reverse: true,
         regex: /\w/,
         useMatchedRegex: true,
     });
 
-    t.deepEquals(parseStringArguments('s /\\w/ m'), {
+    t.deepEquals(parseStringArguments('s /\\w/ p'), {
         reverse: true,
         regex: /\w/,
         useMatchedRegex: true,
@@ -124,7 +124,7 @@ test('main', (t) => {
     t.doesNotThrow(() => parseStringArguments(''));
 
     t.doesNotThrow(
-        () => parseStringArguments('m'),
+        () => parseStringArguments('p'),
         'throws error on m with no regex'
     );
 

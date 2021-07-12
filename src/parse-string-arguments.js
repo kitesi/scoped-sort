@@ -28,7 +28,7 @@ module.exports.parseStringArguments = function (args) {
             case 'n':
                 options.sortNumerically = true;
                 break;
-            case 'm':
+            case 'p':
                 options.useMatchedRegex = true;
                 break;
             default:

@@ -1,3 +1,12 @@
+# 0.8.1 (7/12/2021)
+
+<!-- prettier-ignore -->
+- Change argument `m` to `p`
+
+  Forgot I was gonna use `m` to specify markdown.
+
+- Change command title from `Scope Sort Selected` to `Scoped Sort`
+
 # 0.8.0 (7/11/2021)
 
 <!-- prettier-ignore -->

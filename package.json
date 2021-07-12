@@ -50,7 +50,7 @@
         "commands": [
             {
                 "command": "scoped-sort.sort",
-                "title": "Scope Sort Selected"
+                "title": "Scoped Sort"
             }
         ]
     },

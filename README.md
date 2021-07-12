@@ -42,12 +42,12 @@ Here's all the arguments:
 - `u` remove duplicates
 - `i` case insensitive
 - `n` sort by numbers
-- `m` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
+- `p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
 
 ### Regexs
 
 You can also specify a regex, this will sort using the text _after_ the
-match. If you want it to use the matched text, use the argument `m`. Text that
+match. If you want it to use the matched text, use the argument `p`. Text that
 do not match will be left in place, and will be at the top (or bottom if reversed).
 Also worth noting, the regex language is **javascript**.
 
