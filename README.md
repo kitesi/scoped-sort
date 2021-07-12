@@ -2,31 +2,70 @@
     <img src="assets/banner.png" alt="banner: scoped sort" />
 </p>
 
-<p align="center"><b>Sort lines in a scope for Visual Studio Code</b></p>
+<p align="center"><b>A better sort for Visual Studio Code.</b></p>
 
 [![version](https://vsmarketplacebadge.apphb.com/version/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
 [![installs](https://vsmarketplacebadge.apphb.com/installs-short/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
+[![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
 
-This is a vscode extension to help sort text & lists in a scoped manner. Vscode
-already provides a commands for sorting (`editor.action.sortLinesDescending` and
-`editor.action.sortLinesAscending`) but the problem with these commands is that
-they sort line by line rather than in a scope.
+This is a vscode extension to help sort text & lists in a scoped manner.
+Currently it only supports markdown lists but it will eventually support other lists.
+
+# Table of Contents
+
+<!-- prettier-ignore -->
+- [Why](#why)
+  - [First: Options](#first-options)
+  - [Second: Scope](#second-scope)
+  - [Disclaimer](#disclaimer)
+- [Demos](#demos)
+- [Usage](#usage)
+  - [Regexs](#regexs)
+- [Configuration](#configuration)
+  - [Adding Keybindings](#adding-keybindings)
+- [Acknowledgements](#acknowledgements)
+- [Contributing / Help](#contributing--help)
+
+# Why
+
+Vscode already provides a commands for sorting (`editor.action.sortLinesDescending` and
+`editor.action.sortLinesAscending`), and there's tons of extensions for sorting.
+So why use this extension?
+
+## First: Options
+
+There's a lot of options you might want, reversing the sort,
+case insensitive sort, numeric sort, remove duplicates, etc.
+
+Vscode native commands for sorting don't have many options, other extensions
+like [tyriar.sort-lines](https://marketplace.visualstudio.com/items?itemName=Tyriar.sort-lines)
+have a lot of options, but they don't have a nice way to combine them, so
+they end up polluting the commands contributions with 8+ commands. And even
+then they don't allow for all the possibilities. This extension uses a prompt,
+so it only needs one command, and can use any combination.
+has
+
+## Second: Scope
+
+Most of these extensions don't consider scope/indentation, so you end up with
+an undesired sort.
 
 Here's what I mean:
 
-![the problem with vscode's implementation](assets/non-scope-problem.png)
+![the problem with most sort implementation](assets/non-scope-problem.png)
 
-Another problem is that the sorting is very limited, (only ascending and descending). Other extensions solve that problem,
-but they don't add scoping.
+## Disclaimer
 
-Currently it only supports markdown lists but it will eventually support other lists.
+Currently, this extension is not meant for sorting words inside of a line, nor
+is it trying to sort language specific things like imports or properties of an
+object.
 
-## Demos
+# Demos
 
 If you want to see some demos visit [demos.md](demos.md). I'm not including them
 here so it doesn't load gifs unnecessarily.
 
-## Usage
+# Usage
 
 This command is exposed by the command `scoped-sort.sort`.
 
@@ -44,7 +83,7 @@ Here's all the arguments:
 - `n` sort by numbers
 - `p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
 
-### Regexs
+## Regexs
 
 You can also specify a regex, this will sort using the text _after_ the
 match. If you want it to use the matched text, use the argument `p`. Text that
@@ -55,7 +94,7 @@ Example: `usr` => get unique values, sort descendingly and recursively.
 
 Example: `/title-/` => sort using the text after the text 'title-' in each section/item.
 
-## Configuration
+# Configuration
 
 All of the configuration is under `scoped-sort`, visit your settings.json to change them.
 
