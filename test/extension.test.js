@@ -13,11 +13,6 @@ const { inputs, testString, allowedArguments } = require('./utils.js');
 
 test.createStream().on('data', console.log);
 
-/** @param {vscode.TextEditor} editor */
-function selectAllText(editor) {
-    return executeCommand('editor.action.selectAll');
-}
-
 /** @param {vscode.TextDocument} document */
 function getAllTextRange(document) {
     return new vscode.Range(
@@ -54,6 +49,7 @@ test('Extension Test', async (t) => {
     }
 
     const editor = vscode.window.activeTextEditor;
+    let testIndex = 0;
 
     /**
      * @param {string} input
@@ -73,11 +69,20 @@ test('Extension Test', async (t) => {
         }
 
         await changeAllText(editor, input);
-        await selectAllText(editor);
+
+        // this extension formats the whole document on no selection
+        // this is just testing that it works both with and without
+        // selection
+        if (testIndex % 2 === 0) {
+            await executeCommand('editor.action.selectAll');
+        } else {
+            await executeCommand('cancelSelection');
+        }
+
         await executeCommand('scoped-sort.sort', commandStringArgs);
         // await executeCommand should be suffecient since I return a promise
         // on the command, but it doesn't work for some reason
-        await new Promise((res) => setTimeout(res, 200));
+        await new Promise((res) => setTimeout(res, 500));
 
         testString(
             t,
@@ -85,6 +90,8 @@ test('Extension Test', async (t) => {
             sort(input, sortArgs),
             message
         );
+
+        testIndex++;
     }
 
     // todo: maybe make better integration tests
