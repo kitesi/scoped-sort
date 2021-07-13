@@ -1,32 +1,24 @@
-// @ts-check
 const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])/;
 
-/**
- *  @typedef {object} Options
- *  @property {boolean} [recursive]
- *  @property {boolean} [reverse]
- *  @property {boolean} [unique]
- *  @property {boolean} [caseInsensitive]
- *  @property {boolean} [sortNumerically]
- *  @property {RegExp} [regex]
- *  @property {boolean} [useMatchedRegex]
- */
+export interface Options {
+    recursive?: boolean;
+    reverse?: boolean;
+    unique?: boolean;
+    caseInsensitive?: boolean;
+    sortNumerically?: boolean;
+    useMatchedRegex?: boolean;
+    regex?: RegExp;
+}
 
-/** @param {string} str **/
-function calculateSpaceLength(str) {
+function calculateSpaceLength(str: string) {
     return str.replace('\t', '    ').length;
 }
 
-/** @param {string} str */
-function getNumberPartFromString(str) {
+function getNumberPartFromString(str: string) {
     return str.match(/-?\d+/);
 }
 
-/**
- * @param {string} a
- * @param {string} b
- */
-function numericalSort(a, b) {
+function numericalSort(a: string, b: string) {
     const numberA = getNumberPartFromString(a)?.[0];
     const numberB = getNumberPartFromString(b)?.[0];
 
@@ -41,11 +33,7 @@ function numericalSort(a, b) {
     return parseInt(numberA) - parseInt(numberB);
 }
 
-/**
- * @param {string[]} sections
- * @param {Options} options
- */
-function getModifiedSections(sections, options) {
+function getModifiedSections(sections: string[], options: Options) {
     if (options.sortNumerically) {
         // could replace with localeCompare but idk for now
         sections.sort(numericalSort);
@@ -100,8 +88,7 @@ function getModifiedSections(sections, options) {
     }
 
     if (options.unique) {
-        /** @type {Set<string>} */
-        const haveSeen = new Set();
+        const haveSeen: Set<string> = new Set();
         const unique = [];
 
         for (const section of sections) {
@@ -121,14 +108,8 @@ function getModifiedSections(sections, options) {
     return sections;
 }
 
-/**
- * @param {string[]} lines
- * @param {number} index
- * @param {Options} options
- */
-function sortInnerSection(lines, index, options) {
-    /** @type {string[]} */
-    const sections = [];
+function sortInnerSection(lines: string[], index: number, options: Options) {
+    const sections: string[] = [];
     let currentIndentation = '';
     let amountAdded = 0;
 
@@ -168,17 +149,11 @@ function sortInnerSection(lines, index, options) {
     };
 }
 
-/**
- *  @param {string} text
- *  @param {Options} options
- */
-function sort(text, options) {
+export function sort(text: string, options: Options) {
     const lines = text.trimEnd().split(/\r?\n/);
     let sections = [];
-    /** @type {string[]} */
-    let currentSection = [];
-    /** @type {string | undefined} */
-    let currentIndentation;
+    let currentSection: string[] = [];
+    let currentIndentation: string | undefined;
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -212,5 +187,3 @@ function sort(text, options) {
 
     return getModifiedSections(sections, options).join('\n');
 }
-
-module.exports = sort;

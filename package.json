@@ -5,7 +5,7 @@
     "version": "0.8.2",
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
-    "main": "./src/extension.js",
+    "main": "./dist/extension.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/karizma/vscode-scoped-sort"

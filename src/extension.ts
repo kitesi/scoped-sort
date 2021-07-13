@@ -1,27 +1,36 @@
-// @ts-check
-const vscode = require('vscode');
-const sort = require('./sort.js');
-const { parseStringArguments } = require('./parse-string-arguments.js');
+import * as vscode from 'vscode';
+import type { Options } from './sort.js';
 
-/** @typedef {"ascending" | "descending"} Sort */
+import { sort } from './sort.js';
+import { parseStringArguments } from './parse-string-arguments.js';
 
-/**
- * @param {vscode.TextEditor} editor
- * @param {vscode.TextEditorEdit} _edit
- * @param {string} args
- */
-async function baseCommand(editor, _edit, args) {
+async function baseCommand(
+    editor: vscode.TextEditor,
+    _edit: vscode.TextEditorEdit,
+    userExplicitArgs?: any
+) {
     const config = vscode.workspace.getConfiguration();
-    /** @type {import("./sort.js").Options} */
-    let options = {};
     const defaultArgs = config.get('scoped-sort.defaultArgs');
-    let shouldPrompt = !args && config.get('scoped-sort.prompt');
+    let options: Options = {};
 
-    if (defaultArgs) {
-        args = defaultArgs;
+    if (
+        typeof userExplicitArgs !== 'string' &&
+        typeof userExplicitArgs !== 'undefined'
+    ) {
+        return vscode.window.showErrorMessage(
+            `User explict arguments have to be strings, not: ${typeof userExplicitArgs}`
+        );
     }
 
-    if (shouldPrompt) {
+    if (typeof defaultArgs !== 'string') {
+        return vscode.window.showErrorMessage(
+            "Type of config 'scoped-sort.defaultArgs' should be a string"
+        );
+    }
+
+    let args = userExplicitArgs ?? '';
+
+    if (!userExplicitArgs && config.get('scoped-sort.prompt')) {
         const promptResponse = await vscode.window.showInputBox({
             placeHolder: 'Arguments: sr, r, u, i, ...',
             value: defaultArgs,
@@ -38,8 +47,6 @@ async function baseCommand(editor, _edit, args) {
         try {
             options = parseStringArguments(args);
         } catch (err) {
-            /** @type {string} */
-            // @ts-ignore
             const message = err.message;
             return vscode.window.showErrorMessage(message);
         }
@@ -66,10 +73,7 @@ async function baseCommand(editor, _edit, args) {
     });
 }
 
-/**
- * @param {vscode.ExtensionContext} context
- */
-function activate(context) {
+function activate(context: vscode.ExtensionContext) {
     const _mainCommand = vscode.commands.registerTextEditorCommand(
         'scoped-sort.sort',
         baseCommand
@@ -80,7 +84,7 @@ function activate(context) {
 
 function deactivate() {}
 
-module.exports = {
+export = {
     activate,
     deactivate,
 };

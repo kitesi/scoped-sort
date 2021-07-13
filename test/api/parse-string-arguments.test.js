@@ -4,7 +4,7 @@ const test = require('tape');
 const {
     parseStringArguments,
     argumentParserRegex,
-} = require('../../src/parse-string-arguments.js');
+} = require('../../dist/parse-string-arguments.js');
 const { allowedArguments } = require('../utils.js');
 
 test('argument parser regex', (t) => {

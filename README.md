@@ -129,6 +129,11 @@ For example:
 }
 ```
 
+Your configuration of `scoped-sort.defaultArgs` is not used here. The reason for
+this is that you might have something like `"r"` for your `defaultArgs`, but
+want to turn it off for the keybinding. Problem is there is no negation/cancel
+of an argument (and there won't ever be one).
+
 # Acknowledgements
 
 <!-- prettier-ignore -->

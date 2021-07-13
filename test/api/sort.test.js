@@ -1,10 +1,10 @@
 // @ts-check
 
 const test = require('tape');
-const sort = require('../../src/sort.js');
+const { sort } = require('../../dist/sort.js');
 const { inputs, join, testString } = require('../utils.js');
 
-/** @typedef {import("../../src/sort.js").Options} Options */
+/** @typedef {import("../../dist/sort.js").Options} Options */
 
 test('normal sort', (t) => {
     /** @type {Options} */

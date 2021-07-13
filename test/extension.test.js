@@ -4,8 +4,8 @@ const test = require('tape');
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 const vscode = require('vscode');
-const sort = require('../src/sort.js');
-const { parseStringArguments } = require('../src/parse-string-arguments.js');
+const { sort } = require('../dist/sort.js');
+const { parseStringArguments } = require('../dist/parse-string-arguments.js');
 const { inputs, testString, allowedArguments } = require('./utils.js');
 
 /** @typedef {import("../src/sort.js").Options} SortArgs */

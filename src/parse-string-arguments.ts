@@ -1,10 +1,9 @@
-// @ts-check
-const argumentParserRegex = /\/[^\/]+\/|[^\s]/g;
+import type { Options } from './sort.js';
 
-/** @param {string} args */
-module.exports.parseStringArguments = function (args) {
-    /** @type {import("./sort.js").Options} */
-    const options = {};
+export const argumentParserRegex = /\/[^\/]+\/|[^\s]/g;
+
+export function parseStringArguments(args: string) {
+    const options: Options = {};
     const parsedArgs = args.match(argumentParserRegex);
 
     if (!parsedArgs) {
@@ -60,6 +59,4 @@ module.exports.parseStringArguments = function (args) {
     // }
 
     return options;
-};
-
-module.exports.argumentParserRegex = argumentParserRegex;
+}
