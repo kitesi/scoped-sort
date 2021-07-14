@@ -9,7 +9,7 @@ const { parseStringArguments } = require('../dist/parse-string-arguments.js');
 const {
     nonMarkdownInputs: inputs,
     testString,
-    allowedArguments,
+    possibleArguments,
 } = require('./utils.js');
 
 /** @typedef {import("../src/sort.js").Options} SortArgs */
@@ -99,7 +99,7 @@ test('Extension Test', async (t) => {
     }
 
     // todo: maybe make better integration tests
-    for (const stringArguments of allowedArguments) {
+    for (const stringArguments of possibleArguments) {
         await testSortCommand(
             inputs.nestedListWithDescriptions,
             stringArguments,

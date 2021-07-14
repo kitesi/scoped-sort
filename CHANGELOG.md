@@ -1,3 +1,8 @@
+# 0.9.1 (7/13/2021)
+
+<!-- prettier-ignore -->
+- Fix bug: argument `m` wasn't recognized
+
 # 0.9.0 (7/13/2021)
 
 <!-- prettier-ignore -->

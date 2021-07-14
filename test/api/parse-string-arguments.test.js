@@ -5,11 +5,12 @@ const {
     parseStringArguments,
     argumentParserRegex,
 } = require('../../dist/parse-string-arguments.js');
-const { allowedArguments } = require('../utils.js');
+const { possibleArguments } = require('../utils.js');
 
 test('argument parser regex', (t) => {
     t.deepEquals('s'.match(argumentParserRegex), ['s']);
     t.deepEquals('n'.match(argumentParserRegex), ['n']);
+    t.deepEquals('m'.match(argumentParserRegex), ['m']);
     t.deepEquals('snur'.match(argumentParserRegex), ['s', 'n', 'u', 'r']);
     t.deepEquals('snur /\\d+/'.match(argumentParserRegex), [
         's',
@@ -70,7 +71,7 @@ test('argument parser regex', (t) => {
 });
 
 test('main', (t) => {
-    for (const stringArguments of allowedArguments) {
+    for (const stringArguments of possibleArguments) {
         t.doesNotThrow(() => parseStringArguments(stringArguments));
     }
 
@@ -88,6 +89,10 @@ test('main', (t) => {
 
     t.deepEquals(parseStringArguments('i'), {
         caseInsensitive: true,
+    });
+
+    t.deepEquals(parseStringArguments('m'), {
+        markdown: true,
     });
 
     t.deepEquals(parseStringArguments('u'), {

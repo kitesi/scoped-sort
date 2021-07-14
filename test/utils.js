@@ -280,4 +280,13 @@ module.exports.testString = function (t, actual, expected, message) {
     }
 };
 
-module.exports.allowedArguments = ['s', 'r', 'i', 'n', 'u', 'p', '/\\d+/'];
+module.exports.possibleArguments = [
+    's',
+    'r',
+    'i',
+    'n',
+    'u',
+    'p',
+    'm',
+    '/\\d+/',
+];

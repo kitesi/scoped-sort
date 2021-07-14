@@ -30,6 +30,9 @@ export function parseStringArguments(args: string) {
             case 'p':
                 options.useMatchedRegex = true;
                 break;
+            case 'm':
+                options.markdown = true;
+                break;
             default:
                 if (arg.startsWith('/') && arg.endsWith('/')) {
                     try {
