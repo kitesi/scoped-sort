@@ -1,4 +1,5 @@
-const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])/;
+const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])?/;
+const isBlankLineRegexTest = /^\s*$/;
 
 export interface Options {
     recursive?: boolean;
@@ -6,6 +7,7 @@ export interface Options {
     unique?: boolean;
     caseInsensitive?: boolean;
     sortNumerically?: boolean;
+    markdown?: boolean;
     useMatchedRegex?: boolean;
     regex?: RegExp;
 }
@@ -40,11 +42,11 @@ function getModifiedSections(sections: string[], options: Options) {
     } else if (options.regex) {
         // need this for some reason, other wise typing says options.regex
         // might be undefined inside of the sort callback
-        const regex = options.regex;
+        const userGivenRegex = options.regex;
 
         sections.sort((a, b) => {
-            const matchedA = a.match(regex);
-            const matchedB = b.match(regex);
+            const matchedA = a.match(userGivenRegex);
+            const matchedB = b.match(userGivenRegex);
 
             if (!matchedB || typeof matchedB.index === 'undefined') {
                 return 1;
@@ -119,7 +121,10 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
         const indentation = match?.groups?.indentation || '';
         const listChar = match?.groups?.char;
 
-        if (!currentIndentation && indentation) {
+        // in the main function doesn't check if the indentation is empty,
+        // because that's fine for the outermost level, since this is an innerSection
+        // sort, it can't be just an empty indentation or ''
+        if (!currentIndentation && indentation !== '') {
             currentIndentation = indentation;
         }
 
@@ -127,7 +132,10 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
         const currentIndentationLength =
             calculateSpaceLength(currentIndentation);
 
-        if (!listChar) {
+        if (
+            (options.markdown && !listChar) ||
+            isBlankLineRegexTest.test(line)
+        ) {
             amountAdded++;
             sections[sections.length - 1] += '\n' + line;
         } else if (indentationLength === currentIndentationLength) {
@@ -165,8 +173,11 @@ export function sort(text: string, options: Options) {
             currentIndentation = indentation;
         }
 
-        if (currentSection.length && listChar) {
-            if (indentation === currentIndentation) {
+        if (currentSection.length && (!options.markdown || listChar)) {
+            if (
+                !isBlankLineRegexTest.test(line) &&
+                indentation === currentIndentation
+            ) {
                 sections.push(currentSection.join('\n'));
                 currentSection = [line];
             } else if (options.recursive) {
@@ -181,7 +192,7 @@ export function sort(text: string, options: Options) {
         }
     }
 
-    if (currentSection) {
+    if (currentSection.length) {
         sections.push(currentSection.join('\n'));
     }
 

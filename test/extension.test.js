@@ -6,7 +6,11 @@ const test = require('tape');
 const vscode = require('vscode');
 const { sort } = require('../dist/sort.js');
 const { parseStringArguments } = require('../dist/parse-string-arguments.js');
-const { inputs, testString, allowedArguments } = require('./utils.js');
+const {
+    nonMarkdownInputs: inputs,
+    testString,
+    allowedArguments,
+} = require('./utils.js');
 
 /** @typedef {import("../src/sort.js").Options} SortArgs */
 // const myExtension = require('../extension');
@@ -82,7 +86,7 @@ test('Extension Test', async (t) => {
         await executeCommand('scoped-sort.sort', commandStringArgs);
         // await executeCommand should be suffecient since I return a promise
         // on the command, but it doesn't work for some reason
-        await new Promise((res) => setTimeout(res, 500));
+        await new Promise((res) => setTimeout(res, 200));
 
         testString(
             t,

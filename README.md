@@ -81,6 +81,8 @@ Here's all the arguments:
 - `u` remove duplicates
 - `i` case insensitive
 - `n` sort by numbers
+- `m` better sort for markdown lists, for the most part you won't need this, but
+in certain cases you will
 - `p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
 
 ## Regexs

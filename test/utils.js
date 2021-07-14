@@ -7,7 +7,7 @@ const join = (...lines) => lines.join('\n');
 // simple => non nested list
 // nestedDescriptions => nested list + has descriptions
 module.exports.join = join;
-module.exports.inputs = {
+module.exports.markdownInputs = {
     simple: join('- there', '- bear', '- sear', '- gear'),
     oneLevelDeepNestedList: `- there
 - hear
@@ -135,6 +135,136 @@ module.exports.inputs = {
 - Cats have 9 lives`,
     },
 };
+
+module.exports.nonMarkdownInputs = {
+    simple: join('there', 'bear', 'sear', 'gear'),
+    oneLevelDeepNestedList: `there
+hear
+  beta
+  zamma
+  alpha
+  gamma
+gear
+  dear
+zer`,
+    multiNestedList: `there
+hear
+  beta
+  zamma
+  alpha
+  gamma
+gear
+  dear
+    make do
+    sake so
+    aer do
+    here me
+      gamma
+      mama
+      aera
+zer`,
+    nestedListWithDescriptions: `Commands
+  Migrations
+    rake db: - migrate push all migrations to the database
+    'STEP=3' - revert the last 3 migrations
+  Rails
+    c - start rails console, run code from your app!
+  Rake
+    Rake Task
+    \`\`\`ruby
+    desc 'process csv'
+    task process_csv: :environment do
+        Node.process_csv
+    end
+    \`\`\`
+Package Upgrade Status:
+  1. Install Package
+  2. Attach Plugin
+  3. Review Installation
+  ~~~
+  |Install|Status|
+  |Yes|Pending|
+  ~~~`,
+    duplicates: {
+        simple: `There
+there
+make
+so
+do
+lol
+there
+THERE`,
+        oneLevelDeepNestedList: `There
+there
+make
+so
+do
+  there
+  THERE
+  do
+  HEllo
+  hello
+  grew
+THEre
+THERE
+There`,
+        nestedListWithDescriptions: `There
+there
+make
+so
+do
+  there
+  THERE
+  do
+
+    Once upon a time there was a blue whale.
+
+  HEllo
+  hello
+  grew
+THEre
+THERE
+There`,
+    },
+    numbers: {
+        simple: `7
+1
+230
+213dark
+-91mark3
+ama
+12`,
+        oneLevelDeepNestedList: `23
+7
+8aa
+hello
+  my ex wife still misses me
+  but her aim is getting better
+21a6
+3
+-92`,
+    },
+    regex: {
+        // /media/ is the tested regex
+        media: `media z
+media a
+media lover
+the matched text isn't here
+media hater
+consume media 24/7
+media more like __
+the media Decimated my life`,
+        // /\d+/ is the tested regex
+        number: `top 10 anime betrayals
+7's the game
+An approximation of pi is 3.1415
+It's been 18 years since I've felt the touch of a woman
+King henry had 6 wives
+the matched text isn't here
+Cats have 9 lives`,
+    },
+};
+
 /**
  *
  * @param {import("tape").Test} t

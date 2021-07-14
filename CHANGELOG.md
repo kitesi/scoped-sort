@@ -1,3 +1,10 @@
+# 0.9.0 (7/13/2021)
+
+<!-- prettier-ignore -->
+- Arguments provided by keybindings ignore `scoped-sort.defaultArgs`
+- Add ability to sort non markdown list
+- Added argument `m` to help better sort markdown lists
+
 # 0.8.2 (7/12/2021)
 
 <!-- prettier-ignore -->
