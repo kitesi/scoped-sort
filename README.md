@@ -2,14 +2,13 @@
     <img src="assets/banner.png" alt="banner: scoped sort" />
 </p>
 
-<p align="center"><b>A better sort for Visual Studio Code.</b></p>
+<p align="center"><b>A feature rich sorter for Visual Studio Code.</b></p>
 
 [![version](https://vsmarketplacebadge.apphb.com/version/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
 [![installs](https://vsmarketplacebadge.apphb.com/installs-short/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
 [![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
 
 This is a vscode extension to help sort text & lists in a scoped manner.
-Currently it only supports markdown lists but it will eventually support other lists.
 
 # Table of Contents
 
