@@ -41,8 +41,7 @@ like [tyriar.sort-lines](https://marketplace.visualstudio.com/items?itemName=Tyr
 have a lot of options, but they don't have a nice way to combine them, so
 they end up polluting the commands contributions with 8+ commands. And even
 then they don't allow for all the possibilities. This extension uses a prompt,
-so it only needs one command, and can use any combination.
-has
+so it only needs one command, and can use any combination it has.
 
 ## Second: Scope
 
