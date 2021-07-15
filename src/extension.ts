@@ -18,7 +18,7 @@ async function baseCommand(
         typeof userExplicitArgs !== 'undefined'
     ) {
         return vscode.window.showErrorMessage(
-            `User explict arguments have to be strings, not: ${typeof userExplicitArgs}`
+            `User explicit arguments have to be strings, not: ${typeof userExplicitArgs}`
         );
     }
 
@@ -34,6 +34,7 @@ async function baseCommand(
         const promptResponse = await vscode.window.showInputBox({
             placeHolder: 'Arguments: sr, r, u, i, ...',
             value: defaultArgs,
+            ignoreFocusOut: true,
         });
 
         if (typeof promptResponse === 'undefined') {
