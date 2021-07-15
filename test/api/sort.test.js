@@ -305,34 +305,34 @@ test('regex', (t) => {
     testString(
         t,
         sort(inputs.regex.media, {
-            regex: /media/,
+            regex: /medi(a|cal)/,
         }),
         `the matched text isn't here
 consume media 24/7
 the media Decimated my life
-media a
+medical a
 media hater
-media lover
+medical lover
 media more like __
-media z`,
-        'regex: /media/ no m argument'
+media zn`,
+        'regex: /medi(a|cal)/ no m argument'
     );
 
     testString(
         t,
         sort(inputs.regex.media, {
-            regex: /media/,
+            regex: /medi(a|cal)/,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
-media z
-media a
-media lover
+media zn
 media hater
 consume media 24/7
 media more like __
-the media Decimated my life`,
-        'regex: /media/ with m argument'
+the media Decimated my life
+medical lover
+medical a`,
+        'regex: /medi(a|cal)/ with m argument'
     );
 
     testString(
@@ -358,10 +358,10 @@ test('length', (t) => {
     testString(
         t,
         sort(inputs.regex.media, { sortByLength: true }),
-        `media z
-media a
-media lover
+        `media zn
+medical a
 media hater
+medical lover
 consume media 24/7
 media more like __
 the matched text isn't here
@@ -725,34 +725,54 @@ It's been 18 years since I've felt the touch of a woman`,
 
     testString(
         t,
-        sort(inputs.regex.media, { sortByLength: true, regex: /media/ }),
+        sort(inputs.regex.media, { sortByLength: true, regex: /medi(a|cal)/ }),
         `the matched text isn't here
-media z
-media a
+medical a
+media zn
 consume media 24/7
-media lover
+medical lover
 media hater
 media more like __
 the media Decimated my life`,
-        "regex don't use match: /media/"
+        "regex don't use match: /medi(a|cal)/"
     );
 
     testString(
         t,
         sort(inputs.regex.media, {
             sortByLength: true,
-            regex: /media/,
+            regex: /medi(a|cal)/,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
-media z
-media a
-media lover
+media zn
 media hater
 consume media 24/7
 media more like __
-the media Decimated my life`,
-        'use matched regex /media/'
+the media Decimated my life
+medical lover
+medical a`,
+        'use matched regex /medi(a|cal)/'
+    );
+
+    t.end();
+});
+
+test('regex + n', (t) => {
+    testString(
+        t,
+        sort(inputs.regex.number, {
+            regex: /\d+/,
+            useMatchedRegex: true,
+            sortNumerically: true,
+        }),
+        `the matched text isn't here
+An approximation of pi is 3.1415
+King henry had 6 wives
+7's the game
+Cats have 9 lives
+top 10 anime betrayals
+It's been 18 years since I've felt the touch of a woman`
     );
 
     t.end();

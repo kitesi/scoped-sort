@@ -17,71 +17,57 @@ function calculateSpaceLength(str: string) {
     return str.replace('\t', '    ').length;
 }
 
-function getNumberPartFromString(str: string) {
-    return str.match(/-?\d+/);
-}
+function generateSortByRegex(regex: RegExp, options: Options) {
+    return function (a: string, b: string) {
+        const matchedA = a.match(regex);
+        const matchedB = b.match(regex);
 
-function numericalSort(a: string, b: string) {
-    const numberA = getNumberPartFromString(a)?.[0];
-    const numberB = getNumberPartFromString(b)?.[0];
+        if (!matchedB || typeof matchedB.index === 'undefined') {
+            return 1;
+        }
 
-    if (!numberB) {
-        return 1;
-    }
+        if (!matchedA || typeof matchedA.index === 'undefined') {
+            return -1;
+        }
 
-    if (!numberA) {
-        return -1;
-    }
+        let compareA = matchedA[0];
+        let compareB = matchedB[0];
 
-    return parseInt(numberA) - parseInt(numberB);
+        if (!options.useMatchedRegex) {
+            compareA = a.slice(matchedA.index + compareA.length);
+            compareB = b.slice(matchedB.index + compareB.length);
+        }
+
+        if (options.caseInsensitive) {
+            compareA = compareA.toLowerCase();
+            compareB = compareB.toLowerCase();
+        }
+
+        if (options.sortNumerically) {
+            return parseInt(compareA) - parseInt(compareB);
+        }
+
+        if (options.sortByLength) {
+            return [...compareA].length - [...compareB].length;
+        }
+
+        if (compareA > compareB) {
+            return 1;
+        } else if (compareB > compareA) {
+            return -1;
+        }
+
+        return 0;
+    };
 }
 
 function getModifiedSections(sections: string[], options: Options) {
     if (options.sortNumerically) {
-        // could replace with localeCompare but idk for now
-        sections.sort(numericalSort);
+        sections.sort(
+            generateSortByRegex(/-?\d+/, { ...options, useMatchedRegex: true })
+        );
     } else if (options.regex) {
-        // need this for some reason, other wise typing says options.regex
-        // might be undefined inside of the sort callback
-        const userGivenRegex = options.regex;
-
-        sections.sort((a, b) => {
-            const matchedA = a.match(userGivenRegex);
-            const matchedB = b.match(userGivenRegex);
-
-            if (!matchedB || typeof matchedB.index === 'undefined') {
-                return 1;
-            }
-
-            if (!matchedA || typeof matchedA.index === 'undefined') {
-                return -1;
-            }
-
-            let compareA = matchedA[0];
-            let compareB = matchedB[0];
-
-            if (!options.useMatchedRegex) {
-                compareA = a.slice(matchedA.index);
-                compareB = b.slice(matchedB.index);
-            }
-
-            if (options.caseInsensitive) {
-                compareA = compareA.toLowerCase();
-                compareB = compareB.toLowerCase();
-            }
-
-            if (options.sortByLength) {
-                return [...compareA].length - [...compareB].length;
-            }
-
-            if (compareA > compareB) {
-                return 1;
-            } else if (compareB > compareA) {
-                return -1;
-            }
-
-            return 0;
-        });
+        sections.sort(generateSortByRegex(options.regex, options));
     } else if (options.sortByLength) {
         sections.sort((a, b) => [...a].length - [...b].length);
     } else if (options.caseInsensitive) {

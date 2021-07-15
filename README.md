@@ -114,12 +114,14 @@ Combinations not already stated:
 it only makes the sort insensitive
 - `l /pattern/ p` sorts by the length of the matched text
 - `l /pattern/` sorts by the length of the text after the matched part
+- `n /pattern/` tries to parse the end of the line as a number
+- `np /pattern/` tries to parse the matched text as a number
 
 Errors:
 
 <!-- prettier-ignore -->
 - `ln`
-- `i` when arguments don't include a regex or `u` but use `n`, or `l`
+- `i` when arguments use `n` or `l` but don't include a regex or `u`
 
 # Configuration
 

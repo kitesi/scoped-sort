@@ -1,5 +1,12 @@
 // @ts-check
 
+/* 
+    for the most part a lot of these tests are redundant with the main test file
+    (sort.test.js) but keeping them here because it doesn't hurt to have them.
+
+    New tests and updated tests won't be here unless they involve markdown
+ */
+
 const test = require('tape');
 const { sort } = require('../../dist/sort.js');
 const { markdownInputs: inputs, join, testString } = require('../utils.js');

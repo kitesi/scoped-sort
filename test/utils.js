@@ -248,12 +248,12 @@ hello
 -92`,
     },
     regex: {
-        // /media/ is the tested regex
-        media: `media z
-media a
-media lover
+        // /medi(a|cal)/ is the tested regex
+        media: `media zn
+medical lover
 the matched text isn't here
 media hater
+medical a
 consume media 24/7
 media more like __
 the media Decimated my life`,

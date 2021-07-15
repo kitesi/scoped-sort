@@ -153,5 +153,9 @@ test('main', (t) => {
         'throws error on invalid regex'
     );
 
+    t.throws(() => parseStringArguments('ln'), 'throws on ln');
+    t.throws(() => parseStringArguments('in'), 'throws on in');
+    t.throws(() => parseStringArguments('il'), 'throws on il');
+
     t.end();
 });
