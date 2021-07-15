@@ -59,6 +59,20 @@ export function parseStringArguments(args: string) {
         );
     }
 
+    if (options.caseInsensitive && !options.regex && !options.unique) {
+        if (options.sortNumerically) {
+            throw new Error(
+                "You can't use sort case insensitively with sort numerically"
+            );
+        }
+
+        if (options.sortByLength) {
+            throw new Error(
+                "You can't use sort case insensitively with sort by length"
+            );
+        }
+    }
+
     /* 
         commented it out because there is a valid use case,
         when users by default want to use the matched regex,

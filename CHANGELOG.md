@@ -1,3 +1,8 @@
+# 0.10.0
+
+<!-- prettier-ignore -->
+- Sort by length
+
 # 0.9.1 (7/13/2021)
 
 <!-- prettier-ignore -->

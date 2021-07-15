@@ -56,7 +56,7 @@ Here's what I mean:
 
 Currently, this extension is not meant for sorting words inside of a line, nor
 is it trying to sort language specific things like imports or properties of an
-object.
+object (although it can sort those if they are simple with regex).
 
 # Demos
 
@@ -77,8 +77,9 @@ Here's all the arguments:
 - `s` sort descendingly
 - `r` sort recursively
 - `u` remove duplicates
-- `i` case insensitive
+- `i` case insensitive sort & if used with `u`, duplicates are removed case insensitively
 - `n` sort by numbers
+- `l` sort by length
 - `m` better sort for markdown lists, for the most part you won't need this, but
 in certain cases you will
 - `p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
@@ -96,6 +97,29 @@ Example: `/title-/` => sort using the text after the text 'title-' in each secti
 
 Example: `u /c\w+/ p` => sort using the matched word that starts with c in each
 section/item and remove duplicates.
+
+## Combinations
+
+Since this program has a lot of arguments, you might need to know how they combine.
+There is no such thing as a fallback sorting here, if two lines are equal in their
+sort position, they won't use the second sorter if specified. Example: you might
+expect `ln` to work as in, sort by length, if they are equal sort by the number
+in that line, but it won't work.
+
+Combinations not already stated:
+
+<!-- prettier-ignore -->
+- `m`, `u`, `r` and `s` work on everything
+- `/pattern/i`, `/pattern/ i` this doesn't make the regex case insenitive,
+it only makes the sort insensitive
+- `l /pattern/ p` sorts by the length of the matched text
+- `l /pattern/` sorts by the length of the text after the matched part
+
+Errors:
+
+<!-- prettier-ignore -->
+- `ln`
+- `i` when arguments don't include a regex or `u` but use `n`, or `l`
 
 # Configuration
 

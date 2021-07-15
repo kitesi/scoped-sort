@@ -12,7 +12,13 @@ const { markdownInputs: inputs, join, testString } = require('../utils.js');
  * @param {string} expected
  * @param {string} message
  */
-function assertNoChangeWithMarkdownOption(t, input, options, expected, message) {
+function assertNoChangeWithMarkdownOption(
+    t,
+    input,
+    options,
+    expected,
+    message
+) {
     testString(t, sort(input, options), expected, message + ': no m');
 
     testString(
