@@ -36,6 +36,9 @@ export function parseStringArguments(args: string) {
             case 'l':
                 options.sortByLength = true;
                 break;
+            case 'f':
+                options.sortByFloat = true;
+                break;
             default:
                 if (arg.startsWith('/') && arg.endsWith('/')) {
                     try {
@@ -59,8 +62,26 @@ export function parseStringArguments(args: string) {
         );
     }
 
+    if (options.sortByLength && options.sortByFloat) {
+        throw new Error(
+            "You can't use sort by length and sort by float together"
+        );
+    }
+
+    if (options.sortNumerically && options.sortByFloat) {
+        throw new Error(
+            "You can't use sort numerically and sort by float together"
+        );
+    }
+
     if (options.caseInsensitive && !options.regex && !options.unique) {
         if (options.sortNumerically) {
+            throw new Error(
+                "You can't use sort case insensitively with sort numerically"
+            );
+        }
+
+        if (options.sortByFloat) {
             throw new Error(
                 "You can't use sort case insensitively with sort numerically"
             );

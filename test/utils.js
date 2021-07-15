@@ -247,6 +247,12 @@ hello
 3
 -92`,
     },
+    simpleFloatList: `wack 12
+dax 2.3 hax
+1.20 max
+dax 1.61
+as 13.13
+12.0`,
     regex: {
         // /medi(a|cal)/ is the tested regex
         media: `media zn
@@ -292,5 +298,6 @@ module.exports.possibleArguments = [
     'p',
     'm',
     'l',
+    'f',
     '/\\d+/',
 ];

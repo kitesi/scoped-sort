@@ -79,6 +79,7 @@ Here's all the arguments:
 - `u` remove duplicates
 - `i` case insensitive sort & if used with `u`, duplicates are removed case insensitively
 - `n` sort by numbers
+- `f` sort by floats
 - `l` sort by length
 - `m` better sort for markdown lists, for the most part you won't need this, but
 in certain cases you will
@@ -116,12 +117,16 @@ it only makes the sort insensitive
 - `l /pattern/` sorts by the length of the text after the matched part
 - `n /pattern/` tries to parse the end of the line as a number
 - `np /pattern/` tries to parse the matched text as a number
+- `f /pattern/` tries to parse the end of the line as a float
+- `fp /pattern/` tries to parse the matched text as a float
 
 Errors:
 
 <!-- prettier-ignore -->
 - `ln`
-- `i` when arguments use `n` or `l` but don't include a regex or `u`
+- `lf`
+- `nf`
+- `i` when arguments use `n`, `f`, or `l` but don't include a regex or `u`
 
 # Configuration
 

@@ -395,6 +395,22 @@ It's been 18 years since I've felt the touch of a woman`,
     t.end();
 });
 
+test('floats', (t) => {
+    testString(
+        t,
+        sort(inputs.simpleFloatList, { sortByFloat: true }),
+        `1.20 max
+dax 1.61
+dax 2.3 hax
+wack 12
+12.0
+as 13.13`,
+        'simple list'
+    );
+
+    t.end();
+});
+
 test('recursive, non reverse', (t) => {
     /** @type {Options} */
     const options = {

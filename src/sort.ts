@@ -1,4 +1,8 @@
 const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])?/;
+// from https://stackoverflow.com/a/12643073/, doesn't support more complex floats
+// like 2.3e23, I'm not too experienced with those floats so I'll hold off for now
+export const floatRegex = /[+-]?([0-9]*[.])?[0-9]+/;
+
 const isBlankLineRegexTest = /^\s*$/;
 
 export interface Options {
@@ -7,6 +11,7 @@ export interface Options {
     unique?: boolean;
     caseInsensitive?: boolean;
     sortNumerically?: boolean;
+    sortByFloat?: boolean;
     sortByLength?: boolean;
     markdown?: boolean;
     useMatchedRegex?: boolean;
@@ -47,6 +52,10 @@ function generateSortByRegex(regex: RegExp, options: Options) {
             return parseInt(compareA) - parseInt(compareB);
         }
 
+        if (options.sortByFloat) {
+            return parseFloat(compareA) - parseFloat(compareB);
+        }
+
         if (options.sortByLength) {
             return [...compareA].length - [...compareB].length;
         }
@@ -67,6 +76,13 @@ function getModifiedSections(sections: string[], options: Options) {
     } else if (options.sortNumerically) {
         sections.sort(
             generateSortByRegex(/-?\d+/, { ...options, useMatchedRegex: true })
+        );
+    } else if (options.sortByFloat) {
+        sections.sort(
+            generateSortByRegex(floatRegex, {
+                ...options,
+                useMatchedRegex: true,
+            })
         );
     } else if (options.sortByLength) {
         sections.sort((a, b) => [...a].length - [...b].length);

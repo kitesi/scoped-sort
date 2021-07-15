@@ -104,6 +104,10 @@ test('main', (t) => {
         unique: true,
     });
 
+    t.deepEquals(parseStringArguments('f'), {
+        sortByFloat: true,
+    });
+
     t.deepEquals(parseStringArguments('su'), {
         reverse: true,
         unique: true,
@@ -154,7 +158,10 @@ test('main', (t) => {
     );
 
     t.throws(() => parseStringArguments('ln'), 'throws on ln');
+    t.throws(() => parseStringArguments('lf'), 'throws on lf');
+    t.throws(() => parseStringArguments('nf'), 'throws on nf');
     t.throws(() => parseStringArguments('in'), 'throws on in');
+    t.throws(() => parseStringArguments('if'), 'throws on if');
     t.throws(() => parseStringArguments('il'), 'throws on il');
 
     t.end();
