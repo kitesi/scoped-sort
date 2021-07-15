@@ -62,12 +62,12 @@ function generateSortByRegex(regex: RegExp, options: Options) {
 }
 
 function getModifiedSections(sections: string[], options: Options) {
-    if (options.sortNumerically) {
+    if (options.regex) {
+        sections.sort(generateSortByRegex(options.regex, options));
+    } else if (options.sortNumerically) {
         sections.sort(
             generateSortByRegex(/-?\d+/, { ...options, useMatchedRegex: true })
         );
-    } else if (options.regex) {
-        sections.sort(generateSortByRegex(options.regex, options));
     } else if (options.sortByLength) {
         sections.sort((a, b) => [...a].length - [...b].length);
     } else if (options.caseInsensitive) {

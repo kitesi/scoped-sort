@@ -4,10 +4,13 @@ const test = require('tape');
 const { sort } = require('../../dist/sort.js');
 const { nonMarkdownInputs: inputs, join, testString } = require('../utils.js');
 
-/*@typedef {import("../../dist/sort.js").Options} Options */
+const regexInputMediaMatch = /medi(a|cal)/;
+const regexInputNumbersMatch = /-?\d+/;
+
+/** @typedef {import("../../dist/sort.js").Options} Options */
 
 test('regular sort', (t) => {
-    /*@type {Options} */
+    /** @type {Options} */
     const options = {};
 
     testString(
@@ -86,7 +89,7 @@ Package Upgrade Status:
 });
 
 test('reverse', (t) => {
-    /*@type {Options} */
+    /** @type {Options} */
     const options = {
         reverse: true,
     };
@@ -167,7 +170,7 @@ Commands
 });
 
 test('case insensitive', (t) => {
-    /*@type {Options} */
+    /** @type {Options} */
     const options = {
         caseInsensitive: true,
     };
@@ -210,7 +213,7 @@ There`,
 });
 
 test('unique', (t) => {
-    /*@type {Options} */
+    /** @type {Options} */
     const options = { unique: true };
 
     testString(
@@ -267,7 +270,7 @@ zea
 });
 
 test('sort numerically', (t) => {
-    /*@type {Options} */
+    /** @type {Options} */
     const options = { sortNumerically: true };
 
     testString(
@@ -305,7 +308,7 @@ test('regex', (t) => {
     testString(
         t,
         sort(inputs.regex.media, {
-            regex: /medi(a|cal)/,
+            regex: regexInputMediaMatch,
         }),
         `the matched text isn't here
 consume media 24/7
@@ -315,13 +318,13 @@ media hater
 medical lover
 media more like __
 media zn`,
-        'regex: /medi(a|cal)/ no m argument'
+        'media regex no m argument'
     );
 
     testString(
         t,
         sort(inputs.regex.media, {
-            regex: /medi(a|cal)/,
+            regex: regexInputMediaMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -332,13 +335,13 @@ media more like __
 the media Decimated my life
 medical lover
 medical a`,
-        'regex: /medi(a|cal)/ with m argument'
+        'media regex with m argument'
     );
 
     testString(
         t,
         sort(inputs.regex.number, {
-            regex: /\d+/,
+            regex: regexInputNumbersMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -393,6 +396,7 @@ It's been 18 years since I've felt the touch of a woman`,
 });
 
 test('recursive, non reverse', (t) => {
+    /** @type {Options} */
     const options = {
         recursive: true,
     };
@@ -473,6 +477,7 @@ Package Upgrade Status:
 });
 
 test('recursive, reverse', (t) => {
+    /** @type {Options} */
     const options = {
         recursive: true,
         reverse: true,
@@ -695,7 +700,10 @@ there`,
 test('length with regex', (t) => {
     testString(
         t,
-        sort(inputs.regex.number, { sortByLength: true, regex: /\d+/ }),
+        sort(inputs.regex.number, {
+            sortByLength: true,
+            regex: regexInputNumbersMatch,
+        }),
         `the matched text isn't here
 An approximation of pi is 3.1415
 King henry had 6 wives
@@ -703,14 +711,14 @@ Cats have 9 lives
 7's the game
 top 10 anime betrayals
 It's been 18 years since I've felt the touch of a woman`,
-        "regex don't use match: /\\d+/"
+        "number regex don't use match"
     );
 
     testString(
         t,
         sort(inputs.regex.number, {
             sortByLength: true,
-            regex: /\d+/,
+            regex: regexInputNumbersMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -720,12 +728,15 @@ King henry had 6 wives
 Cats have 9 lives
 top 10 anime betrayals
 It's been 18 years since I've felt the touch of a woman`,
-        'use matched regex /\\d+/'
+        'number regex use match'
     );
 
     testString(
         t,
-        sort(inputs.regex.media, { sortByLength: true, regex: /medi(a|cal)/ }),
+        sort(inputs.regex.media, {
+            sortByLength: true,
+            regex: regexInputMediaMatch,
+        }),
         `the matched text isn't here
 medical a
 media zn
@@ -734,14 +745,14 @@ medical lover
 media hater
 media more like __
 the media Decimated my life`,
-        "regex don't use match: /medi(a|cal)/"
+        "media regex don't use match"
     );
 
     testString(
         t,
         sort(inputs.regex.media, {
             sortByLength: true,
-            regex: /medi(a|cal)/,
+            regex: regexInputMediaMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -752,7 +763,7 @@ media more like __
 the media Decimated my life
 medical lover
 medical a`,
-        'use matched regex /medi(a|cal)/'
+        'media regex use matched'
     );
 
     t.end();
@@ -762,7 +773,7 @@ test('regex + n', (t) => {
     testString(
         t,
         sort(inputs.regex.number, {
-            regex: /\d+/,
+            regex: regexInputNumbersMatch,
             useMatchedRegex: true,
             sortNumerically: true,
         }),
@@ -772,8 +783,30 @@ King henry had 6 wives
 7's the game
 Cats have 9 lives
 top 10 anime betrayals
-It's been 18 years since I've felt the touch of a woman`
+It's been 18 years since I've felt the touch of a woman`,
+        'use number regex, use matched'
     );
+
+    // not sure how to implement it, maybe something like --use-match-group {number}?
+    //     testString(
+    //         t,
+    //         sort(
+    //             `there are 2 numbers here 7
+    // that should -10 convince you enough 10
+    // but there lies 1 only tales of it 27
+    // right slayer123? or no? 2`,
+    //             {
+    //                 regex: /\d+[^\d]+(\d+)/,
+    //                 useMatchedRegex: true,
+    //                 sortNumerically: true,
+    //             }
+    //         ),
+    //         `right slayer123? or no? 2
+    // there are -10 numbers here 7
+    // that should 6 convince you enough 10
+    // but there lies 1 only tales of it 27`,
+    //         'test double numbers, capture second'
+    //     );
 
     t.end();
 });
