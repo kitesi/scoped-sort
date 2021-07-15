@@ -185,6 +185,9 @@ Package Upgrade Status:
   |Install|Status|
   |Yes|Pending|
   ~~~`,
+    multiByteCharacters: `𝟘𝟙𝟚𝟛
+012345
+0123456789`,
     duplicates: {
         simple: `There
 there
@@ -288,5 +291,6 @@ module.exports.possibleArguments = [
     'u',
     'p',
     'm',
+    'l',
     '/\\d+/',
 ];

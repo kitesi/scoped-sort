@@ -11,6 +11,7 @@ test('argument parser regex', (t) => {
     t.deepEquals('s'.match(argumentParserRegex), ['s']);
     t.deepEquals('n'.match(argumentParserRegex), ['n']);
     t.deepEquals('m'.match(argumentParserRegex), ['m']);
+    t.deepEquals('l'.match(argumentParserRegex), ['l']);
     t.deepEquals('snur'.match(argumentParserRegex), ['s', 'n', 'u', 'r']);
     t.deepEquals('snur /\\d+/'.match(argumentParserRegex), [
         's',
@@ -93,6 +94,10 @@ test('main', (t) => {
 
     t.deepEquals(parseStringArguments('m'), {
         markdown: true,
+    });
+
+    t.deepEquals(parseStringArguments('l'), {
+        sortByLength: true,
     });
 
     t.deepEquals(parseStringArguments('u'), {

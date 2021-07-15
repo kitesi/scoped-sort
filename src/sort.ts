@@ -7,6 +7,7 @@ export interface Options {
     unique?: boolean;
     caseInsensitive?: boolean;
     sortNumerically?: boolean;
+    sortByLength?: boolean;
     markdown?: boolean;
     useMatchedRegex?: boolean;
     regex?: RegExp;
@@ -69,6 +70,10 @@ function getModifiedSections(sections: string[], options: Options) {
                 compareB = compareB.toLowerCase();
             }
 
+            if (options.sortByLength) {
+                return [...compareA].length - [...compareB].length;
+            }
+
             if (compareA > compareB) {
                 return 1;
             } else if (compareB > compareA) {
@@ -77,6 +82,8 @@ function getModifiedSections(sections: string[], options: Options) {
 
             return 0;
         });
+    } else if (options.sortByLength) {
+        sections.sort((a, b) => [...a].length - [...b].length);
     } else if (options.caseInsensitive) {
         // faster: https://stackoverflow.com/a/52369951/15021883
         const collator = new Intl.Collator('en', { sensitivity: 'base' });

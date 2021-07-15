@@ -33,6 +33,9 @@ export function parseStringArguments(args: string) {
             case 'm':
                 options.markdown = true;
                 break;
+            case 'l':
+                options.sortByLength = true;
+                break;
             default:
                 if (arg.startsWith('/') && arg.endsWith('/')) {
                     try {
@@ -48,6 +51,12 @@ export function parseStringArguments(args: string) {
                     throw new Error(`Could not understand argument: ${arg}`);
                 }
         }
+    }
+
+    if (options.sortByLength && options.sortNumerically) {
+        throw new Error(
+            "You can't use sort by length and sort numerically together"
+        );
     }
 
     /* 

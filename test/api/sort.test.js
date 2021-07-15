@@ -353,6 +353,45 @@ Cats have 9 lives`
     t.end();
 });
 
+// uses inputs.regex for the text since all the other inputs have similar text length
+test('length', (t) => {
+    testString(
+        t,
+        sort(inputs.regex.media, { sortByLength: true }),
+        `media z
+media a
+media lover
+media hater
+consume media 24/7
+media more like __
+the matched text isn't here
+the media Decimated my life`,
+        'media'
+    );
+
+    testString(
+        t,
+        sort(inputs.regex.number, { sortByLength: true }),
+        `7's the game
+Cats have 9 lives
+top 10 anime betrayals
+King henry had 6 wives
+the matched text isn't here
+An approximation of pi is 3.1415
+It's been 18 years since I've felt the touch of a woman`,
+        'numbers'
+    );
+
+    testString(
+        t,
+        sort(inputs.multiByteCharacters, { sortByLength: true }),
+        inputs.multiByteCharacters,
+        'multi byte characters'
+    );
+
+    t.end();
+});
+
 test('recursive, non reverse', (t) => {
     const options = {
         recursive: true,
@@ -648,6 +687,72 @@ make
 so
 there`,
         'one level deep nested list, unique & recursive'
+    );
+
+    t.end();
+});
+
+test('length with regex', (t) => {
+    testString(
+        t,
+        sort(inputs.regex.number, { sortByLength: true, regex: /\d+/ }),
+        `the matched text isn't here
+An approximation of pi is 3.1415
+King henry had 6 wives
+Cats have 9 lives
+7's the game
+top 10 anime betrayals
+It's been 18 years since I've felt the touch of a woman`,
+        "regex don't use match: /\\d+/"
+    );
+
+    testString(
+        t,
+        sort(inputs.regex.number, {
+            sortByLength: true,
+            regex: /\d+/,
+            useMatchedRegex: true,
+        }),
+        `the matched text isn't here
+7's the game
+An approximation of pi is 3.1415
+King henry had 6 wives
+Cats have 9 lives
+top 10 anime betrayals
+It's been 18 years since I've felt the touch of a woman`,
+        'use matched regex /\\d+/'
+    );
+
+    testString(
+        t,
+        sort(inputs.regex.media, { sortByLength: true, regex: /media/ }),
+        `the matched text isn't here
+media z
+media a
+consume media 24/7
+media lover
+media hater
+media more like __
+the media Decimated my life`,
+        "regex don't use match: /media/"
+    );
+
+    testString(
+        t,
+        sort(inputs.regex.media, {
+            sortByLength: true,
+            regex: /media/,
+            useMatchedRegex: true,
+        }),
+        `the matched text isn't here
+media z
+media a
+media lover
+media hater
+consume media 24/7
+media more like __
+the media Decimated my life`,
+        'use matched regex /media/'
     );
 
     t.end();
