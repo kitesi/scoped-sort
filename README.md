@@ -17,11 +17,13 @@ This is a vscode extension to help sort text & lists in a scoped manner.
   - [First: Options](#first-options)
   - [Second: Scope](#second-scope)
   - [Disclaimer](#disclaimer)
-- [Demos](#demos)
+- [Demos / Previews](#demos--previews)
 - [Usage](#usage)
   - [Regexs](#regexs)
+  - [Combinations](#combinations)
 - [Configuration](#configuration)
   - [Adding Keybindings](#adding-keybindings)
+- [Future](#future)
 - [Acknowledgements](#acknowledgements)
 - [Contributing / Help](#contributing--help)
 
@@ -166,10 +168,40 @@ this is that you might have something like `"r"` for your `defaultArgs`, but
 want to turn it off for the keybinding. Problem is there is no negation/cancel
 of an argument (and there won't ever be one).
 
+# Future
+
+Here are some plans for the future, these features might be added in
+the future. Some of these features need a more defined api, or I need to know
+if people actually want them.
+
+If something has 100%, on it, it will be added for sure.
+
+<!-- prettier-ignore -->
+- Random sort `z`, 100%
+- Longer argument names, 100%
+- GUI arguments, 100%
+
+  Uses the method `vscode.window.showQuickPick`
+
+- Confirmation `c`, 100%
+
+  This would open up a webview of the transformations, and stats,
+  you can then confirm if you want to go ahead with the transformation.
+
+- Sort on save
+
+  I think I might be able to piggy back of prettier. Sections will need to be
+  marked with comments.
+
+- NPM Package
+- Website
+- CLI
+
 # Acknowledgements
 
 <!-- prettier-ignore -->
 - Inspired by vim's :sort, but isn't going trying/going be a complete 1:1
+- Theme in the demo is [Ayu Mirage](https://github.com/ayu-theme/vscode-ayu)
 - Font in banner is [Ordinary](https://www.dafont.com/ordinary.font)
 - Font in previews is [Cascadia Code](https://github.com/microsoft/cascadia-code)
 
