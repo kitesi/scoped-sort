@@ -3,6 +3,7 @@
 const test = require('tape');
 const { sort } = require('../../dist/sort.js');
 const { nonMarkdownInputs: inputs, join, testString } = require('../utils.js');
+const previews = require('../previews.js');
 
 const regexInputMediaMatch = /medi(a|cal)/;
 const regexInputNumbersMatch = /-?\d+/;
@@ -823,6 +824,16 @@ It's been 18 years since I've felt the touch of a woman`,
     // but there lies 1 only tales of it 27`,
     //         'test double numbers, capture second'
     //     );
+
+    t.end();
+});
+
+previews;
+
+test('preview sorts', (t) => {
+    for (const [name, { input, output, options }] of Object.entries(previews)) {
+        testString(t, sort(input, options), output, name);
+    }
 
     t.end();
 });

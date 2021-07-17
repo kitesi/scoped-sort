@@ -3,3 +3,5 @@ node_modules
 *.vsix
 dist
 temp.js
+
+preview-generator/public/build

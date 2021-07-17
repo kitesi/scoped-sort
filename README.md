@@ -58,10 +58,11 @@ Currently, this extension is not meant for sorting words inside of a line, nor
 is it trying to sort language specific things like imports or properties of an
 object (although it can sort those if they are simple with regex).
 
-# Demos
+# Demos / Previews
 
-If you want to see some demos visit [demos.md](demos.md). I'm not including them
-here so it doesn't load gifs unnecessarily.
+![gif demo](assets/video-preview.gif)
+
+If you want to see some more demos/previews visit [previews.md](previews.md).
 
 # Usage
 
