@@ -1,7 +1,10 @@
 # 0.10.0
 
 <!-- prettier-ignore -->
-- Sort by length
+- Add sort by length
+- Add sort by float
+- Add feature: `n` with `/pattern/` will now try to parse the matched text/the text after matched text
+- Fix bug: `/pattern/` without `p` will now exclude the entire match, (before it only excluded the first letter)
 
 # 0.9.1 (7/13/2021)
 
