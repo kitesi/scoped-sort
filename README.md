@@ -185,7 +185,7 @@ If something has 100%, on it, it will be added for sure.
 
 - Confirmation `c`, 100%
 
-  This would open up a webview of the transformations, and stats,
+  This would open up a webview of the transformations and stats,
   you can then confirm if you want to go ahead with the transformation.
 
 - Sort on save
