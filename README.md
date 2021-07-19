@@ -129,7 +129,7 @@ Errors:
 - `ln`
 - `lf`
 - `nf`
-- `i` when arguments use `n`, `f`, or `l` but don't include a regex or `u`
+- `i` when arguments include `n`, `f`, or `l` but don't include a regex or `u`
 
 # Configuration
 
@@ -179,6 +179,25 @@ If something has 100%, on it, it will be added for sure.
 <!-- prettier-ignore -->
 - Random sort `z`, 100%
 - Longer argument names, 100%
+- Sort [naturally](https://en.wikipedia.org/wiki/Natural_sort_order), `e`, 100%
+- Seperate sections with blank lines
+
+  For example you might have some text like this:
+
+  ```text
+  Theme: Material Dark
+  Link: https://example.com
+
+  Theme: Horizon
+  Link: https://example.com
+
+  Theme: Ayu Dark
+  Link: https://example.com
+
+  Theme: Atom One Dark
+  Link: https://example.com
+  ```
+
 - GUI arguments, 100%
 
   Uses the method `vscode.window.showQuickPick`
@@ -190,12 +209,19 @@ If something has 100%, on it, it will be added for sure.
 
 - Sort on save
 
-  I think I might be able to piggy back of prettier. Sections will need to be
-  marked with comments.
+  Sections will need to be marked with comments and arguments will **only** be
+  taken from the starting comment. `scoped-sort.defaultArgs` is ignored.
+
+- CLI
+
+  There would be two commands, one to format a single file, you can specify
+  which lines as well, and provide sort arguments through the cli. The second
+  one would be to format multiple files, inside the files you would need to
+  specify the sections with comments, and the arguments will have to be inside
+  of the starting comment.
 
 - NPM Package
 - Website
-- CLI
 
 # Acknowledgements
 
