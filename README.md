@@ -134,7 +134,7 @@ Errors:
 - `lz`
 - `nz`
 - `z` + regex pattern
-- `i` when arguments include `n`, `f`, `l`, or `z` but don't include a regex or `u`
+- `i` when arguments include `n`, `f`, `l`, or `z` but don't include `u`
 
 # Configuration
 

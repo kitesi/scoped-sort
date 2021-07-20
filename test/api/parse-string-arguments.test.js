@@ -177,14 +177,14 @@ test('main', (t) => {
 
     t.throws(() => parseStringArguments('z/me/'), 'throws on random + pattern');
 
-    t.doesNotThrow(
-        () => parseStringArguments('inu'),
-        'does not throw on in when u is specified'
+    t.throws(
+        () => parseStringArguments('in /\\d+/'),
+        'still throws on in when pattern is specified'
     );
 
     t.doesNotThrow(
-        () => parseStringArguments('in /\\d+/'),
-        'does not throw on in when pattern is specified'
+        () => parseStringArguments('inu'),
+        'does not throw on in when u is specified'
     );
 
     t.end();

@@ -84,7 +84,7 @@ export function parseStringArguments(args: string) {
         );
     }
 
-    if (options.caseInsensitive && !options.regex && !options.unique) {
+    if (options.caseInsensitive && !options.unique) {
         for (const sorter of sorters) {
             throw new Error(
                 `You can't use sort case insensitively with ${argumentDescriptions[sorter]} without a regex pattern or without the unique argument`
