@@ -10,6 +10,15 @@ export function parseStringArguments(args: string) {
         return options;
     }
 
+    const argumentDescriptions = {
+        f: 'by float',
+        l: 'by length',
+        n: 'numerically',
+        z: 'randomlly',
+    };
+
+    const sorters: Set<'f' | 'l' | 'n' | 'z'> = new Set();
+
     for (const arg of parsedArgs) {
         switch (arg) {
             case 's':
@@ -24,20 +33,27 @@ export function parseStringArguments(args: string) {
             case 'i':
                 options.caseInsensitive = true;
                 break;
-            case 'n':
-                options.sortNumerically = true;
-                break;
             case 'p':
                 options.useMatchedRegex = true;
                 break;
             case 'm':
                 options.markdown = true;
                 break;
+            case 'n':
+                sorters.add('n');
+                options.sortNumerically = true;
+                break;
             case 'l':
+                sorters.add('l');
                 options.sortByLength = true;
                 break;
             case 'f':
+                sorters.add('f');
                 options.sortByFloat = true;
+                break;
+            case 'z':
+                sorters.add('z');
+                options.sortRandomly = true;
                 break;
             default:
                 if (arg.startsWith('/') && arg.endsWith('/')) {
@@ -51,45 +67,27 @@ export function parseStringArguments(args: string) {
                         );
                     }
                 } else {
-                    throw new Error(`Could not understand argument: ${arg}`);
+                    throw new Error(`Could not understand argument: '${arg}'`);
                 }
         }
     }
 
-    if (options.sortByLength && options.sortNumerically) {
-        throw new Error(
-            "You can't use sort by length and sort numerically together"
-        );
+    if (options.regex && options.sortRandomly) {
+        throw new Error("You can't sort by random and use a regex pattern");
     }
 
-    if (options.sortByLength && options.sortByFloat) {
-        throw new Error(
-            "You can't use sort by length and sort by float together"
-        );
-    }
+    if (sorters.size > 1) {
+        const [firstSorter, secondSorter] = sorters.values();
 
-    if (options.sortNumerically && options.sortByFloat) {
         throw new Error(
-            "You can't use sort numerically and sort by float together"
+            `You can't use sort ${argumentDescriptions[firstSorter]} and sort ${argumentDescriptions[secondSorter]} together`
         );
     }
 
     if (options.caseInsensitive && !options.regex && !options.unique) {
-        if (options.sortNumerically) {
+        for (const sorter of sorters) {
             throw new Error(
-                "You can't use sort case insensitively with sort numerically"
-            );
-        }
-
-        if (options.sortByFloat) {
-            throw new Error(
-                "You can't use sort case insensitively with sort numerically"
-            );
-        }
-
-        if (options.sortByLength) {
-            throw new Error(
-                "You can't use sort case insensitively with sort by length"
+                `You can't use sort case insensitively with ${argumentDescriptions[sorter]} without a regex pattern or without the unique argument`
             );
         }
     }

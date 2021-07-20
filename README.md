@@ -84,6 +84,7 @@ Here's all the arguments:
 - `n` sort by numbers
 - `f` sort by floats
 - `l` sort by length
+- `z` sort randomly
 - `m` better sort for markdown lists, for the most part you won't need this, but
 in certain cases you will
 - `p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
@@ -126,10 +127,14 @@ it only makes the sort insensitive
 Errors:
 
 <!-- prettier-ignore -->
+- `fl`
+- `fn`
+- `fz`
 - `ln`
-- `lf`
-- `nf`
-- `i` when arguments include `n`, `f`, or `l` but don't include a regex or `u`
+- `lz`
+- `nz`
+- `z` + regex pattern
+- `i` when arguments include `n`, `f`, `l`, or `z` but don't include a regex or `u`
 
 # Configuration
 

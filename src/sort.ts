@@ -13,6 +13,7 @@ export interface Options {
     sortNumerically?: boolean;
     sortByFloat?: boolean;
     sortByLength?: boolean;
+    sortRandomly?: boolean;
     markdown?: boolean;
     useMatchedRegex?: boolean;
     regex?: RegExp;
@@ -86,6 +87,20 @@ function getModifiedSections(sections: string[], options: Options) {
         );
     } else if (options.sortByLength) {
         sections.sort((a, b) => [...a].length - [...b].length);
+    } else if (options.sortRandomly) {
+        //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
+        let currentIndex = sections.length;
+        let randomIndex: number;
+
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            [sections[currentIndex], sections[randomIndex]] = [
+                sections[randomIndex],
+                sections[currentIndex],
+            ];
+        }
     } else if (options.caseInsensitive) {
         // faster: https://stackoverflow.com/a/52369951/15021883
         const collator = new Intl.Collator('en', { sensitivity: 'base' });

@@ -412,6 +412,39 @@ as 13.13`,
     t.end();
 });
 
+// tbh not sure how to test this
+test('random', (t) => {
+    /** @type {Set<string>} */
+    const nonRecursiveResults = new Set();
+    /** @type {Set<string>} */
+    const recursiveResults = new Set();
+
+    for (let i = 0; i < 1000; i++) {
+        nonRecursiveResults.add(
+            sort(inputs.multiNestedList, {
+                sortRandomly: true,
+            })
+        );
+
+        recursiveResults.add(
+            sort(inputs.multiNestedList, {
+                sortRandomly: true,
+                recursive: true,
+            })
+        );
+    }
+
+    // t.assert(results.size > 20, 'set is greater than 20');
+    t.equals(nonRecursiveResults.size, 24, 'non recursive results 24');
+
+    t.assert(
+        recursiveResults.size > 900,
+        'recursive results is greater than 900'
+    );
+
+    t.end();
+});
+
 test('recursive, non reverse', (t) => {
     /** @type {Options} */
     const options = {

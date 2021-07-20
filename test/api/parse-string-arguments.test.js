@@ -108,6 +108,10 @@ test('main', (t) => {
         sortByFloat: true,
     });
 
+    t.deepEquals(parseStringArguments('z'), {
+        sortRandomly: true,
+    });
+
     t.deepEquals(parseStringArguments('su'), {
         reverse: true,
         unique: true,
@@ -157,12 +161,31 @@ test('main', (t) => {
         'throws error on invalid regex'
     );
 
+    t.throws(() => parseStringArguments('fl'), 'throws on fl');
+    t.throws(() => parseStringArguments('fn'), 'throws on fn');
+    t.throws(() => parseStringArguments('fz'), 'throws on fz');
+
     t.throws(() => parseStringArguments('ln'), 'throws on ln');
-    t.throws(() => parseStringArguments('lf'), 'throws on lf');
-    t.throws(() => parseStringArguments('nf'), 'throws on nf');
+    t.throws(() => parseStringArguments('lz'), 'throws on lz');
+
+    t.throws(() => parseStringArguments('nz'), 'throws on nz');
+
     t.throws(() => parseStringArguments('in'), 'throws on in');
     t.throws(() => parseStringArguments('if'), 'throws on if');
     t.throws(() => parseStringArguments('il'), 'throws on il');
+    t.throws(() => parseStringArguments('iz'), 'throws on iz');
+
+    t.throws(() => parseStringArguments('z/me/'), 'throws on random + pattern');
+
+    t.doesNotThrow(
+        () => parseStringArguments('inu'),
+        'does not throw on in when u is specified'
+    );
+
+    t.doesNotThrow(
+        () => parseStringArguments('in /\\d+/'),
+        'does not throw on in when pattern is specified'
+    );
 
     t.end();
 });
