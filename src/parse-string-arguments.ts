@@ -11,13 +11,14 @@ export function parseStringArguments(args: string) {
     }
 
     const argumentDescriptions = {
+        e: 'naturally',
         f: 'by float',
         l: 'by length',
         n: 'numerically',
         z: 'randomlly',
     };
 
-    const sorters: Set<'f' | 'l' | 'n' | 'z'> = new Set();
+    const sorters: Set<'e' | 'f' | 'l' | 'n' | 'z'> = new Set();
 
     for (const arg of parsedArgs) {
         switch (arg) {
@@ -38,6 +39,10 @@ export function parseStringArguments(args: string) {
                 break;
             case 'm':
                 options.markdown = true;
+                break;
+            case 'e':
+                sorters.add('e');
+                options.sortNaturally = true;
                 break;
             case 'n':
                 sorters.add('n');
@@ -74,6 +79,10 @@ export function parseStringArguments(args: string) {
 
     if (options.regex && options.sortRandomly) {
         throw new Error("You can't sort by random and use a regex pattern");
+    }
+
+    if (options.regex && options.sortNaturally) {
+        throw new Error("You can't sort naturally and use a regex pattern");
     }
 
     if (sorters.size > 1) {

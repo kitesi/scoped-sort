@@ -11,9 +11,10 @@ export interface Options {
     unique?: boolean;
     caseInsensitive?: boolean;
     sortNumerically?: boolean;
+    sortRandomly?: boolean;
+    sortNaturally?: boolean;
     sortByFloat?: boolean;
     sortByLength?: boolean;
-    sortRandomly?: boolean;
     markdown?: boolean;
     useMatchedRegex?: boolean;
     regex?: RegExp;
@@ -74,6 +75,10 @@ function generateSortByRegex(regex: RegExp, options: Options) {
 function getModifiedSections(sections: string[], options: Options) {
     if (options.regex) {
         sections.sort(generateSortByRegex(options.regex, options));
+    } else if (options.sortNaturally) {
+        sections.sort((a, b) =>
+            a.localeCompare(b, 'en', { sensitivity: 'base', numeric: true })
+        );
     } else if (options.sortNumerically) {
         sections.sort(
             generateSortByRegex(/-?\d+/, { ...options, useMatchedRegex: true })

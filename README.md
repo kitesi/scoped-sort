@@ -98,6 +98,7 @@ Here's all the arguments:
 <!-- prettier-ignore -->
 - `s` sort descendingly
 - `r` sort recursively
+- `e` sort naturally
 - `u` remove duplicates
 - `i` case insensitive sort & if used with `u`, duplicates are removed case insensitively
 - `n` sort by numbers
@@ -147,7 +148,8 @@ Errors:
 
 <!-- prettier-ignore -->
 - Mixing sorters (like sort by number and sort by length), `fl`, `fn`, `fz`,
-`ln`, `lz`, `nz`
+`ln`, `lz`, `nz`, ...
+- `e` + regex pattern
 - `z` + regex pattern
 - `i` when arguments include `n`, `f`, `l`, or `z` but don't include `u`
 

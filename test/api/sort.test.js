@@ -445,6 +445,25 @@ test('random', (t) => {
     t.end();
 });
 
+test('sort naturally', (t) => {
+    testString(
+        t,
+        sort(inputs.simpleNaturalList, { sortNaturally: true }),
+        `a20
+a51
+a100
+b23
+c12
+d91
+g12
+i could only see her once
+no number here
+z123`
+    );
+
+    t.end();
+});
+
 test('recursive, non reverse', (t) => {
     /** @type {Options} */
     const options = {
@@ -860,8 +879,6 @@ It's been 18 years since I've felt the touch of a woman`,
 
     t.end();
 });
-
-previews;
 
 test('preview sorts', (t) => {
     for (const [name, { input, output, options }] of Object.entries(previews)) {

@@ -188,6 +188,22 @@ Package Upgrade Status:
     multiByteCharacters: `𝟘𝟙𝟚𝟛
 012345
 0123456789`,
+    simpleFloatList: `wack 12
+dax 2.3 hax
+1.20 max
+dax 1.61
+as 13.13
+12.0`,
+    simpleNaturalList: `c12
+b23
+a51
+a100
+d91
+z123
+i could only see her once
+g12
+a20
+no number here`,
     duplicates: {
         simple: `There
 there
@@ -247,12 +263,6 @@ hello
 3
 -92`,
     },
-    simpleFloatList: `wack 12
-dax 2.3 hax
-1.20 max
-dax 1.61
-as 13.13
-12.0`,
     regex: {
         // /medi(a|cal)/ is the tested regex
         media: `media zn

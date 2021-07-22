@@ -164,18 +164,25 @@ test('main', (t) => {
     t.throws(() => parseStringArguments('fl'), 'throws on fl');
     t.throws(() => parseStringArguments('fn'), 'throws on fn');
     t.throws(() => parseStringArguments('fz'), 'throws on fz');
+    t.throws(() => parseStringArguments('fe'), 'throws on fe');
 
     t.throws(() => parseStringArguments('ln'), 'throws on ln');
     t.throws(() => parseStringArguments('lz'), 'throws on lz');
+    t.throws(() => parseStringArguments('le'), 'throws on le');
 
     t.throws(() => parseStringArguments('nz'), 'throws on nz');
+    t.throws(() => parseStringArguments('ne'), 'throws on ne');
 
+    t.throws(() => parseStringArguments('ze'), 'throws on ze');
+
+    t.throws(() => parseStringArguments('ie'), 'throws on ie');
     t.throws(() => parseStringArguments('in'), 'throws on in');
     t.throws(() => parseStringArguments('if'), 'throws on if');
     t.throws(() => parseStringArguments('il'), 'throws on il');
     t.throws(() => parseStringArguments('iz'), 'throws on iz');
 
     t.throws(() => parseStringArguments('z/me/'), 'throws on random + pattern');
+    t.throws(() => parseStringArguments('e/me/'), 'throws on random + pattern');
 
     t.throws(
         () => parseStringArguments('in /\\d+/'),
