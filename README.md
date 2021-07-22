@@ -43,7 +43,9 @@ like [tyriar.sort-lines](https://marketplace.visualstudio.com/items?itemName=Tyr
 have a lot of options, but they don't have a nice way to combine them, so
 they end up polluting the commands contributions with 8+ commands. And even
 then they don't allow for all the possibilities. This extension uses a prompt,
-so it only needs one command, and can use any combination it has.
+so it only needs one command, and can use any combination it has (that makes sense).
+
+This extension also has a lot more options than most sorters, and even has a sort-on-save functionality.
 
 ## Second: Scope
 
@@ -68,11 +70,28 @@ If you want to see some more demos/previews visit [previews.md](previews.md).
 
 # Usage
 
-This command is exposed by the command `scoped-sort.sort`.
+This extension is exposed by the command `scoped-sort.sort` and when saving a
+text document.
 
-To use this, first select the text you want to sort, or don't and it'll sort the entire document. Next go to your command pallete
-(usually `ctrl+shift+p`), type 'scoped sort', and select the command. It will
-then give you a prompt that allows for arguments.
+To use the command, first select the text you want to sort, or don't and it'll
+sort the entire document. Next go to your command pallete (usually `ctrl+shift+p`),
+type 'scoped sort', and select the command. It will then give you a prompt that
+allows for arguments, learn more at [#arguments](#arguments).
+
+To use the on-save feature, you need to mark sections with `{ sort-start [arguments] }` and
+`{ sort-end }`. The line that marks it, must follow the space format, for example `{sort-start}` won't work. The text can be anywhere on the line, start, middle, or end.
+
+Example:
+
+```js
+// { sort-start /['"]/ }
+import react from 'react';
+import express from 'express';
+import isIsOdd from 'is-is-odd';
+// { sort-end }
+```
+
+# Arguments
 
 Here's all the arguments:
 
@@ -127,12 +146,8 @@ it only makes the sort insensitive
 Errors:
 
 <!-- prettier-ignore -->
-- `fl`
-- `fn`
-- `fz`
-- `ln`
-- `lz`
-- `nz`
+- Mixing sorters (like sort by number and sort by length), `fl`, `fn`, `fz`,
+`ln`, `lz`, `nz`
 - `z` + regex pattern
 - `i` when arguments include `n`, `f`, `l`, or `z` but don't include `u`
 
@@ -211,11 +226,6 @@ If something has 100%, on it, it will be added for sure.
 
   This would open up a webview of the transformations and stats,
   you can then confirm if you want to go ahead with the transformation.
-
-- Sort on save
-
-  Sections will need to be marked with comments and arguments will **only** be
-  taken from the starting comment. `scoped-sort.defaultArgs` is ignored.
 
 - CLI
 
