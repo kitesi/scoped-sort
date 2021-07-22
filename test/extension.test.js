@@ -49,6 +49,7 @@ function getAllText(document) {
 vscode.window.showInformationMessage('Start all tests.');
 const executeCommand = vscode.commands.executeCommand;
 
+// todo: write tests based on configuration
 test('Extension Test', async (t) => {
     const tmpFolderPath = path.join(__dirname, '..', 'tmp');
     const tmpDocumentPath = path.join(tmpFolderPath, 'tmp.txt');
@@ -112,7 +113,8 @@ test('Extension Test', async (t) => {
         testIndex++;
     }
 
-    const endLine = '\n// { sort-end }';
+    const sortIgnoreFileLine = '// { sort-ignore-file }\n';
+    const sortEndLine = '\n// { sort-end }';
 
     // todo: maybe make better integration tests
     for (const stringArguments of possibleArguments) {
@@ -137,11 +139,11 @@ test('Extension Test', async (t) => {
             stringArguments + ': numbers one level deep nested list'
         );
 
-        const startLine = `// { sort-start ${stringArguments} }\n`;
+        const sortStartLine = `// { sort-start ${stringArguments} }\n`;
 
         await changeAllText(
             editor,
-            startLine + inputs.multiNestedList + endLine
+            sortStartLine + inputs.multiNestedList + sortEndLine
         );
 
         await executeCommand('workbench.action.files.save');
@@ -149,13 +151,33 @@ test('Extension Test', async (t) => {
         testString(
             t,
             getAllText(editor.document).replace(/\r/g, ''),
-            startLine +
+            sortStartLine +
                 sort(
                     inputs.multiNestedList,
                     parseStringArguments(stringArguments)
                 ) +
-                endLine,
+                sortEndLine,
             'works on save'
+        );
+
+        await changeAllText(
+            editor,
+            sortIgnoreFileLine +
+                sortStartLine +
+                inputs.multiNestedList +
+                sortEndLine
+        );
+
+        await executeCommand('workbench.action.files.save');
+
+        testString(
+            t,
+            getAllText(editor.document).replace(/\r/g, ''),
+            sortIgnoreFileLine +
+                sortStartLine +
+                inputs.multiNestedList +
+                sortEndLine,
+            'should work with sort-file-ignore'
         );
     }
 

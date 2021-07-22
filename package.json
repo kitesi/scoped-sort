@@ -40,6 +40,11 @@
                     "default": true,
                     "description": "Decides if the program should always prompt/ask for options"
                 },
+                "scoped-sort.formatSectionsOnSave": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Decides if the program should try to format sections that are marked. The marking is specific to this extension and shouldn't collide with normal text, so I don't see many reasons to turn this off."
+                },
                 "scoped-sort.defaultArgs": {
                     "type": "string",
                     "default": "",

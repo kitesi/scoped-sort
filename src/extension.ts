@@ -89,21 +89,33 @@ async function baseCommand(
 }
 
 function onWillSaveTextDocument(ev: vscode.TextDocumentWillSaveEvent) {
+    if (
+        !vscode.workspace
+            .getConfiguration()
+            .get('scoped-sort.formatSectionsOnSave')
+    ) {
+        return;
+    }
+
     const file = ev.document;
     let currentStartLine: vscode.TextLine | undefined = undefined;
+
+    if (!file.isDirty) {
+        return;
+    }
 
     const ranges: {
         range: vscode.Range;
         args: string;
     }[] = [];
 
-    if (!file.isDirty) {
-        return;
-    }
-
     for (let i = 0; i < file.lineCount; i++) {
         const line = file.lineAt(i);
         const lineText = line.text;
+
+        if (lineText.includes('{ sort-ignore-file }')) {
+            return;
+        }
 
         if (commentRegex.sortStart.test(lineText)) {
             if (currentStartLine) {
