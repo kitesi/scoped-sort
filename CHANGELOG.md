@@ -1,3 +1,17 @@
+# 1.0.0
+
+<!-- prettier-ignore -->
+- Add random sort `z`
+- Add natural sort `e`
+- Add sorting on save
+  - Add configuration option `scoped-sort.formatSectionsOnSave`, to toggle this feature
+  - Extension now runs after start up instead of when you first try the sort command
+  
+- Errors now occur when `i` is specified with a sorter (n, f, l, z), but doesn't
+  include `u`. Before it used to be if it doesn't include `u` *or* a regex pattern
+  but if you are using a regex pattern with n, f, or l, then making it case insensitive
+  wouldn't do anything, and using z with a regex pattern is an error anyways.
+
 # 0.10.0
 
 <!-- prettier-ignore -->
