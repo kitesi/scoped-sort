@@ -3,6 +3,31 @@ import type { Options } from './sort.js';
 
 import { sort } from './sort.js';
 import { parseStringArguments } from './parse-string-arguments.js';
+import * as commentRegex from './comment-regexs.js';
+
+function sortOverRangeOrSelection(
+    editor: vscode.TextEditor,
+    location: vscode.Range | vscode.Selection,
+    args: string
+) {
+    let options: Options = {};
+
+    if (args) {
+        try {
+            options = parseStringArguments(args);
+        } catch (err) {
+            const message = err.message;
+            return vscode.window.showErrorMessage(message);
+        }
+    }
+
+    return editor.edit((edit) => {
+        edit.replace(
+            location,
+            sort(editor.document.getText(location), options)
+        );
+    });
+}
 
 async function baseCommand(
     editor: vscode.TextEditor,
@@ -11,7 +36,6 @@ async function baseCommand(
 ) {
     const config = vscode.workspace.getConfiguration();
     const defaultArgs = config.get('scoped-sort.defaultArgs');
-    let options: Options = {};
 
     if (
         typeof userExplicitArgs !== 'string' &&
@@ -44,34 +68,83 @@ async function baseCommand(
         args = promptResponse;
     }
 
-    if (args) {
-        try {
-            options = parseStringArguments(args);
-        } catch (err) {
-            const message = err.message;
-            return vscode.window.showErrorMessage(message);
+    const document = editor.document;
+
+    if (editor.selections.length === 1 && editor.selections[0].isEmpty) {
+        const documentWholeRange = new vscode.Range(
+            0,
+            0,
+            document.lineCount - 1,
+            document.lineAt(document.lineCount - 1).text.length
+        );
+
+        return sortOverRangeOrSelection(editor, documentWholeRange, args);
+    }
+
+    for (const selection of editor.selections) {
+        return sortOverRangeOrSelection(editor, selection, args);
+        // const text = document.getText(selection);
+        // edit.replace(selection, sort(text, options));
+    }
+}
+
+function onWillSaveTextDocument(ev: vscode.TextDocumentWillSaveEvent) {
+    const file = ev.document;
+    let currentStartLine: vscode.TextLine | undefined = undefined;
+
+    const ranges: {
+        range: vscode.Range;
+        args: string;
+    }[] = [];
+
+    if (!file.isDirty) {
+        return;
+    }
+
+    for (let i = 0; i < file.lineCount; i++) {
+        const line = file.lineAt(i);
+        const lineText = line.text;
+
+        if (commentRegex.sortStart.test(lineText)) {
+            if (currentStartLine) {
+                return vscode.window.showErrorMessage(
+                    `Recieved sort-start comment at ${line.lineNumber} but didn't finish the one at ${currentStartLine.lineNumber}`
+                );
+            }
+
+            currentStartLine = line;
+        } else if (commentRegex.sortEnd.test(lineText)) {
+            if (!currentStartLine) {
+                return vscode.window.showErrorMessage(
+                    `Recieved sort-end comment at ${line.lineNumber} but didn't recieve any sort-start`
+                );
+            }
+
+            ranges.push({
+                range: new vscode.Range(
+                    currentStartLine.range.start.line + 1,
+                    0,
+                    line.range.end.line - 1,
+                    file.lineAt(i - 1).range.end.character
+                ),
+                args:
+                    currentStartLine.text.match(commentRegex.sortStart)?.groups
+                        ?.args || '',
+            });
+
+            currentStartLine = undefined;
         }
     }
 
-    const document = editor.document;
+    const editor = vscode.window.activeTextEditor;
 
-    return editor.edit((edit) => {
-        if (editor.selections.length === 1 && editor.selections[0].isEmpty) {
-            const range = new vscode.Range(
-                0,
-                0,
-                document.lineCount - 1,
-                document.lineAt(document.lineCount - 1).text.length
-            );
-
-            edit.replace(range, sort(document.getText(range), options));
+    for (const { range, args } of ranges) {
+        if (editor) {
+            sortOverRangeOrSelection(editor, range, args);
         } else {
-            for (const selection of editor.selections) {
-                const text = document.getText(selection);
-                edit.replace(selection, sort(text, options));
-            }
+            console.log('No active text editor?');
         }
-    });
+    }
 }
 
 function activate(context: vscode.ExtensionContext) {
@@ -80,7 +153,12 @@ function activate(context: vscode.ExtensionContext) {
         baseCommand
     );
 
+    const _onWillSaveTextDocument = vscode.workspace.onWillSaveTextDocument(
+        onWillSaveTextDocument
+    );
+
     context.subscriptions.push(_mainCommand);
+    context.subscriptions.push(_onWillSaveTextDocument);
 }
 
 function deactivate() {}

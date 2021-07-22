@@ -29,7 +29,7 @@
         "scoped"
     ],
     "activationEvents": [
-        "onCommand:scoped-sort.sort"
+        "onStartupFinished"
     ],
     "contributes": {
         "configuration": {

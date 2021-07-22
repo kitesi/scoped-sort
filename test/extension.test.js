@@ -1,5 +1,7 @@
 // @ts-check
 const test = require('tape');
+const path = require('path');
+const fs = require('fs');
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
@@ -48,9 +50,22 @@ vscode.window.showInformationMessage('Start all tests.');
 const executeCommand = vscode.commands.executeCommand;
 
 test('Extension Test', async (t) => {
-    if (!vscode.window.activeTextEditor) {
-        await executeCommand('workbench.action.files.newUntitledFile');
+    const tmpFolderPath = path.join(__dirname, '..', 'tmp');
+    const tmpDocumentPath = path.join(tmpFolderPath, 'tmp.txt');
+
+    if (!fs.existsSync(tmpFolderPath)) {
+        await fs.promises.mkdir(tmpFolderPath);
     }
+
+    if (!fs.existsSync(tmpDocumentPath)) {
+        await fs.promises.writeFile(tmpDocumentPath, '');
+    }
+
+    const tmpDocument = await vscode.workspace.openTextDocument(
+        tmpDocumentPath
+    );
+
+    await vscode.window.showTextDocument(tmpDocument);
 
     const editor = vscode.window.activeTextEditor;
     let testIndex = 0;
@@ -67,7 +82,6 @@ test('Extension Test', async (t) => {
         sortArgs,
         message
     ) {
-        // mainly just for typing, this shouldn't ever happen
         if (!editor) {
             return console.error('Still no active text editor');
         }
@@ -98,6 +112,8 @@ test('Extension Test', async (t) => {
         testIndex++;
     }
 
+    const endLine = '\n// { sort-end }';
+
     // todo: maybe make better integration tests
     for (const stringArguments of possibleArguments) {
         await testSortCommand(
@@ -119,6 +135,27 @@ test('Extension Test', async (t) => {
             stringArguments,
             parseStringArguments(stringArguments),
             stringArguments + ': numbers one level deep nested list'
+        );
+
+        const startLine = `// { sort-start ${stringArguments} }\n`;
+
+        await changeAllText(
+            editor,
+            startLine + inputs.multiNestedList + endLine
+        );
+
+        await executeCommand('workbench.action.files.save');
+
+        testString(
+            t,
+            getAllText(editor.document).replace(/\r/g, ''),
+            startLine +
+                sort(
+                    inputs.multiNestedList,
+                    parseStringArguments(stringArguments)
+                ) +
+                endLine,
+            'works on save'
         );
     }
 
