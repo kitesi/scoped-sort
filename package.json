@@ -38,17 +38,17 @@
                 "scoped-sort.prompt": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Decides if the program should always prompt/ask for options"
+                    "description": "Decides if the program should always prompt/ask for options when executing the main command"
                 },
                 "scoped-sort.formatSectionsOnSave": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Decides if the program should try to format sections that are marked. The marking is specific to this extension and shouldn't collide with normal text, so I don't see many reasons to turn this off."
+                    "description": "Decides if the program should try to format sections that are marked"
                 },
                 "scoped-sort.defaultArgs": {
                     "type": "string",
                     "default": "",
-                    "description": "String of arguments which follow the prompt's rules."
+                    "description": "If `scoped-sort.prompt` is on, it will inject the arguments into the prompt, if it's off it will execute the sort with those arguments. Only affects manually executing the command, keybindings and sort-on-save don't care about this option"
                 }
             }
         },

@@ -1,4 +1,11 @@
-# 1.0.0
+# 1.0.1 (7/22/2021)
+
+<!-- prettier-ignore -->
+- Update Readme
+- Update configuration descriptions
+- Add dates on changelog
+
+# 1.0.0 (7/22/2021)
 
 <!-- prettier-ignore -->
 - Add random sort `z`
@@ -12,7 +19,7 @@
   but if you are using a regex pattern with n, f, or l, then making it case insensitive
   wouldn't do anything, and using z with a regex pattern is an error anyways.
 
-# 0.10.0
+# 0.10.0 (7/17/2021)
 
 <!-- prettier-ignore -->
 - Add sort by length
