@@ -64,11 +64,22 @@ Currently, this extension is not meant for sorting words inside of a line, nor
 is it trying to sort language specific things like imports or properties of an
 object (although it can sort those if they are simple with regex).
 
+This extension requires a bit of reading to use efficiently. If you are looking
+for something simple like just a case-insensitive line sort, other extensions
+like [tyriar.sort-lines](https://github.com/Tyriar/vscode-sort-lines) might be
+better/easier.
+
 # Demos / Previews
 
-![gif demo](assets/video-preview.gif)
+With command:
 
-If you want to see some more demos/previews visit [previews.md](previews.md).
+![command gif demo](assets/command-preview.gif)
+
+Sort on save:
+
+![sort on save gif demo](assets/sort-on-save.gif)
+
+If you want to see more demos/previews visit [previews.md](previews.md).
 
 # Usage
 
@@ -160,7 +171,7 @@ Errors:
 `ln`, `lz`, `nz`, ...
 - `e` + regex pattern
 - `z` + regex pattern
-- `i` when arguments include `n`, `f`, `l`, or `z` but don't include `u`
+- `i` when arguments include `n`, `f`, `l`, `e`, or `z` but don't include `u`
 
 # Configuration
 
@@ -190,6 +201,8 @@ keeping the sort-on-save functionality but disable it in a particular file you
 should have `{ sort-ignore-file }` (that text has to be somewhere in the line)
 at the top.
 
+Default: `true`
+
 # Adding Keybindings
 
 If you are planning to add keybindings, you can add `.args` to provide arguments. This will make it so no prompt shows
@@ -215,12 +228,10 @@ Here are some plans for the future, these features might be added in
 the future. Some of these features need a more defined api, or I need to know
 if people actually want them.
 
-If something has 100%, on it, it will be added for sure.
+If something has 100%, on it, it will be added for sure, assuming I keep working on this.
 
 <!-- prettier-ignore -->
-- Random sort `z`, 100%
 - Longer argument names, 100%
-- Sort [naturally](https://en.wikipedia.org/wiki/Natural_sort_order), `e`, 100%
 - Seperate sections with blank lines
 
   For example you might have some text like this:
@@ -262,7 +273,6 @@ If something has 100%, on it, it will be added for sure.
 # Acknowledgements
 
 <!-- prettier-ignore -->
-- Inspired by vim's :sort, but isn't going trying/going be a complete 1:1
 - Theme in the demo is [Ayu Mirage](https://github.com/ayu-theme/vscode-ayu)
 - Font in banner is [Ordinary](https://www.dafont.com/ordinary.font)
 - Font in previews is [Cascadia Code](https://github.com/microsoft/cascadia-code)
