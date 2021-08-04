@@ -155,7 +155,7 @@ Combinations not already stated:
 
 <!-- prettier-ignore -->
 - `m`, `u`, `r` and `s` work on everything
-- `/pattern/i`, `/pattern/ i` this doesn't make the regex case insenitive,
+- `/pattern/i`, `/pattern/ i` this doesn't make the regex case insensitive,
 it only makes the sort insensitive
 - `l /pattern/ p` sorts by the length of the matched text
 - `l /pattern/` sorts by the length of the text after the matched part
