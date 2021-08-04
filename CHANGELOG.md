@@ -1,7 +1,13 @@
+# 1.0.2 (8/4/2021)
+
+<!-- prettier-ignore -->
+- Update readme
+- Remove unnecessary assets packed in extension
+
 # 1.0.1 (7/22/2021)
 
 <!-- prettier-ignore -->
-- Update Readme
+- Update readme
 - Update configuration descriptions
 - Add dates on changelog
 

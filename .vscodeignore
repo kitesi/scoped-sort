@@ -9,3 +9,11 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 src/**
 preview-generator/**
+tmp/**
+assets/previews/**
+assets/*.mp4
+temp.js
+previews.md
+tsconfig.json
+.prettierignore
+.prettierrc
