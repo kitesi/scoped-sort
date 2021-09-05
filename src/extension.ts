@@ -4,6 +4,8 @@ import type { Options } from './sort.js';
 import { sort } from './sort.js';
 import { parseStringArguments } from './parse-string-arguments.js';
 import * as commentRegex from './comment-regexs.js';
+import languageComments from './language-comments.js';
+import path = require('path');
 
 function sortOverRangeOrSelection(
     editor: vscode.TextEditor,
@@ -29,7 +31,7 @@ function sortOverRangeOrSelection(
     });
 }
 
-async function baseCommand(
+async function sortCommand(
     editor: vscode.TextEditor,
     _edit: vscode.TextEditorEdit,
     userExplicitArgs?: any
@@ -159,17 +161,54 @@ function onWillSaveTextDocument(ev: vscode.TextDocumentWillSaveEvent) {
     }
 }
 
+function addSurroundSortCommentsCommand(
+    editor: vscode.TextEditor,
+    _edit: vscode.TextEditorEdit
+) {
+    console.log(2);
+    editor.edit((edit) => {
+        if (editor.selections.length > 1 || !editor.selections[0].isEmpty) {
+            for (const selection of editor.selections) {
+                const ext = path.extname(editor.document.fileName);
+                const language = languageComments.find((language) =>
+                    language.exts.includes(ext)
+                );
+
+                const startPosition = new vscode.Position(
+                    selection.start.line,
+                    0
+                );
+
+                const endPosition = new vscode.Position(
+                    selection.end.line,
+                    editor.document.lineAt(selection.end.line).text.length
+                );
+
+                edit.insert(startPosition, '// { sort-start }\n');
+                edit.insert(endPosition, '\n// { sort-end }');
+            }
+        }
+    });
+}
+
 function activate(context: vscode.ExtensionContext) {
     const _mainCommand = vscode.commands.registerTextEditorCommand(
         'scoped-sort.sort',
-        baseCommand
+        sortCommand
     );
+
+    const _addSurroundingSortCommentsCommand =
+        vscode.commands.registerTextEditorCommand(
+            'scoped-sort.addSurroundingSortComments',
+            addSurroundSortCommentsCommand
+        );
 
     const _onWillSaveTextDocument = vscode.workspace.onWillSaveTextDocument(
         onWillSaveTextDocument
     );
 
     context.subscriptions.push(_mainCommand);
+    context.subscriptions.push(_addSurroundingSortCommentsCommand);
     context.subscriptions.push(_onWillSaveTextDocument);
 }
 

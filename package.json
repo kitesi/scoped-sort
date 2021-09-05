@@ -29,7 +29,9 @@
         "scoped"
     ],
     "activationEvents": [
-        "onStartupFinished"
+        "onStartupFinished",
+        "onCommand:scoped-sort.sort",
+        "onCommand:scoped-sort.addSurroundingSortComments"
     ],
     "contributes": {
         "configuration": {
@@ -56,6 +58,10 @@
             {
                 "command": "scoped-sort.sort",
                 "title": "Scoped Sort"
+            },
+            {
+                "command": "scoped-sort.addSurroundingSortComments",
+                "title": "Add Surrounding Sort Comments On Selection"
             }
         ]
     },
