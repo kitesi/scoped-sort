@@ -165,7 +165,6 @@ function addSurroundSortCommentsCommand(
     editor: vscode.TextEditor,
     _edit: vscode.TextEditorEdit
 ) {
-    console.log(2);
     editor.edit((edit) => {
         if (editor.selections.length > 1 || !editor.selections[0].isEmpty) {
             for (const selection of editor.selections) {

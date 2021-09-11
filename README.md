@@ -269,6 +269,7 @@ If something has 100%, on it, it will be added for sure, assuming I keep working
 
 - NPM Package
 - Website
+- vim/nvim plugin
 
 # Acknowledgements
 
