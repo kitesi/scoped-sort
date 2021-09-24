@@ -18,8 +18,7 @@ function sortOverRangeOrSelection(
         try {
             options = parseStringArguments(args);
         } catch (err) {
-            const message = err.message;
-            return vscode.window.showErrorMessage(message);
+            return vscode.window.showErrorMessage((err as Error)!.message);
         }
     }
 
