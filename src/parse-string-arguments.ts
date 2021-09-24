@@ -68,7 +68,7 @@ export function parseStringArguments(args: string) {
                     } catch (e) {
                         throw new Error(
                             `Tried to parse "${arg}" as a regex, failed with: ` +
-                                e?.message
+                                (e as Error)?.message
                         );
                     }
                 } else {
