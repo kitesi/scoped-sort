@@ -261,11 +261,20 @@ If something has 100%, on it, it will be added for sure, assuming I keep working
 
 - CLI
 
-  There would be two commands, one to format a single file, you can specify
-  which lines as well, and provide sort arguments through the cli. The second
-  one would be to format multiple files, inside the files you would need to
-  specify the sections with comments, and the arguments will have to be inside
-  of the starting comment.
+  - Would allow for piping like the normal unix command
+  - You can input a file to sort that file
+  - You can input a glob
+  - You can sort a specific range
+  - You can only sections commented
+
+  ```
+  // { sort-start }
+  a
+  c
+  b
+  // { sort-end }
+  ```
+
 
 - NPM Package
 - Website
