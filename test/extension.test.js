@@ -43,7 +43,7 @@ function changeAllText(editor, text) {
 
 /** @param {vscode.TextDocument} document */
 function getAllText(document) {
-    return document.getText(getAllTextRange(document));
+    return document.getText(getAllTextRange(document)).replace(/\r/g, '');
 }
 
 vscode.window.showInformationMessage('Start all tests.');
@@ -51,8 +51,10 @@ const executeCommand = vscode.commands.executeCommand;
 
 // todo: write tests based on configuration
 test('Extension Test', async (t) => {
+    // create throwaway files to test with if it doesn't exist
     const tmpFolderPath = path.join(__dirname, '..', 'tmp');
     const tmpDocumentPath = path.join(tmpFolderPath, 'tmp.txt');
+    const tmpMarkdownDocumentPath = path.join(tmpFolderPath, 'tmp.md');
 
     if (!fs.existsSync(tmpFolderPath)) {
         await fs.promises.mkdir(tmpFolderPath);
@@ -62,13 +64,17 @@ test('Extension Test', async (t) => {
         await fs.promises.writeFile(tmpDocumentPath, '');
     }
 
+    if (!fs.existsSync(tmpMarkdownDocumentPath)) {
+        await fs.promises.writeFile(tmpMarkdownDocumentPath, '');
+    }
+
     const tmpDocument = await vscode.workspace.openTextDocument(
         tmpDocumentPath
     );
 
     await vscode.window.showTextDocument(tmpDocument);
 
-    const editor = vscode.window.activeTextEditor;
+    let editor = vscode.window.activeTextEditor;
     let testIndex = 0;
 
     /**
@@ -90,8 +96,7 @@ test('Extension Test', async (t) => {
         await changeAllText(editor, input);
 
         // this extension formats the whole document on no selection
-        // this is just testing that it works both with and without
-        // selection
+        // this is just testing that it works both with and without selection
         if (testIndex % 2 === 0) {
             await executeCommand('editor.action.selectAll');
         } else {
@@ -105,7 +110,7 @@ test('Extension Test', async (t) => {
 
         testString(
             t,
-            getAllText(editor.document).replace(/\r/g, ''),
+            getAllText(editor.document),
             sort(input, sortArgs),
             message
         );
@@ -150,7 +155,7 @@ test('Extension Test', async (t) => {
 
         testString(
             t,
-            getAllText(editor.document).replace(/\r/g, ''),
+            getAllText(editor.document),
             sortStartLine +
                 sort(
                     inputs.multiNestedList,
@@ -172,7 +177,7 @@ test('Extension Test', async (t) => {
 
         testString(
             t,
-            getAllText(editor.document).replace(/\r/g, ''),
+            getAllText(editor.document),
             sortIgnoreFileLine +
                 sortStartLine +
                 inputs.multiNestedList +
@@ -180,6 +185,37 @@ test('Extension Test', async (t) => {
             'should work with sort-file-ignore'
         );
     }
+
+    await changeAllText(editor, 'one\ntwo\nthree');
+    await executeCommand('editor.action.selectAll');
+    await executeCommand('scoped-sort.addSurroundingSortComments');
+    await new Promise((res) => setTimeout(res, 200));
+
+    testString(
+        t,
+        getAllText(editor.document),
+        '// { sort-start }\none\ntwo\nthree\n// { sort-end }',
+        'addSurroundSortComments works on regular documents'
+    );
+
+    const tmpMarkdownDocument = await vscode.workspace.openTextDocument(
+        tmpMarkdownDocumentPath
+    );
+
+    await vscode.window.showTextDocument(tmpMarkdownDocument);
+    editor = vscode.window.activeTextEditor;
+
+    await changeAllText(editor, 'one\ntwo\nthree');
+    await executeCommand('editor.action.selectAll');
+    await executeCommand('scoped-sort.addSurroundingSortComments');
+    await new Promise((res) => setTimeout(res, 200));
+
+    testString(
+        t,
+        getAllText(editor.document),
+        '<!-- { sort-start } -->\none\ntwo\nthree\n<!-- { sort-end } -->',
+        'addSurroundSortComments works on markdown documents'
+    );
 
     t.end();
 });

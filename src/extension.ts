@@ -4,7 +4,10 @@ import type { Options } from './sort.js';
 import { sort } from './sort.js';
 import { parseStringArguments } from './parse-string-arguments.js';
 import * as commentRegex from './comment-regexs.js';
-import languageComments from './language-comments.js';
+import {
+    languageComments,
+    defaultLanguageComment,
+} from './language-comments.js';
 import path = require('path');
 
 function sortOverRangeOrSelection(
@@ -164,13 +167,13 @@ function addSurroundSortCommentsCommand(
     editor: vscode.TextEditor,
     _edit: vscode.TextEditorEdit
 ) {
-    editor.edit((edit) => {
+    return editor.edit((edit) => {
         if (editor.selections.length > 1 || !editor.selections[0].isEmpty) {
             for (const selection of editor.selections) {
-                const ext = path.extname(editor.document.fileName);
-                const language = languageComments.find((language) =>
-                    language.exts.includes(ext)
-                );
+                const language =
+                    languageComments.find((lang) =>
+                        lang.ids?.includes(editor.document.languageId)
+                    ) || defaultLanguageComment;
 
                 const startPosition = new vscode.Position(
                     selection.start.line,
@@ -182,8 +185,30 @@ function addSurroundSortCommentsCommand(
                     editor.document.lineAt(selection.end.line).text.length
                 );
 
-                edit.insert(startPosition, '// { sort-start }\n');
-                edit.insert(endPosition, '\n// { sort-end }');
+                if ('singleLineComment' in language) {
+                    edit.insert(
+                        startPosition,
+                        `${language.singleLineComment} { sort-start }\n`
+                    );
+                    edit.insert(
+                        endPosition,
+                        `\n${language.singleLineComment} { sort-end }`
+                    );
+                } else {
+                    const startingCommentBlock = language.multiLineComment[0];
+                    const endingCommentBlock = language.multiLineComment[1];
+
+                    edit.insert(
+                        startPosition,
+                        `${startingCommentBlock} { sort-start } ${endingCommentBlock}\n`
+                    );
+                    edit.insert(
+                        endPosition,
+                        `\n${startingCommentBlock} { sort-end } ${endingCommentBlock}`
+                    );
+                }
+
+                // todo: remove selection or make it so the selection stays the same
             }
         }
     });

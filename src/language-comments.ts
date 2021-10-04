@@ -2,15 +2,17 @@
 // https://github.com/nknapp/comment-patterns/blob/master/docs/languages.md
 // https://github.com/nevir/groc
 
-interface Language {
-    exts: string[];
-    singleLineComment?: string[];
-    multiLineComment?: string[];
-}
+type Language = {
+    ids?: string[];
+} & ({ singleLineComment: string } | { multiLineComment: string[] });
 
-export default [
+export const languageComments: Language[] = [
     {
-        exts: ['.md', '.markdown'],
+        ids: ['markdown', 'html'],
         multiLineComment: ['<!--', '-->'],
     },
-] as Language[];
+];
+
+export const defaultLanguageComment: Language = {
+    singleLineComment: '//',
+};
