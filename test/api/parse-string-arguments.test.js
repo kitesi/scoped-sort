@@ -182,7 +182,10 @@ test('main', (t) => {
     t.throws(() => parseStringArguments('iz'), 'throws on iz');
 
     t.throws(() => parseStringArguments('z/me/'), 'throws on random + pattern');
-    t.throws(() => parseStringArguments('e/me/'), 'throws on natural + pattern');
+    t.throws(
+        () => parseStringArguments('e/me/'),
+        'throws on natural + pattern'
+    );
 
     t.throws(
         () => parseStringArguments('in /\\d+/'),
