@@ -83,8 +83,8 @@ If you want to see more demos/previews visit [previews.md](previews.md).
 
 # Usage
 
-This extension is exposed by the command `scoped-sort.sort` and when saving a
-text document.
+There are two commands to this extension. The main functionality is exposed by
+the command `scoped-sort.sort` and when saving a text document.
 
 To use the command, first select the text you want to sort, or don't and it'll
 sort the entire document. Next go to your command pallete (usually `ctrl+shift+p`),
@@ -96,9 +96,6 @@ To use the sort-on-save feature, you need to mark sections with `{ sort-start [a
 `{sort-start}` won't work. The text can be anywhere on the line, start, middle,
 or end.
 
-You can also use `{ sort-ignore-file }` (probably want it at the top of the file)
-to ignore a whole file.
-
 Example:
 
 ```js
@@ -106,6 +103,28 @@ Example:
 import react from 'react';
 import express from 'express';
 import isIsOdd from 'is-is-odd';
+// { sort-end }
+```
+
+You can also include the text `{ sort-ignore-file }` (probably want it at the top of the file)
+to ignore a whole file.
+
+The other command, `scoped-sort.addSurroundingSortComments` aids the sort-on-save feature.
+If you select the below text, and execute the command:
+
+```
+3
+1
+2
+```
+
+will turn into (assuming it's not a markdown file)
+
+```
+// { sort-start }
+3
+1
+2
 // { sort-end }
 ```
 
@@ -195,8 +214,7 @@ Default: `""`
 `scoped-sort.formatSectionsOnSave`: boolean
 
 Decides if the program should format sections on save. Formatting on save only
-works when you explicitly define the sections, so I don't think there's too much
-reason to turn this off. Speed might be one of them, if you are interested in
+works when you explicitly define the sections. If you are interested in
 keeping the sort-on-save functionality but disable it in a particular file you
 should have `{ sort-ignore-file }` (that text has to be somewhere in the line)
 at the top.

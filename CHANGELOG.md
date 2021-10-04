@@ -1,3 +1,25 @@
+# 1.1.0 (10/3/2021)
+
+<!-- prettier-ignore -->
+- Add `scoped-sort.addSurroundingSortComments` command 
+  - Just adds surrounding comments that works with the sort-on-save functionality.
+  
+  ```
+  3
+  1
+  2
+  ```
+  
+  turns into (assuming it's not a markdown file)
+
+  ```
+  // { sort-start }
+  3
+  1
+  2
+  // { sort-end }
+  ```
+
 # 1.0.2 (8/4/2021)
 
 <!-- prettier-ignore -->
