@@ -1,79 +1,109 @@
+import * as yargs from 'yargs';
 import type { Options } from './sort.js';
 
-export const argumentParserRegex = /\/[^\/]+\/|[^\s]/g;
-
 export function parseStringArguments(args: string) {
-    const options: Options = {};
-    const parsedArgs = args.match(argumentParserRegex);
+    const parsedArgs = yargs
+        .options({
+            e: {
+                alias: 'sort-naturally',
+                type: 'boolean',
+            },
+            f: {
+                alias: 'sort-by-float',
+                type: 'boolean',
+            },
+            l: {
+                alias: 'sort-by-length',
+                type: 'boolean',
+            },
+            n: {
+                alias: 'sort-numerically',
+                type: 'boolean',
+            },
+            z: {
+                alias: 'sort-randomly',
+                type: 'boolean',
+            },
+            s: {
+                alias: 'reverse',
+                type: 'boolean',
+            },
+            r: {
+                alias: 'recursive',
+                type: 'boolean',
+            },
+            u: {
+                alias: 'unique',
+                type: 'boolean',
+            },
+            i: {
+                alias: 'case-insensitive',
+                type: 'boolean',
+            },
+            p: {
+                alias: 'use-matched-regex',
+                type: 'boolean',
+            },
+            m: {
+                alias: 'markdown',
+                type: 'boolean',
+            },
+        })
+        .help(false)
+        .fail((msg, err) => {
+            throw new Error(msg);
+        })
+        .strictOptions(true)
+        .parse(args);
 
-    if (!parsedArgs) {
-        return options;
-    }
+    const options: Options = {
+        sortNaturally: parsedArgs.e,
+        sortByFloat: parsedArgs.f,
+        sortByLength: parsedArgs.l,
+        sortNumerically: parsedArgs.n,
+        sortRandomly: parsedArgs.z,
+        reverse: parsedArgs.s,
+        recursive: parsedArgs.r,
+        unique: parsedArgs.u,
+        caseInsensitive: parsedArgs.i,
+        useMatchedRegex: parsedArgs.p,
+        markdown: parsedArgs.m,
+    };
 
     const argumentDescriptions = {
         e: 'naturally',
         f: 'by float',
         l: 'by length',
         n: 'numerically',
-        z: 'randomlly',
+        z: 'randomly',
     };
 
-    const sorters: Set<'e' | 'f' | 'l' | 'n' | 'z'> = new Set();
+    for (let arg of parsedArgs._) {
+        if (typeof arg === 'number') {
+            arg = arg.toString();
+        }
 
-    for (const arg of parsedArgs) {
-        switch (arg) {
-            case 's':
-                options.reverse = true;
-                break;
-            case 'r':
-                options.recursive = true;
-                break;
-            case 'u':
-                options.unique = true;
-                break;
-            case 'i':
-                options.caseInsensitive = true;
-                break;
-            case 'p':
-                options.useMatchedRegex = true;
-                break;
-            case 'm':
-                options.markdown = true;
-                break;
-            case 'e':
-                sorters.add('e');
-                options.sortNaturally = true;
-                break;
-            case 'n':
-                sorters.add('n');
-                options.sortNumerically = true;
-                break;
-            case 'l':
-                sorters.add('l');
-                options.sortByLength = true;
-                break;
-            case 'f':
-                sorters.add('f');
-                options.sortByFloat = true;
-                break;
-            case 'z':
-                sorters.add('z');
-                options.sortRandomly = true;
-                break;
-            default:
-                if (arg.startsWith('/') && arg.endsWith('/')) {
-                    try {
-                        const regex = new RegExp(arg.slice(1, arg.length - 1));
-                        options.regex = regex;
-                    } catch (e) {
-                        throw new Error(
-                            `Tried to parse "${arg}" as a regex, failed with: ` +
-                                (e as Error)?.message
-                        );
-                    }
-                } else {
-                    throw new Error(`Could not understand argument: '${arg}'`);
-                }
+        if (arg.startsWith('/') && arg.endsWith('/')) {
+            try {
+                const regex = new RegExp(arg.slice(1, arg.length - 1));
+                options.regex = regex;
+            } catch (e) {
+                throw new Error(
+                    `Tried to parse "${arg}" as a regex, failed with: ` +
+                        (e as Error)?.message
+                );
+            }
+        } else {
+            throw new Error(`Could not understand argument: '${arg}'`);
+        }
+    }
+
+    type SortAlias = 'e' | 'f' | 'l' | 'n' | 'z';
+    const sorters: Set<SortAlias> = new Set();
+
+    for (const sortAlias of ['e', 'f', 'l', 'n', 'z']) {
+        if (parsedArgs[sortAlias]) {
+            sorters.add(sortAlias as SortAlias);
         }
     }
 
@@ -112,5 +142,13 @@ export function parseStringArguments(args: string) {
     //     throw new Error("You can't use the m argument without a regex pattern");
     // }
 
-    return options;
+    // need to do all this to remove the undefined properties, maybe a bit slow on runtime though
+    const regex = options.regex;
+    const cleanOptions: Options = JSON.parse(JSON.stringify(options));
+
+    if (regex) {
+        cleanOptions.regex = regex;
+    }
+
+    return cleanOptions;
 }

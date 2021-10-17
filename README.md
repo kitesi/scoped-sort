@@ -112,7 +112,7 @@ to ignore a whole file.
 The other command, `scoped-sort.addSurroundingSortComments` aids the sort-on-save feature.
 If you select the below text, and execute the command:
 
-```
+```text
 3
 1
 2
@@ -120,7 +120,7 @@ If you select the below text, and execute the command:
 
 will turn into (assuming it's not a markdown file)
 
-```
+```text
 // { sort-start }
 3
 1
@@ -133,33 +133,35 @@ will turn into (assuming it's not a markdown file)
 Here's all the arguments:
 
 <!-- prettier-ignore -->
-- `s` sort descendingly
-- `r` sort recursively
-- `e` sort naturally
-- `u` remove duplicates
-- `i` case insensitive sort & if used with `u`, duplicates are removed case insensitively
-- `n` sort by numbers
-- `f` sort by floats
-- `l` sort by length
-- `z` sort randomly
-- `m` better sort for markdown lists, for the most part you won't need this, but
+- `--reverse`, `-s` sort descendingly
+- `--recursive`, `-r` sort recursively
+- `--sort-naturally`, `-e` sort naturally
+- `--unique`, `-u` remove duplicates
+- `--case-insensitive`, `-i` case insensitive sort & if used with `u`, duplicates are removed case insensitively
+- `--sort-numerically`, `-n` sort by numbers
+- `--sort-by-float`, `-f` sort by floats
+- `--sort-by-length`, `-l` sort by length
+- `--sort-randomly`, `-z` sort randomly
+- `--markdown`, `-m` better sort for markdown lists, for the most part you won't need this, but
 in certain cases you will
-- `p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
+- `--use-matched-regex`, `-p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
 
 ## Regexs
 
 You can also specify a regex, this will sort using the text _after_ the
-match. If you want it to use the matched text, use the argument `p`. Text that
+match. If you want it to use the matched text, use the argument `-p`. Text that
 do not match will be left in place, and will be at the top (or bottom if reversed).
 Also worth noting, the regex language is **javascript**.
 
+Regexes should not have anything before or after them, for example: `/text/i`, `i/text/` or `i/text/p`
+
 ## Examples
 
-Example: `usr` => get unique values, sort descendingly and recursively.
+Example: `-usr` => get unique values, sort descendingly and recursively.
 
 Example: `/title-/` => sort using the text after the text 'title-' in each section/item.
 
-Example: `u /c\w+/ p` => sort using the matched word that starts with c in each
+Example: `-u /c\w+/ -p` => sort using the matched word that starts with c in each
 section/item and remove duplicates.
 
 ## Combinations
@@ -167,30 +169,28 @@ section/item and remove duplicates.
 Since this program has a lot of arguments, you might need to know how they combine.
 There is no such thing as a fallback sorting here, if two lines are equal in their
 sort position, they won't use the second sorter if specified. Example: you might
-expect `ln` to work as in, sort by length, if they are equal sort by the number
-in that line, but it won't work.
+expect `-ln` to work as in, sort by length, and fallback to sort numerically if two lines have the same length; but that will not work.
 
 Combinations not already stated:
 
 <!-- prettier-ignore -->
-- `m`, `u`, `r` and `s` work on everything
-- `/pattern/i`, `/pattern/ i` this doesn't make the regex case insensitive,
-it only makes the sort insensitive
-- `l /pattern/ p` sorts by the length of the matched text
-- `l /pattern/` sorts by the length of the text after the matched part
-- `n /pattern/` tries to parse the end of the line as a number
-- `np /pattern/` tries to parse the matched text as a number
-- `f /pattern/` tries to parse the end of the line as a float
-- `fp /pattern/` tries to parse the matched text as a float
+- `-m`, `-u`, `-r` and `-s` work on everything
+- `/pattern/ -i` this doesn't make the regex case insensitive, it only makes the sort insensitive
+- `-l /pattern/ -p` sorts by the length of the matched text
+- `-l /pattern/` sorts by the length of the text after the matched part
+- `-n /pattern/` tries to parse the text after the pattern as a number
+- `-np /pattern/` tries to parse the matched text as a number
+- `-f /pattern/` tries to parse the end of the line as a float
+- `-fp /pattern/` tries to parse the matched text as a float
 
 Errors:
 
 <!-- prettier-ignore -->
-- Mixing sorters (like sort by number and sort by length), `fl`, `fn`, `fz`,
-`ln`, `lz`, `nz`, ...
-- `e` + regex pattern
-- `z` + regex pattern
-- `i` when arguments include `n`, `f`, `l`, `e`, or `z` but don't include `u`
+- Mixing sorters (like sort by number and sort by length), `-fl`, `-fn`, `-fz`,
+`-ln`, `-lz`, `-nz`, ...
+- `-e` + regex pattern
+- `-z` + regex pattern
+- `-i` when arguments include `-n`, `-f`, `-l`, `-e`, or `-z` but don't include `-u`
 
 # Configuration
 
@@ -231,12 +231,14 @@ For example:
 {
     "key": "ctrl+shift+m",
     "command": "scoped-sort.sort",
-    "args": "sur"
+    "args": "-sur"
 }
 ```
 
+<!-- todo: not true anymore, since yargs by default has --no- prefix to negate an option -->
+
 Your configuration of `scoped-sort.defaultArgs` is not used here. The reason for
-this is that you might have something like `"r"` for your `defaultArgs`, but
+this is that you might have something like `"-r"` for your `defaultArgs`, but
 want to turn it off for the keybinding. Problem is there is no negation/cancel
 of an argument (and there probably won't ever be one).
 
@@ -249,7 +251,6 @@ if people actually want them.
 If something has 100%, on it, it will be added for sure, assuming I keep working on this.
 
 <!-- prettier-ignore -->
-- Longer argument names, 100%
 - Seperate sections with blank lines
 
   For example you might have some text like this:
@@ -285,14 +286,13 @@ If something has 100%, on it, it will be added for sure, assuming I keep working
   - You can sort a specific range
   - You can only sections commented
 
-  ```
+  ```text
   // { sort-start }
   a
   c
   b
   // { sort-end }
   ```
-
 
 - NPM Package
 - Website

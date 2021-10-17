@@ -79,5 +79,8 @@
         "prettier": "^2.3.2",
         "tape": "^5.2.2",
         "vscode-test": "^1.5.2"
+    },
+    "dependencies": {
+        "yargs": "^17.2.1"
     }
 }

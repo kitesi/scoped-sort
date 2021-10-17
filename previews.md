@@ -13,7 +13,7 @@ cases due to the regex argument.
 
 # Sort by Numbers
 
-Arguments: `n`
+Arguments: `-n`
 
 ![sort by numbers](assets/previews/number-normal.png)
 
@@ -25,6 +25,6 @@ Arguments: none
 
 # Sort Reverse & Remove Duplicates
 
-Arguments: `su`
+Arguments: `-su`
 
 ![sort reverse & remove duplicates](assets/previews/unique-reverse.png)

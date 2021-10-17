@@ -1,10 +1,19 @@
+# Upcoming
+
+<!-- prettier-ignore -->
+- Change parsing rules
+  - add long option names
+    - example: you can use `--sort-naturally` instead of `-e`
+  - must now use dashes to specify options, this is due to the previous change
+    - so something like `su` would now have to be `-su` or `-s -u`
+
 # 1.1.0 (10/3/2021)
 
 <!-- prettier-ignore -->
-- Add `scoped-sort.addSurroundingSortComments` command 
+- Add `scoped-sort.addSurroundingSortComments` command
   - Just adds surrounding comments that works with the sort-on-save functionality.
   
-  ```
+  ```text
   3
   1
   2
@@ -12,11 +21,11 @@
   
   turns into (assuming it's not a markdown file)
 
-  ```
+  ```text
   // { sort-start }
-  3
   1
   2
+  3
   // { sort-end }
   ```
 
