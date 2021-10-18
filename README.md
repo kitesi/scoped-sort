@@ -235,12 +235,9 @@ For example:
 }
 ```
 
-<!-- todo: not true anymore, since yargs by default has --no- prefix to negate an option -->
-
-Your configuration of `scoped-sort.defaultArgs` is not used here. The reason for
-this is that you might have something like `"-r"` for your `defaultArgs`, but
-want to turn it off for the keybinding. Problem is there is no negation/cancel
-of an argument (and there probably won't ever be one).
+Your configuration of `scoped-sort.defaultArgs` is not used here. I think it's best to
+list all your wanted options inside of the object. In the future `scoped-sort.defaultArgs`
+might be an object, where `keybindings`, is a property, and in that case, it will be used as a default.
 
 # Future
 
