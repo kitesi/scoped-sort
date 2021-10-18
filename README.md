@@ -281,7 +281,7 @@ If something has 100%, on it, it will be added for sure, assuming I keep working
   - You can input a file to sort that file
   - You can input a glob
   - You can sort a specific range
-  - You can only sections commented
+  - You can sort only sections that are commented
 
   ```text
   // { sort-start }
