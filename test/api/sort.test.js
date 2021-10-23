@@ -309,7 +309,7 @@ test('regex', (t) => {
     testString(
         t,
         sort(inputs.regex.media, {
-            regex: regexInputMediaMatch,
+            regexFilter: regexInputMediaMatch,
         }),
         `the matched text isn't here
 consume media 24/7
@@ -319,13 +319,13 @@ media hater
 medical lover
 media more like __
 media zn`,
-        'media regex no m argument'
+        'media regex no p argument'
     );
 
     testString(
         t,
         sort(inputs.regex.media, {
-            regex: regexInputMediaMatch,
+            regexFilter: regexInputMediaMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -336,13 +336,13 @@ media more like __
 the media Decimated my life
 medical lover
 medical a`,
-        'media regex with m argument'
+        'media regex with p argument'
     );
 
     testString(
         t,
         sort(inputs.regex.number, {
-            regex: regexInputNumbersMatch,
+            regexFilter: regexInputNumbersMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -771,7 +771,7 @@ test('length with regex', (t) => {
         t,
         sort(inputs.regex.number, {
             sortByLength: true,
-            regex: regexInputNumbersMatch,
+            regexFilter: regexInputNumbersMatch,
         }),
         `the matched text isn't here
 An approximation of pi is 3.1415
@@ -787,7 +787,7 @@ It's been 18 years since I've felt the touch of a woman`,
         t,
         sort(inputs.regex.number, {
             sortByLength: true,
-            regex: regexInputNumbersMatch,
+            regexFilter: regexInputNumbersMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -804,7 +804,7 @@ It's been 18 years since I've felt the touch of a woman`,
         t,
         sort(inputs.regex.media, {
             sortByLength: true,
-            regex: regexInputMediaMatch,
+            regexFilter: regexInputMediaMatch,
         }),
         `the matched text isn't here
 medical a
@@ -821,7 +821,7 @@ the media Decimated my life`,
         t,
         sort(inputs.regex.media, {
             sortByLength: true,
-            regex: regexInputMediaMatch,
+            regexFilter: regexInputMediaMatch,
             useMatchedRegex: true,
         }),
         `the matched text isn't here
@@ -842,7 +842,7 @@ test('regex + n', (t) => {
     testString(
         t,
         sort(inputs.regex.number, {
-            regex: regexInputNumbersMatch,
+            regexFilter: regexInputNumbersMatch,
             useMatchedRegex: true,
             sortNumerically: true,
         }),
@@ -865,7 +865,7 @@ It's been 18 years since I've felt the touch of a woman`,
     // but there lies 1 only tales of it 27
     // right slayer123? or no? 2`,
     //             {
-    //                 regex: /\d+[^\d]+(\d+)/,
+    //                 regexFilter: /\d+[^\d]+(\d+)/,
     //                 useMatchedRegex: true,
     //                 sortNumerically: true,
     //             }
@@ -876,6 +876,132 @@ It's been 18 years since I've felt the touch of a woman`,
     // but there lies 1 only tales of it 27`,
     //         'test double numbers, capture second'
     //     );
+
+    t.end();
+});
+
+test('seperator', (t) => {
+    const sectionSeperator = /^    <div/;
+
+    testString(
+        t,
+        sort(inputs.sectionSeperator.divChildren, {
+            sectionSeperator,
+        }),
+        `    <div class="child">
+        <h3>Earl Henry</h3>
+        <p>Aerospace</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Elijah Tyler</h3>
+        <p>Math</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Herman Reed</h3>
+        <p>English</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Zachary Garrett</h3>
+        <p>Computer Science</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>`,
+        'div children'
+    );
+
+    testString(
+        t,
+        sort(inputs.sectionSeperator.divChildren, {
+            sectionSeperator,
+            regexFilter: /<p>/,
+        }),
+        `    <div class="child">
+        <h3>Earl Henry</h3>
+        <p>Aerospace</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Zachary Garrett</h3>
+        <p>Computer Science</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Herman Reed</h3>
+        <p>English</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Elijah Tyler</h3>
+        <p>Math</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>`,
+        'div children with regex filer on <p>'
+    );
+
+    t.end();
+});
+
+/*
+
+    Can't find any combo that works with sectionSeperator, /^Title/ is close,
+    but there's no blank line after the atom theme, and there's an extra empty
+    line after Material Dark
+    
+    It makes sense why it does it, and I think trying to make it work with 
+    sectionSeperator will just be a hack, and unintuitive. Instead I'm thinking
+    another option might be required, like --seperate-on? 
+
+*/
+test.skip('seperation with blank lines', (t) => {
+    testString(
+        t,
+        sort(
+            `Theme: Material Dark
+Link: https://example.com
+
+Theme: Horizon
+Link: https://example.com
+
+Theme: Ayu Dark
+Link: https://example.com
+
+Theme: Atom One Dark
+Link: https://example.com`,
+            {
+                sectionSeperator: /^Title/,
+            }
+        ),
+        `Theme: Atom One Dark
+Link: https://example.com
+
+Theme: Ayu Dark
+Link: https://example.com
+
+Theme: Horizon
+Link: https://example.com
+
+Theme: Material Dark
+Link: https://example.com`,
+        'seperation by blank lines'
+    );
 
     t.end();
 });

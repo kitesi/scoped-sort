@@ -186,6 +186,24 @@ test('Extension Test', async (t) => {
         );
     }
 
+    // test --section-seperator
+    await changeAllText(editor, inputs.sectionSeperator.divChildren);
+    await executeCommand(
+        'scoped-sort.sort',
+        '--section-seperator "/^    <div/"'
+    );
+    await new Promise((res) => setTimeout(res, 200));
+
+    testString(
+        t,
+        getAllText(editor.document),
+        sort(inputs.sectionSeperator.divChildren, {
+            sectionSeperator: /^    <div/,
+        }),
+        'should work with section seperator /^    <div/'
+    );
+
+    // test command: addSurroundingSortComments
     await changeAllText(editor, 'one\ntwo\nthree');
     await executeCommand('editor.action.selectAll');
     await executeCommand('scoped-sort.addSurroundingSortComments');

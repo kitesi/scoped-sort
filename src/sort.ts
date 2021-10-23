@@ -17,7 +17,8 @@ export interface Options {
     sortByLength?: boolean;
     markdown?: boolean;
     useMatchedRegex?: boolean;
-    regex?: RegExp;
+    regexFilter?: RegExp;
+    sectionSeperator?: RegExp;
 }
 
 function calculateSpaceLength(str: string) {
@@ -73,8 +74,8 @@ function generateSortByRegex(regex: RegExp, options: Options) {
 }
 
 function getModifiedSections(sections: string[], options: Options) {
-    if (options.regex) {
-        sections.sort(generateSortByRegex(options.regex, options));
+    if (options.regexFilter) {
+        sections.sort(generateSortByRegex(options.regexFilter, options));
     } else if (options.sortNaturally) {
         sections.sort((a, b) =>
             a.localeCompare(b, 'en', { sensitivity: 'base', numeric: true })
@@ -204,8 +205,10 @@ export function sort(text: string, options: Options) {
 
         if (currentSection.length && (!options.markdown || listChar)) {
             if (
-                !isBlankLineRegexTest.test(line) &&
-                indentation === currentIndentation
+                options.sectionSeperator
+                    ? options.sectionSeperator.test(line)
+                    : !isBlankLineRegexTest.test(line) &&
+                      indentation === currentIndentation
             ) {
                 sections.push(currentSection.join('\n'));
                 currentSection = [line];

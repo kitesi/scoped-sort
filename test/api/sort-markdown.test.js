@@ -350,7 +350,7 @@ test('regex', (t) => {
         t,
         inputs.regex.media,
         {
-            regex: /media/,
+            regexFilter: /media/,
         },
         `- the matched text isn't here
 - consume media 24/7
@@ -367,7 +367,7 @@ test('regex', (t) => {
         t,
         inputs.regex.media,
         {
-            regex: /media/,
+            regexFilter: /media/,
             useMatchedRegex: true,
         },
         `- the matched text isn't here
@@ -385,7 +385,7 @@ test('regex', (t) => {
         t,
         inputs.regex.number,
         {
-            regex: /\d+/,
+            regexFilter: /\d+/,
             useMatchedRegex: true,
         },
         `- the matched text isn't here

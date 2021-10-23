@@ -1,6 +1,21 @@
 import * as yargs from 'yargs';
 import type { Options } from './sort.js';
 
+function parseStringAsRegex(arg: string) {
+    if (arg.startsWith('/') && arg.endsWith('/')) {
+        try {
+            return new RegExp(arg.slice(1, arg.length - 1));
+        } catch (e) {
+            throw new Error(
+                `Tried to parse "${arg}" as a regex, failed with: ` +
+                    (e as Error)?.message
+            );
+        }
+    } else {
+        throw new Error(`Could not understand argument: '${arg}'`);
+    }
+}
+
 export function parseStringArguments(args: string) {
     const parsedArgs = yargs
         .options({
@@ -48,6 +63,9 @@ export function parseStringArguments(args: string) {
                 alias: 'markdown',
                 type: 'boolean',
             },
+            'section-seperator': {
+                type: 'string',
+            },
         })
         .help(false)
         .fail((msg, err) => {
@@ -83,19 +101,13 @@ export function parseStringArguments(args: string) {
             arg = arg.toString();
         }
 
-        if (arg.startsWith('/') && arg.endsWith('/')) {
-            try {
-                const regex = new RegExp(arg.slice(1, arg.length - 1));
-                options.regex = regex;
-            } catch (e) {
-                throw new Error(
-                    `Tried to parse "${arg}" as a regex, failed with: ` +
-                        (e as Error)?.message
-                );
-            }
-        } else {
-            throw new Error(`Could not understand argument: '${arg}'`);
-        }
+        options.regexFilter = parseStringAsRegex(arg);
+    }
+
+    if (parsedArgs['section-seperator']) {
+        options.sectionSeperator = parseStringAsRegex(
+            parsedArgs['section-seperator']
+        );
     }
 
     type SortAlias = 'e' | 'f' | 'l' | 'n' | 'z';
@@ -107,11 +119,11 @@ export function parseStringArguments(args: string) {
         }
     }
 
-    if (options.regex && options.sortRandomly) {
+    if (options.regexFilter && options.sortRandomly) {
         throw new Error("You can't sort by random and use a regex pattern");
     }
 
-    if (options.regex && options.sortNaturally) {
+    if (options.regexFilter && options.sortNaturally) {
         throw new Error("You can't sort naturally and use a regex pattern");
     }
 
@@ -143,11 +155,16 @@ export function parseStringArguments(args: string) {
     // }
 
     // need to do all this to remove the undefined properties, maybe a bit slow on runtime though
-    const regex = options.regex;
+    const regexFilter = options.regexFilter;
+    const sectionSeperator = options.sectionSeperator;
     const cleanOptions: Options = JSON.parse(JSON.stringify(options));
 
-    if (regex) {
-        cleanOptions.regex = regex;
+    if (regexFilter) {
+        cleanOptions.regexFilter = regexFilter;
+    }
+
+    if (sectionSeperator) {
+        cleanOptions.sectionSeperator = sectionSeperator;
     }
 
     return cleanOptions;

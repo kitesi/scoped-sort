@@ -8,7 +8,7 @@ const {
 
 const { possibleArguments } = require('../utils.js');
 
-test('main', (t) => {
+test('main parse-string-arguments', (t) => {
     for (const stringArguments of possibleArguments) {
         t.doesNotThrow(() => parseStringArguments(stringArguments));
     }
@@ -97,19 +97,27 @@ test('main', (t) => {
 
     t.deepEquals(parseStringArguments('-s /\\w/'), {
         reverse: true,
-        regex: /\w/,
+        regexFilter: /\w/,
     });
 
     t.deepEquals(parseStringArguments('-sp /\\w/'), {
         reverse: true,
-        regex: /\w/,
+        regexFilter: /\w/,
         useMatchedRegex: true,
     });
 
     t.deepEquals(parseStringArguments('-s /\\w/ -p'), {
         reverse: true,
-        regex: /\w/,
+        regexFilter: /\w/,
         useMatchedRegex: true,
+    });
+
+    t.deepEquals(parseStringArguments('--sectionSeperator /^Title/'), {
+        sectionSeperator: /^Title/,
+    });
+
+    t.deepEquals(parseStringArguments('--section-seperator "/^  <div/"'), {
+        sectionSeperator: /^  <div/,
     });
 
     t.doesNotThrow(() => parseStringArguments(''));

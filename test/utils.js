@@ -282,6 +282,36 @@ King henry had 6 wives
 the matched text isn't here
 Cats have 9 lives`,
     },
+    sectionSeperator: {
+        divChildren: `    <div class="child">
+        <h3>Zachary Garrett</h3>
+        <p>Computer Science</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Elijah Tyler</h3>
+        <p>Math</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Earl Henry</h3>
+        <p>Aerospace</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Herman Reed</h3>
+        <p>English</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>`,
+    },
 };
 
 /**
@@ -322,4 +352,5 @@ module.exports.possibleArguments = [
     '--use-matched-regex',
     '--markdown',
     '/\\d+/',
+    '--section-seperator /^Title:/',
 ];
