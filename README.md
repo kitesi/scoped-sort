@@ -14,8 +14,8 @@ This is a vscode extension to help sort text & lists in a scoped manner.
 
 <!-- prettier-ignore -->
 - [Why](#why)
-  - [First: Options](#first-options)
-  - [Second: Scope](#second-scope)
+  - [Options](#first-options)
+  - [Scope](#second-scope)
   - [Disclaimer](#disclaimer)
 - [Demos / Previews](#demos--previews)
 - [Usage](#usage)
@@ -71,7 +71,10 @@ better/easier.
 
 # Demos / Previews
 
-With command:
+Command:
+
+Note this example is technically outdated since it uses `re`, which now should
+be `-re`.
 
 ![command gif demo](assets/command-preview.gif)
 
@@ -145,10 +148,12 @@ Here's all the arguments:
 - `--markdown`, `-m` better sort for markdown lists, for the most part you won't need this, but
 in certain cases you will
 - `--use-matched-regex`, `-p` combined with regexs, instead of sorting after the matched text, it sorts using the matched text
+- `--section-seperator`, this is a way to tell the program when to start a new section,
+as opposed to just comparing indentations. Check out [previews.md](previews.md) example 5, for an example.
 
 ## Regexs
 
-You can also specify a regex, this will sort using the text _after_ the
+You can also specify a regex as a positional argument, this will sort using the text _after_ the
 match. If you want it to use the matched text, use the argument `-p`. Text that
 do not match will be left in place, and will be at the top (or bottom if reversed).
 Also worth noting, the regex language is **javascript**.

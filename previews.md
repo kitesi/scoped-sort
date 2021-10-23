@@ -5,7 +5,7 @@ in blue, that means it's highlighted inside of vscode before executing the comma
 
 Arguments: `/['"]/`
 
-NOTE: Don't expect import sorting to work if you have multi line imports.
+Note: Don't expect import sorting to work if you have multi line imports.
 This extension was not made to sort import, it's just able to do it in certain
 cases due to the regex argument.
 
@@ -28,3 +28,13 @@ Arguments: none
 Arguments: `-su`
 
 ![sort reverse & remove duplicates](assets/previews/unique-reverse.png)
+
+# Sort HTML Elements
+
+Note: Don't expect sorting html elements to work. Once again this extension
+is not language aware (execept markdown). This is only possible due to `--section-seperator`
+
+<!-- prettier-ignore -->
+Arguments: `--section-seperator "/^    <div/"`
+
+![sort html children elements](assets/previews/section-seperator-html.png)

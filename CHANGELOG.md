@@ -1,4 +1,4 @@
-# Upcoming
+# 2.0.0
 
 <!-- prettier-ignore -->
 - Change parsing rules
@@ -6,6 +6,8 @@
     - example: you can use `--sort-naturally` instead of `-e`
   - must now use dashes to specify options, this is due to the previous change
     - so something like `su` would now have to be `-su` or `-s -u`
+- Add option `--section-seperator`, this is a way to tell the program when to start a new section,
+as opposed to just comparing indentations. Check out [previews.md](previews.md) example 5, for an example.
 
 # 1.1.0 (10/3/2021)
 

@@ -1,5 +1,35 @@
 // @ts-check
 
+const { nonMarkdownInputs: inputs } = require('./utils.js');
+const expectedSectionSeperatorDivChildrenResult = `    <div class="child">
+        <h3>Earl Henry</h3>
+        <p>Aerospace</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Elijah Tyler</h3>
+        <p>Math</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Herman Reed</h3>
+        <p>English</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>
+    <div class="child">
+        <h3>Zachary Garrett</h3>
+        <p>Computer Science</p>
+        <div class="something">
+            lorem ipsum
+        </div>
+    </div>`;
+
 /* 
     display is supposed to be the text that's displayed in a preview, this is
     accomanied by a highlightRange, which is supposed to show what text is
@@ -17,11 +47,13 @@
     you won't be sorting the whole switch, you will only be sorting lines 2-4
     (the case statements)
 
+    todo: make highlight range automatic 
+
  */
 /** @typedef {{ input: string; output: string; highlightRange: string }} Display */
 /** @typedef {{ display?: Display; input: string; output: string; options: import("../dist/sort.js").Options; language?: string; }} PreviewTest */
 // manually listing everything so i can get auto complete
-/** @type {{ sortImportsNormal: PreviewTest; switchCaseNormal: PreviewTest; numberNormal: PreviewTest; uniqueReverse: PreviewTest }} */
+/** @type {{ sortImportsNormal: PreviewTest; switchCaseNormal: PreviewTest; numberNormal: PreviewTest; uniqueReverse: PreviewTest, sectionSeperatorHtml: PreviewTest  }} */
 const previews = {
     sortImportsNormal: {
         input: `import react from 'react';
@@ -36,7 +68,7 @@ import express from 'express';
 import isIsOdd from 'is-is-odd';
 import isOdd from 'is-odd';
 import react from 'react';`,
-        options: { regex: /'/ },
+        options: { regexFilter: /'/ },
         language: 'javascript',
     },
     switchCaseNormal: {
@@ -120,6 +152,17 @@ You are our 5000th customer!`,
 - Hot Dog
 - Burger`,
         options: { unique: true, reverse: true },
+    },
+    sectionSeperatorHtml: {
+        input: inputs.sectionSeperator.divChildren,
+        output: expectedSectionSeperatorDivChildrenResult,
+        options: { sectionSeperator: /^    <div/ },
+        language: 'html',
+        display: {
+            input: `<div>\n${inputs.sectionSeperator.divChildren}\n</div>`,
+            output: `<div>\n${expectedSectionSeperatorDivChildrenResult}\n</div>`,
+            highlightRange: '2-29',
+        },
     },
 };
 
