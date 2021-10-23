@@ -1,4 +1,4 @@
-# 2.0.0
+# 2.0.0 (10/25/2021)
 
 <!-- prettier-ignore -->
 - Change parsing rules
