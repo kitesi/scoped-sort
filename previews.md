@@ -35,6 +35,8 @@ Note: Don't expect sorting html elements to work. Once again this extension
 is not language aware (execept markdown). This is only possible due to `--section-seperator`
 
 <!-- prettier-ignore -->
-Arguments: `--section-seperator "/^    <div/"`
-
+Arguments: 
+```text
+--section-seperator "/^    <div/"
+```
 ![sort html children elements](assets/previews/section-seperator-html.png)
