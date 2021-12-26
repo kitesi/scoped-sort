@@ -8,7 +8,6 @@ import {
     languageComments,
     defaultLanguageComment,
 } from './language-comments.js';
-import path = require('path');
 
 function sortOverRangeOrSelection(
     editor: vscode.TextEditor,
@@ -26,10 +25,22 @@ function sortOverRangeOrSelection(
     }
 
     return editor.edit((edit) => {
-        edit.replace(
-            location,
-            sort(editor.document.getText(location), options)
-        );
+        let replacementText = sort(editor.document.getText(location), options);
+
+        // markdown formatters add a new line after a comment, and usually you will
+        // use the sort on save functionality with a comment. To make the text still
+        // look nice and symmetrical we just add a new line before the sort-end comment
+        if (editor.document.languageId === 'markdown') {
+            if (!replacementText.startsWith('\n')) {
+                replacementText = '\n' + replacementText;
+            }
+
+            if (!replacementText.endsWith('\n')) {
+                replacementText += '\n';
+            }
+        }
+
+        edit.replace(location, replacementText);
     });
 }
 
