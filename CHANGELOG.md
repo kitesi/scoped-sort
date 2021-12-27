@@ -1,3 +1,47 @@
+# 2.0.1 (12/26/2021)
+
+<!-- prettier-ignore -->
+- fix formatting on save on markdown files adding an empty line after sort-start
+
+markdown formatters like prettier add a new line after a comment.
+So `<!-- { sort-start } -->` would always have a new line after it.
+
+So
+
+```
+<!-- { sort-start } -->
+z
+b
+a
+<!-- { sort-end } -->
+```
+
+turns into
+
+```
+<!-- { sort-start } -->
+
+a
+b
+z
+<!-- { sort-end } -->
+```
+
+There's no way to turn it off afaik so the 'fix' is to add a new line
+before the ending sort comment as well (`<!-- { sort-end } -->`).
+
+So now the result is
+
+```
+<!-- { sort-start } -->
+
+a
+b
+z
+
+<!-- { sort-end } -->
+```
+
 # 2.0.0 (10/25/2021)
 
 <!-- prettier-ignore -->
