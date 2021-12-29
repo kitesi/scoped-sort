@@ -203,9 +203,9 @@ function addSurroundSortCommentsCommand(
     _edit: vscode.TextEditorEdit
 ) {
     const config = vscode.workspace.getConfiguration();
-    let sortArgs = config.get(
+    let sortArgs = (config.get(
         'scoped-sort.defaultArgs.addSurroundingSortComments'
-    ) as string;
+    ) || '') as string;
 
     if (sortArgs !== '') {
         sortArgs += ' ';
