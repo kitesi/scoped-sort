@@ -48,9 +48,25 @@
                     "description": "Decides if the program should try to format sections that are marked"
                 },
                 "scoped-sort.defaultArgs": {
-                    "type": "string",
-                    "default": "",
-                    "description": "If `scoped-sort.prompt` is on, it will inject the arguments into the prompt, if it's off it will execute the sort with those arguments. Only affects manually executing the command, keybindings and sort-on-save don't care about this option"
+                    "type": "object",
+                    "properties": {
+                        "prompt": {
+                            "type": "string",
+                            "default": "",
+                            "description": "injects the value into the prompt box when using the main command"
+                        },
+                        "no-prompt": {
+                            "type": "string",
+                            "default": "",
+                            "description": "when calling the main command with .prompt=false, it will run with these args"
+                        },
+                        "addSurroundingSortComments": {
+                            "type": "string",
+                            "default": "",
+                            "description": "when calling addSurroundingSortComments command it will add these args in the sort-start comment"
+                        }
+                    },
+                    "default": {}
                 }
             }
         },

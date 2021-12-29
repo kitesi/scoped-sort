@@ -44,13 +44,20 @@ function sortOverRangeOrSelection(
     });
 }
 
+interface DefaultArgs {
+    prompt?: string;
+    'no-prompt'?: string;
+    addSurroundingSortComments?: string;
+}
+
 async function sortCommand(
     editor: vscode.TextEditor,
     _edit: vscode.TextEditorEdit,
     userExplicitArgs?: any
 ) {
+    // might need better validation for the configuration, but vscode warns if you don't follow the rules so kinda on you tbh
     const config = vscode.workspace.getConfiguration();
-    const defaultArgs = config.get('scoped-sort.defaultArgs');
+    const defaultArgs: DefaultArgs = config.get('scoped-sort.defaultArgs')!;
 
     if (
         typeof userExplicitArgs !== 'string' &&
@@ -61,18 +68,23 @@ async function sortCommand(
         );
     }
 
-    if (typeof defaultArgs !== 'string') {
+    if (
+        typeof defaultArgs === 'undefined' ||
+        typeof defaultArgs !== 'object' ||
+        Array.isArray(defaultArgs)
+    ) {
         return vscode.window.showErrorMessage(
-            "Type of config 'scoped-sort.defaultArgs' should be a string"
+            "Type of config 'scoped-sort.defaultArgs' should be an object"
         );
     }
 
-    let args = userExplicitArgs ?? '';
+    let sortArgs = userExplicitArgs ?? '';
+    const shouldPrompt = config.get('scoped-sort.prompt') as boolean;
 
-    if (!userExplicitArgs && config.get('scoped-sort.prompt')) {
+    if (!userExplicitArgs && shouldPrompt) {
         const promptResponse = await vscode.window.showInputBox({
             placeHolder: 'Arguments: sr, r, u, i, ...',
-            value: defaultArgs,
+            value: defaultArgs.prompt,
             ignoreFocusOut: true,
         });
 
@@ -80,7 +92,12 @@ async function sortCommand(
             return;
         }
 
-        args = promptResponse;
+        sortArgs = promptResponse;
+    }
+
+    // could use nested if statement in the prev if statement, but I like this better
+    if (!userExplicitArgs && !shouldPrompt && defaultArgs['no-prompt']) {
+        sortArgs = defaultArgs['no-prompt'];
     }
 
     const document = editor.document;
@@ -93,11 +110,11 @@ async function sortCommand(
             document.lineAt(document.lineCount - 1).text.length
         );
 
-        return sortOverRangeOrSelection(editor, documentWholeRange, args);
+        return sortOverRangeOrSelection(editor, documentWholeRange, sortArgs);
     }
 
     for (const selection of editor.selections) {
-        return sortOverRangeOrSelection(editor, selection, args);
+        return sortOverRangeOrSelection(editor, selection, sortArgs);
         // const text = document.getText(selection);
         // edit.replace(selection, sort(text, options));
     }
@@ -178,6 +195,15 @@ function addSurroundSortCommentsCommand(
     editor: vscode.TextEditor,
     _edit: vscode.TextEditorEdit
 ) {
+    const config = vscode.workspace.getConfiguration();
+    let sortArgs = config.get(
+        'scoped-sort.defaultArgs.addSurroundingSortComments'
+    ) as string;
+
+    if (sortArgs !== '') {
+        sortArgs += ' ';
+    }
+
     return editor.edit((edit) => {
         if (editor.selections.length > 1 || !editor.selections[0].isEmpty) {
             for (const selection of editor.selections) {
@@ -199,7 +225,7 @@ function addSurroundSortCommentsCommand(
                 if ('singleLineComment' in language) {
                     edit.insert(
                         startPosition,
-                        `${language.singleLineComment} { sort-start }\n`
+                        `${language.singleLineComment} { sort-start ${sortArgs}}\n`
                     );
                     edit.insert(
                         endPosition,
@@ -211,7 +237,7 @@ function addSurroundSortCommentsCommand(
 
                     edit.insert(
                         startPosition,
-                        `${startingCommentBlock} { sort-start } ${endingCommentBlock}\n`
+                        `${startingCommentBlock} { sort-start ${sortArgs}} ${endingCommentBlock}\n`
                     );
                     edit.insert(
                         endPosition,
