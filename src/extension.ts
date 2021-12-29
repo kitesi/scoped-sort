@@ -83,7 +83,8 @@ async function sortCommand(
 
     if (!userExplicitArgs && shouldPrompt) {
         const promptResponse = await vscode.window.showInputBox({
-            placeHolder: 'Arguments: sr, r, u, i, ...',
+            placeHolder:
+                'Arguments: -sr, --random, -z, --case-insensitive, ...',
             value: defaultArgs.prompt,
             ignoreFocusOut: true,
         });
