@@ -12,7 +12,8 @@ import {
 function sortOverRangeOrSelection(
     editor: vscode.TextEditor,
     location: vscode.Range | vscode.Selection,
-    args: string
+    args: string,
+    isCommand: boolean
 ) {
     let options: Options = {};
 
@@ -30,7 +31,7 @@ function sortOverRangeOrSelection(
         // markdown formatters add a new line after a comment, and usually you will
         // use the sort on save functionality with a comment. To make the text still
         // look nice and symmetrical we just add a new line before the sort-end comment
-        if (editor.document.languageId === 'markdown') {
+        if (!isCommand && editor.document.languageId === 'markdown') {
             if (!replacementText.startsWith('\n')) {
                 replacementText = '\n' + replacementText;
             }
@@ -111,11 +112,16 @@ async function sortCommand(
             document.lineAt(document.lineCount - 1).text.length
         );
 
-        return sortOverRangeOrSelection(editor, documentWholeRange, sortArgs);
+        return sortOverRangeOrSelection(
+            editor,
+            documentWholeRange,
+            sortArgs,
+            true
+        );
     }
 
     for (const selection of editor.selections) {
-        return sortOverRangeOrSelection(editor, selection, sortArgs);
+        return sortOverRangeOrSelection(editor, selection, sortArgs, true);
         // const text = document.getText(selection);
         // edit.replace(selection, sort(text, options));
     }
@@ -185,7 +191,7 @@ function onWillSaveTextDocument(ev: vscode.TextDocumentWillSaveEvent) {
 
     for (const { range, args } of ranges) {
         if (editor) {
-            sortOverRangeOrSelection(editor, range, args);
+            sortOverRangeOrSelection(editor, range, args, false);
         } else {
             console.log('No active text editor?');
         }
