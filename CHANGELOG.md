@@ -1,3 +1,10 @@
+# 2.1.0 (12/28/2021)
+
+<!-- prettier-ignore -->
+- update placeholder text to match the new arguments schema introduced in 2.0.0 (flaris)
+- changed `.defaultArgs` in settings to be an object
+- fix adding a new line before and after selected text when using the main command on a markdown file
+
 # 2.0.1 (12/26/2021)
 
 <!-- prettier-ignore -->

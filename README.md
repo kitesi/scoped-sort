@@ -207,14 +207,44 @@ Decides if the program should always prompt/ask for options when executing the m
 
 Default: `true`
 
-`scoped-sort.defaultArgs`: string
+`scoped-sort.defaultArgs`: object
 
-This is a string of arguments which follow [#arguments](#arguments). If you have
-`scoped-sort.prompt` on, it will insert the string into the prompt, if you have
-it off, it will just execute the command with those arguments. Keybindings and
-sort-on-save ignore this configuration.
+This is an object which defines the default arguments used in situations.
+The properties of this object are all strings which follow [#arguments](#arguments).
+All the defaults are empty strings.
 
-Default: `""`
+`scoped-sort.defaultArgs.prompt`: string
+
+When you call the main command, if you have `scoped-sort.prompt` set to true,
+this string will be injected into the prompt box.
+
+`scoped-sort.defaultArgs.no-prompt`: string
+
+When you call the main command, if you have `scoped-sort.prompt` set to false,
+the command will execute with this value
+
+`scoped-sort.defaultArgs.addSurroundingSortComments`: string
+
+When you call the `addSurroundingSortComments` command, the sort-start comment
+will have this value as it's arguments.
+
+For example, if the value was: `--random`, when you use the command on the following text:
+
+```
+a
+z
+b
+```
+
+it will turn into
+
+```
+// { sort-start --random }
+a
+z
+b
+// { sort-end }
+```
 
 `scoped-sort.formatSectionsOnSave`: boolean
 
@@ -239,10 +269,6 @@ For example:
     "args": "-sur"
 }
 ```
-
-Your configuration of `scoped-sort.defaultArgs` is not used here. I think it's best to
-list all your wanted options inside of the object. In the future `scoped-sort.defaultArgs`
-might be an object, where `keybindings`, is a property, and in that case, it will be used as a default.
 
 # Future
 
