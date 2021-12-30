@@ -1,14 +1,15 @@
 // @ts-check
 
 const test = require('tape');
-const { sort } = require('../../dist/sort.js');
-const { nonMarkdownInputs: inputs, join, testString } = require('../utils.js');
-const previews = require('../previews.js');
+
+const { sort } = require('../dist/main.js');
+const { testString } = require('./testString.js');
+const { nonMarkdownInputs: inputs, join } = require('../../test-utils.js');
 
 const regexInputMediaMatch = /medi(a|cal)/;
 const regexInputNumbersMatch = /-?\d+/;
 
-/** @typedef {import("../../dist/sort.js").Options} Options */
+/** @typedef {import("../dist/main.js").Options} Options */
 
 test('regular sort', (t) => {
     /** @type {Options} */
@@ -1002,14 +1003,6 @@ Theme: Material Dark
 Link: https://example.com`,
         'seperation by blank lines'
     );
-
-    t.end();
-});
-
-test('preview sorts', (t) => {
-    for (const [name, { input, output, options }] of Object.entries(previews)) {
-        testString(t, sort(input, options), output, name);
-    }
 
     t.end();
 });

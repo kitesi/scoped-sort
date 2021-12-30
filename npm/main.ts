@@ -187,7 +187,7 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
     };
 }
 
-export function sort(text: string, options: Options) {
+export function sort(text: string, options: Options = {}) {
     const lines = text.trimEnd().split(/\r?\n/);
     let sections = [];
     let currentSection: string[] = [];

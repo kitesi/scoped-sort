@@ -1,0 +1,20 @@
+{
+    "name": "string-content-sort",
+    "version": "1.0.0",
+    "description": "sort the content inside of a string",
+    "main": "dist/main.js",
+    "scripts": {
+        "test": "tape ./test/*.test.js"
+    },
+    "keywords": [
+        "string",
+        "sort",
+        "list"
+    ],
+    "author": "karizma",
+    "license": "MIT",
+    "devDependencies": {
+        "jest-diff": "^27.4.2",
+        "tape": "^5.4.0"
+    }
+}

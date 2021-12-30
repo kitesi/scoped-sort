@@ -8,14 +8,15 @@
  */
 
 const test = require('tape');
-const { sort } = require('../../dist/sort.js');
-const { markdownInputs: inputs, join, testString } = require('../utils.js');
+const { sort } = require('../dist/main.js');
+const { markdownInputs: inputs, join } = require('../../test-utils.js');
+const { testString } = require('./testString.js');
 
 /**
  *
  * @param {test.Test} t
  * @param {string} input
- * @param {import("../../dist/sort.js").Options} options
+ * @param {import("../dist/main.js").Options} options
  * @param {string} expected
  * @param {string} message
  */
@@ -36,7 +37,7 @@ function assertNoChangeWithMarkdownOption(
     );
 }
 
-/** @typedef {import("../../dist/sort.js").Options} Options */
+/** @typedef {import("../dist/main.js").Options} Options */
 
 test('regular sort', (t) => {
     /** @type {Options} */
