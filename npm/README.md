@@ -11,15 +11,17 @@ const { sort } = require('string-content-sort');
 // or
 import { sort } from 'string-content-sort';
 
-sort(
-    `a
-b
-d
-c`,
-    {
-        recursive: true,
-    }
-);
+let list = `Pokemon
+Dragon Ball Z
+Naruto`;
+
+list = sort(list, { reverse: true });
+
+/* list's value is now:
+Pokemon
+Naruto
+Dragon Ball Z 
+*/
 ```
 
 The first argument is the string, and the second argument is an object of options.
