@@ -125,14 +125,16 @@ async function handleFile(file: string) {
                     i - currentStartLine - 1,
                     ...sortedSection.split('\n')
                 );
-
-                currentStartLine = undefined;
             }
-        }
 
-        if (hasOperatedOnFile) {
-            fs.promises.writeFile(file, lines.join('\n'));
+            currentStartLine = undefined;
         }
+    }
+
+    if (hasOperatedOnFile) {
+        fs.writeFile(file, lines.join('\n'), (err) => {
+            if (err) throw err;
+        });
     }
 }
 
