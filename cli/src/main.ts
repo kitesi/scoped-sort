@@ -36,6 +36,17 @@ function defaultCommandHandler(args: DefaultCommandArgs) {
 
     if (file) {
         args.file = undefined;
+
+        if (!fs.existsSync(file)) {
+            throw new Error('File does not exist');
+        }
+
+        if (fs.statSync(file).isDirectory()) {
+            throw new Error(
+                'Input has to be a directory. Maybe you meant to use the modify command?'
+            );
+        }
+
         console.log(sort(fs.readFileSync(file, 'utf-8'), args));
         process.exit(0);
     } else {
@@ -153,20 +164,41 @@ function modifyCommandHandler(argv: { paths: string[] }) {
     }
 }
 
-yargs(process.argv.slice(2))
-    .command({
-        command: '$0 [file]',
-        description: 'regular sort, takes in from stdin or takes a file',
-        builder: (y) => genericSortYargsBuilder(y).strict(),
+try {
+    yargs(process.argv.slice(2))
+        .command({
+            command: '$0 [file]',
+            description: 'regular sort, takes in from stdin or takes a file',
+            builder: (y) => genericSortYargsBuilder(y).strict(),
+            // @ts-ignore
+            handler: defaultCommandHandler,
+        })
+        .command({
+            command: 'modify <paths..>',
+            description: 'command to modify files in place',
+            builder: (y) => y,
+            // @ts-ignore
+            handler: modifyCommandHandler,
+        })
+        .fail(false)
+        // .fail((msg, err, y) => {
+        //     console.log(2, 5);
+        //     if (msg) {
+        //         console.error(msg);
+        //     }
+        // })
+        .strict()
+        .parserConfiguration({ 'dot-notation': false }).argv;
+} catch (err) {
+    if (err) {
         // @ts-ignore
-        handler: defaultCommandHandler,
-    })
-    .command({
-        command: 'modify <paths..>',
-        description: 'command to modify files in place',
-        builder: (y) => y,
-        // @ts-ignore
-        handler: modifyCommandHandler,
-    })
-    .strict()
-    .parserConfiguration({ 'dot-notation': false }).argv;
+        if (err.message) {
+            // @ts-ignore
+            console.error('Error: ' + err.message);
+        } else {
+            console.error(err);
+        }
+
+        process.exit(1);
+    }
+}
