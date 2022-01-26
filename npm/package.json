@@ -11,6 +11,9 @@
         "sort",
         "list"
     ],
+    "files": [
+        "dist"
+    ],
     "author": "karizma",
     "license": "MIT",
     "devDependencies": {
