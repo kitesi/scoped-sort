@@ -100,6 +100,17 @@ Errors: (library does not throw any errors for now, but these make no sense)
 
 <!-- prettier-ignore -->
 - Mixing sorters like `sortNumerically` and `sortByLength`
-- `regex && sortNaturally` - `regex && sortRandomly` - `caseInsensitive` when
-options include one of: `sortNumerically`, `sortByFloat`, `sortByLength`,
+  - `regex && sortNaturally` 
+  - `regex && sortRandomly` 
+  - `caseInsensitive` when options include one of: `sortNumerically`, `sortByFloat`, `sortByLength`,
 `sortNaturally`, `sortRandomly` but doesn't include `unique`
+
+# Contributing / Help
+
+Contributions are very welcome and appreciated.
+
+If you need help with something, found a bug, or want to request a feature,
+feel free to make an issue.
+
+If you want to fix a bug or contribute a feature, first create an issue, and
+then you can work on a pull request.

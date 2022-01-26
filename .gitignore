@@ -3,6 +3,8 @@ preview-generator/public/build
 .vscode-test/
 npm/dist
 
+cli/dist
+
 vscode/tmp
 
 npm/main.js
