@@ -43,7 +43,7 @@ function defaultCommandHandler(args: DefaultCommandArgs) {
 
         if (fs.statSync(file).isDirectory()) {
             throw new Error(
-                'Input has to be a directory. Maybe you meant to use the modify command?'
+                'Input is a directory. Maybe you meant to use the modify command?'
             );
         }
 
