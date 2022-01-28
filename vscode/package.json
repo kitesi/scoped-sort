@@ -82,7 +82,7 @@
         ]
     },
     "scripts": {
-        "test": "tape ./test/api/**.js",
+        "test": "tape ./test/parse-string-arguments.test.js",
         "pretty": "npx prettier --write ."
     },
     "devDependencies": {
@@ -97,6 +97,7 @@
         "vscode-test": "^1.5.2"
     },
     "dependencies": {
+        "string-content-sort": "^1.0.1",
         "yargs": "^17.2.1"
     }
 }

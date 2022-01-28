@@ -335,6 +335,6 @@ module.exports.possibleArguments = [
     '--case-insensitive',
     '--use-matched-regex',
     '--markdown',
-    '/\\d+/',
+    '--regex /\\d+/',
     '--section-seperator /^Title:/',
 ];

@@ -6,6 +6,7 @@ npm/dist
 cli/dist
 
 vscode/tmp
+vscode/dist
 
 npm/main.js
 *.vsix

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import type { Options } from './sort.js';
+import type { Options } from 'string-content-sort';
 
-import { sort } from './sort.js';
+import { sort } from 'string-content-sort';
 import { parseStringArguments } from './parse-string-arguments.js';
 import * as commentRegex from './comment-regexs.js';
 import {

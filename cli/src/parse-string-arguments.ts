@@ -57,7 +57,7 @@ export function genericSortYargsBuilder(y: Argv) {
             type: 'boolean',
         },
         sortRandomly: {
-            alias: 'n',
+            alias: 'z',
             type: 'boolean',
         },
         markdown: {
@@ -83,7 +83,7 @@ export function parseStringArguments(args: string) {
         .fail((msg, err) => {
             throw new Error(msg);
         })
-        .strictOptions(true)
+        .strict(true)
         .parseSync(args);
 
     // prob a better way to do this

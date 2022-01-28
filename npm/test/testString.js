@@ -1,3 +1,6 @@
+// @ts-check
+const { diffStringsUnified } = require('jest-diff');
+
 /**
  *
  * @param {import("tape").Test} t

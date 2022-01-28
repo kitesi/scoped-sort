@@ -181,12 +181,6 @@ try {
             handler: modifyCommandHandler,
         })
         .fail(false)
-        // .fail((msg, err, y) => {
-        //     console.log(2, 5);
-        //     if (msg) {
-        //         console.error(msg);
-        //     }
-        // })
         .strict()
         .parserConfiguration({ 'dot-notation': false }).argv;
 } catch (err) {
