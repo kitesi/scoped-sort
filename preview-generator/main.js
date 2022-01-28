@@ -2,7 +2,7 @@
 
 // import { spawn } from 'child_process';
 import { firefox, chromium, webkit } from 'playwright';
-import previews from '../test/previews.js';
+import { previews } from '../previews.js';
 
 /** @param {string} str */
 function convertCamelCase(str) {

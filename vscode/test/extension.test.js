@@ -6,15 +6,30 @@ const fs = require('fs');
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 const vscode = require('vscode');
-const { sort } = require('../dist/sort.js');
+const { sort } = require('string-content-sort');
+const { diffStringsUnified } = require('jest-diff');
 const { parseStringArguments } = require('../dist/parse-string-arguments.js');
 const {
     nonMarkdownInputs: inputs,
-    testString,
     possibleArguments,
-} = require('./utils.js');
+} = require('../../test-utils.js');
 
-/** @typedef {import("../src/sort.js").Options} SortArgs */
+/**
+ *
+ * @param {import("tape").Test} t
+ * @param {string} actual
+ * @param {string} expected
+ * @param {string} [message]
+ */
+function testString(t, actual, expected, message) {
+    t.equals(actual, expected, message);
+
+    if (actual !== expected) {
+        console.log(diffStringsUnified(expected, actual));
+    }
+}
+
+/** @typedef {import("string-content-sort").Options} SortArgs */
 // const myExtension = require('../extension');
 
 test.createStream().on('data', console.log);
@@ -55,6 +70,11 @@ test('Extension Test', async (t) => {
     const tmpFolderPath = path.join(__dirname, '..', 'tmp');
     const tmpDocumentPath = path.join(tmpFolderPath, 'tmp.txt');
     const tmpMarkdownDocumentPath = path.join(tmpFolderPath, 'tmp.md');
+    /** @type {string} */
+    const addSurroundingSortCommentsDefaultArgs =
+        vscode.workspace
+            .getConfiguration()
+            .get('scoped-sort.defaultArgs.addSurroundingSortComments') + ' ';
 
     if (!fs.existsSync(tmpFolderPath)) {
         await fs.promises.mkdir(tmpFolderPath);
@@ -212,7 +232,7 @@ test('Extension Test', async (t) => {
     testString(
         t,
         getAllText(editor.document),
-        '// { sort-start }\none\ntwo\nthree\n// { sort-end }',
+        `// { sort-start ${addSurroundingSortCommentsDefaultArgs}}\none\ntwo\nthree\n// { sort-end }`,
         'addSurroundSortComments works on regular documents'
     );
 
@@ -231,7 +251,7 @@ test('Extension Test', async (t) => {
     testString(
         t,
         getAllText(editor.document),
-        '<!-- { sort-start } -->\none\ntwo\nthree\n<!-- { sort-end } -->',
+        `<!-- { sort-start ${addSurroundingSortCommentsDefaultArgs}} -->\none\ntwo\nthree\n<!-- { sort-end } -->`,
         'addSurroundSortComments works on markdown documents'
     );
 

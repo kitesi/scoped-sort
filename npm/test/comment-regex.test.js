@@ -1,10 +1,9 @@
 // @ts-check
 
 const test = require('tape');
-const {
-    sortStart: sortStartRegex,
-    sortEnd: sortEndRegex,
-} = require('../../dist/comment-regexs.js');
+
+const sortStartRegex = /\{ sort-start (?<args>[^\}]*)(?<= )\}/;
+const sortEndRegex = /\{ sort-end \}/;
 
 test('sort start', (t) => {
     t.false(sortStartRegex.test(''), 'empty string');

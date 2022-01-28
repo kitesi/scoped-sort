@@ -1,3 +1,10 @@
+# 2.2.0 (1/27/21)
+
+<!-- prettier-ignore -->
+- [fix bug: sort on save accidently sorts the wrong file](https://github.com/sixskys/scoped-sort/issues/3)
+- start using npm package `string-content-sort` and `string-content-sort-cli`
+  - regex is now not specified by positional arguments, use `--regex`
+
 # 2.1.0 (12/28/2021)
 
 <!-- prettier-ignore -->

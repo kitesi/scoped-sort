@@ -1,6 +1,6 @@
 // @ts-check
+const { nonMarkdownInputs: inputs } = require('./test-utils.js');
 
-const { nonMarkdownInputs: inputs } = require('./utils.js');
 const expectedSectionSeperatorDivChildrenResult = `    <div class="child">
         <h3>Earl Henry</h3>
         <p>Aerospace</p>
@@ -51,9 +51,9 @@ const expectedSectionSeperatorDivChildrenResult = `    <div class="child">
 
  */
 /** @typedef {{ input: string; output: string; highlightRange: string }} Display */
-/** @typedef {{ display?: Display; input: string; output: string; options: import("../dist/sort.js").Options; language?: string; }} PreviewTest */
+/** @typedef {{ display?: Display; input: string; output: string; options: import("./npm/dist/main.js").Options; language?: string; }} PreviewTest */
 // manually listing everything so i can get auto complete
-/** @type {{ sortImportsNormal: PreviewTest; switchCaseNormal: PreviewTest; numberNormal: PreviewTest; uniqueReverse: PreviewTest, sectionSeperatorHtml: PreviewTest  }} */
+/** @type {{ sortImportsNormal: PreviewTest; switchCaseNormal: PreviewTest; numberNormal: PreviewTest; uniqueReverse: PreviewTest, sectionSeperatorHtml: PreviewTest, generalExample: PreviewTest  }} */
 const previews = {
     sortImportsNormal: {
         input: `import react from 'react';
@@ -164,6 +164,53 @@ You are our 5000th customer!`,
             highlightRange: '2-29',
         },
     },
+    generalExample: {
+        input: `- Shows
+  - Caroons
+    - Simpsons
+    - Family Guy
+  - Anime
+    - Noragami
+    - Black Clover
+    - One Piece
+    - 7 Deadly Sins
+- Apps
+  - Games
+    - Clash Royale
+    - Brawl Stars
+    - Dumb Ways To Die
+  - Youtube
+  - VLC
+  - Brawl Stars
+- Editors
+  - VSCode
+  - Atom
+  - Vim
+  - Emacs`,
+        output: `- Apps
+  - Brawl Stars
+  - Games
+    - Brawl Stars
+    - Clash Royale
+    - Dumb Ways To Die
+  - VLC
+  - Youtube
+- Editors
+  - Atom
+  - Emacs
+  - Vim
+  - VSCode
+- Shows
+  - Anime
+    - 7 Deadly Sins
+    - Black Clover
+    - Noragami
+    - One Piece
+  - Caroons
+    - Family Guy
+    - Simpsons`,
+        options: { recursive: true, sortNaturally: true },
+    },
 };
 
-module.exports = previews;
+module.exports = { previews };

@@ -2,11 +2,9 @@
 
 const test = require('tape');
 
-const {
-    parseStringArguments,
-} = require('../../dist/parse-string-arguments.js');
+const { parseStringArguments } = require('../dist/parse-string-arguments.js');
 
-const { possibleArguments } = require('../utils.js');
+const { possibleArguments } = require('../../test-utils.js');
 
 test('main parse-string-arguments', (t) => {
     for (const stringArguments of possibleArguments) {
@@ -95,18 +93,18 @@ test('main parse-string-arguments', (t) => {
         unique: true,
     });
 
-    t.deepEquals(parseStringArguments('-s /\\w/'), {
+    t.deepEquals(parseStringArguments('-s --regex /\\w/'), {
         reverse: true,
         regexFilter: /\w/,
     });
 
-    t.deepEquals(parseStringArguments('-sp /\\w/'), {
+    t.deepEquals(parseStringArguments('-sp --regex /\\w/'), {
         reverse: true,
         regexFilter: /\w/,
         useMatchedRegex: true,
     });
 
-    t.deepEquals(parseStringArguments('-s /\\w/ -p'), {
+    t.deepEquals(parseStringArguments('-s --regex /\\w/ -p'), {
         reverse: true,
         regexFilter: /\w/,
         useMatchedRegex: true,
@@ -142,6 +140,11 @@ test('main parse-string-arguments', (t) => {
         'throws error on invalid regex'
     );
 
+    t.throws(
+        () => parseStringArguments('/\\d+/'),
+        'throws on positional regex'
+    );
+
     t.throws(() => parseStringArguments('-fl'), 'throws on fl');
     t.throws(() => parseStringArguments('-fn'), 'throws on fn');
     t.throws(() => parseStringArguments('-fz'), 'throws on fz');
@@ -163,16 +166,16 @@ test('main parse-string-arguments', (t) => {
     t.throws(() => parseStringArguments('-iz'), 'throws on iz');
 
     t.throws(
-        () => parseStringArguments('-z /me/'),
+        () => parseStringArguments('-z --regex /me/'),
         'throws on random + pattern'
     );
     t.throws(
-        () => parseStringArguments('-e /me/'),
+        () => parseStringArguments('-e --regex /me/'),
         'throws on natural + pattern'
     );
 
     t.throws(
-        () => parseStringArguments('-in /\\d+/'),
+        () => parseStringArguments('-in --regex /\\d+/'),
         'still throws on in when pattern is specified'
     );
 

@@ -1,0 +1,30 @@
+{
+    "name": "string-content-sort-cli",
+    "version": "1.0.0",
+    "description": "a cli for the npm package: string-content-sort",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/karizma/scoped-sort"
+    },
+    "bugs": {
+        "url": "https://github.com/karizma/scoped-sort/issues"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "bin": {
+        "ssort": "./dist/main.js"
+    },
+    "keywords": [],
+    "author": "karizma",
+    "license": "MIT",
+    "dependencies": {
+        "string-content-sort": "^1.0.1",
+        "yargs": "^17.3.1"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.6",
+        "@types/yargs": "^17.0.8"
+    }
+}

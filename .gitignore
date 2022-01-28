@@ -1,8 +1,13 @@
 node_modules
-tmp
-dist
 preview-generator/public/build
 .vscode-test/
+npm/dist
+
+cli/dist
+
+vscode/tmp
+vscode/dist
+
+npm/main.js
 *.vsix
-temp.js
 

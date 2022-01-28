@@ -1,7 +1,13 @@
 import * as yargs from 'yargs';
-import type { Options } from './sort.js';
 
-function parseStringAsRegex(arg: string) {
+import type { Argv } from 'yargs';
+import type { Options } from 'string-content-sort';
+
+function parseStringAsRegex(arg?: string) {
+    if (typeof arg === 'undefined') {
+        return undefined;
+    }
+
     if (arg.startsWith('/') && arg.endsWith('/')) {
         try {
             return new RegExp(arg.slice(1, arg.length - 1));
@@ -16,76 +22,85 @@ function parseStringAsRegex(arg: string) {
     }
 }
 
+export function genericSortYargsBuilder(y: Argv) {
+    return y.options({
+        reverse: {
+            alias: 's',
+            type: 'boolean',
+        },
+        recursive: {
+            alias: 'r',
+            type: 'boolean',
+        },
+        sortNaturally: {
+            alias: 'e',
+            type: 'boolean',
+        },
+        unique: {
+            alias: 'u',
+            type: 'boolean',
+        },
+        caseInsensitive: {
+            alias: 'i',
+            type: 'boolean',
+        },
+        sortNumerically: {
+            alias: 'n',
+            type: 'boolean',
+        },
+        sortByFloat: {
+            alias: 'f',
+            type: 'boolean',
+        },
+        sortByLength: {
+            alias: 'l',
+            type: 'boolean',
+        },
+        sortRandomly: {
+            alias: 'z',
+            type: 'boolean',
+        },
+        markdown: {
+            alias: 'm',
+            type: 'boolean',
+        },
+        useMatchedRegex: {
+            alias: 'p',
+            type: 'boolean',
+        },
+        sectionSeperator: {
+            type: 'string',
+        },
+        regex: {
+            type: 'string',
+        },
+    });
+}
+
 export function parseStringArguments(args: string) {
-    const parsedArgs = yargs
-        .options({
-            e: {
-                alias: 'sort-naturally',
-                type: 'boolean',
-            },
-            f: {
-                alias: 'sort-by-float',
-                type: 'boolean',
-            },
-            l: {
-                alias: 'sort-by-length',
-                type: 'boolean',
-            },
-            n: {
-                alias: 'sort-numerically',
-                type: 'boolean',
-            },
-            z: {
-                alias: 'sort-randomly',
-                type: 'boolean',
-            },
-            s: {
-                alias: 'reverse',
-                type: 'boolean',
-            },
-            r: {
-                alias: 'recursive',
-                type: 'boolean',
-            },
-            u: {
-                alias: 'unique',
-                type: 'boolean',
-            },
-            i: {
-                alias: 'case-insensitive',
-                type: 'boolean',
-            },
-            p: {
-                alias: 'use-matched-regex',
-                type: 'boolean',
-            },
-            m: {
-                alias: 'markdown',
-                type: 'boolean',
-            },
-            'section-seperator': {
-                type: 'string',
-            },
-        })
+    const parsedArgs = genericSortYargsBuilder(yargs)
         .help(false)
         .fail((msg, err) => {
             throw new Error(msg);
         })
-        .strictOptions(true)
+        .strict(true)
         .parse(args);
 
+    // prob a better way to do this
     const options: Options = {
-        sortNaturally: parsedArgs.e,
-        sortByFloat: parsedArgs.f,
-        sortByLength: parsedArgs.l,
-        sortNumerically: parsedArgs.n,
-        sortRandomly: parsedArgs.z,
-        reverse: parsedArgs.s,
-        recursive: parsedArgs.r,
-        unique: parsedArgs.u,
-        caseInsensitive: parsedArgs.i,
-        useMatchedRegex: parsedArgs.p,
-        markdown: parsedArgs.m,
+        sortNaturally: parsedArgs.sortNaturally,
+        sortByFloat: parsedArgs.sortByFloat,
+        sortByLength: parsedArgs.sortByLength,
+        sortNumerically: parsedArgs.sortNumerically,
+        sortRandomly: parsedArgs.sortRandomly,
+        reverse: parsedArgs.reverse,
+        recursive: parsedArgs.recursive,
+        unique: parsedArgs.unique,
+        caseInsensitive: parsedArgs.caseInsensitive,
+        useMatchedRegex: parsedArgs.useMatchedRegex,
+        markdown: parsedArgs.markdown,
+        regexFilter: parseStringAsRegex(parsedArgs.regex),
+        sectionSeperator: parseStringAsRegex(parsedArgs.sectionSeperator),
     };
 
     const argumentDescriptions = {
@@ -95,20 +110,6 @@ export function parseStringArguments(args: string) {
         n: 'numerically',
         z: 'randomly',
     };
-
-    for (let arg of parsedArgs._) {
-        if (typeof arg === 'number') {
-            arg = arg.toString();
-        }
-
-        options.regexFilter = parseStringAsRegex(arg);
-    }
-
-    if (parsedArgs['section-seperator']) {
-        options.sectionSeperator = parseStringAsRegex(
-            parsedArgs['section-seperator']
-        );
-    }
 
     type SortAlias = 'e' | 'f' | 'l' | 'n' | 'z';
     const sorters: Set<SortAlias> = new Set();

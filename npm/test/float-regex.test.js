@@ -1,7 +1,7 @@
 // @ts-check
 
 const test = require('tape');
-const { floatRegex } = require('../../dist/sort.js');
+const { floatRegex } = require('../dist/main.js');
 
 /** @param {string} str */
 const getValue = (str) => str.match(floatRegex)?.[0];

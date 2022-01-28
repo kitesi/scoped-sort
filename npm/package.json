@@ -1,0 +1,31 @@
+{
+    "name": "string-content-sort",
+    "version": "1.0.3",
+    "description": "sort the content inside of a string",
+    "main": "dist/main.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/karizma/scoped-sort"
+    },
+    "bugs": {
+        "url": "https://github.com/karizma/scoped-sort/issues"
+    },
+    "scripts": {
+        "test": "tape ./test/*.test.js"
+    },
+    "keywords": [
+        "string",
+        "sort",
+        "list"
+    ],
+    "files": [
+        "dist",
+        "general-example.png"
+    ],
+    "author": "karizma",
+    "license": "MIT",
+    "devDependencies": {
+        "jest-diff": "^27.4.2",
+        "tape": "^5.4.0"
+    }
+}
