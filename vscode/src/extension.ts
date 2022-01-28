@@ -122,8 +122,6 @@ async function sortCommand(
 
     for (const selection of editor.selections) {
         return sortOverRangeOrSelection(editor, selection, sortArgs, true);
-        // const text = document.getText(selection);
-        // edit.replace(selection, sort(text, options));
     }
 }
 
@@ -187,13 +185,16 @@ function onWillSaveTextDocument(ev: vscode.TextDocumentWillSaveEvent) {
         }
     }
 
-    const editor = vscode.window.activeTextEditor;
+    const editor = vscode.window.visibleTextEditors.find(
+        (editor) => editor.document === ev.document
+    );
+    // const editor = vscode.window.activeTextEditor;
 
     for (const { range, args } of ranges) {
         if (editor) {
             sortOverRangeOrSelection(editor, range, args, false);
         } else {
-            console.log('No active text editor?');
+            console.log("Didn't match any text editor?");
         }
     }
 }
