@@ -3,6 +3,13 @@
     "version": "1.0.0",
     "description": "a cli for the npm package: string-content-sort",
     "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/karizma/scoped-sort"
+    },
+    "bugs": {
+        "url": "https://github.com/karizma/scoped-sort/issues"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
