@@ -1,4 +1,9 @@
-# 2.2.0 (1/27/21)
+# 2.2.1 (2/6/22)
+
+<!-- prettier-ignore -->
+- update repo link
+
+# 2.2.0 (1/27/22)
 
 <!-- prettier-ignore -->
 - [fix bug: sort on save accidently sorts the wrong file](https://github.com/sixskys/scoped-sort/issues/3)
