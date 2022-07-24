@@ -9,6 +9,7 @@ import {
     genericSortYargsBuilder,
     parseStringArguments,
 } from './parse-string-arguments.js';
+import { EOL } from 'os';
 
 export const commentRegexs = {
     sortStart: /\{ sort-start (?<args>[^\}]*)(?<= )\}/,
@@ -98,6 +99,7 @@ async function handleFile(file: string) {
             currentStartLine = i;
         } else if (commentRegexs.sortEnd.test(line)) {
             if (typeof currentStartLine === 'undefined') {
+                console.log(currentStartLine);
                 return console.log(
                     `${indentation}[Error] Recieved sort-end comment at line: ${i} but didn't receive any sort-start${fileInfo}`
                 );
@@ -131,21 +133,21 @@ async function handleFile(file: string) {
                     `    sort changed from lines ${currentStartLine + 2}-${i}`
                 );
 
-                lines.splice(
-                    currentStartLine + 1,
-                    i - currentStartLine - 1,
-                    ...sortedSection.split('\n')
-                );
+                const deleteCount = i - currentStartLine - 1;
+                const itemsToAdd = sortedSection.split(EOL);
+
+                lines.splice(currentStartLine + 1, deleteCount, ...itemsToAdd);
+                i -= deleteCount - itemsToAdd.length;
             }
 
             currentStartLine = undefined;
         }
-    }
 
-    if (hasOperatedOnFile) {
-        fs.writeFile(file, lines.join('\n'), (err) => {
-            if (err) throw err;
-        });
+        if (hasOperatedOnFile) {
+            fs.writeFile(file, lines.join('\n'), (err) => {
+                if (err) throw err;
+            });
+        }
     }
 }
 

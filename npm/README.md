@@ -1,8 +1,8 @@
 <p align="center"><b>A feature rich sorter for the content inside of a string, usually lists</b></p>
 
-![Example](general-example.png)
+![Example](/assets/previews/general-example.png)
 
-For more examples you can look at [previews.md](../previews.md), or look at the test cases.
+For more examples you can look at [previews.md](/previews.md), or look at the test cases.
 
 ## Usage
 
