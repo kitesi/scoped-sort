@@ -1,9 +1,19 @@
-# 1.0.3 (1/27/21)
+# 1.0.5 (2/6/22)
+
+<!-- prettier-ignore -->
+- try to get img to work
+
+# 1.0.4 (2/6/22)
+
+<!-- prettier-ignore -->
+- update git repo
+
+# 1.0.3 (1/27/22)
 
 <!-- prettier-ignore -->
 - Add general-example.png to files
 
-# 1.0.2 (1/27/21)
+# 1.0.2 (1/27/22)
 
 <!-- prettier-ignore -->
 - Add repo to package.json
