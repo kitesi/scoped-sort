@@ -1,0 +1,47 @@
+@use './colors.scss' as *;
+
+@font-face {
+	font-family: 'Roboto';
+	src: url('/fonts/roboto-regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Roboto';
+	src: url('/fonts/roboto-bold.woff') format('woff');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Ordinary';
+	src: url('/fonts/Ordinary.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	font-family: Roboto, Arial;
+	background-color: $c-black-1;
+	color: white;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+button {
+	font-family: Roboto, Arial;
+}
+
+button:hover {
+	cursor: pointer;
+}
