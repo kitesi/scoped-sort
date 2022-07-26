@@ -48,6 +48,10 @@ sorts case insensitively. If used with `.unique`, duplicates are removed case in
 
 sorts numerically
 
+**sortNaturally** | boolean
+
+sorts naturally
+
 **sortByFloat** | boolean
 
 sorts by floats
