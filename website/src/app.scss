@@ -1,4 +1,5 @@
 @use './colors.scss' as *;
+@use './numerical.scss' as *;
 
 @font-face {
 	font-family: 'Roboto';
@@ -31,11 +32,13 @@ html {
 	font-family: Roboto, Arial;
 	background-color: $c-black-1;
 	color: white;
+	scroll-behavior: smooth;
 }
 
 html,
 body {
 	height: 100%;
+	overflow: hidden;
 }
 
 button {
@@ -44,4 +47,21 @@ button {
 
 button:hover {
 	cursor: pointer;
+}
+
+a {
+	color: $c-blue-1;
+	text-decoration: none;
+}
+
+a:hover {
+	color: $c-blue-1;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+@media screen and (min-width: $size-2) {
+	:root {
+		// font-size: 18px;
+	}
 }

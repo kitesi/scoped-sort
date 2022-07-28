@@ -1,5 +1,5 @@
-<script lang="ts">
-	import Icon from '$lib/Icon.svelte';
+<script>
+	import IconBar from './IconBar.svelte';
 </script>
 
 <header>
@@ -18,8 +18,9 @@
 	<div class="content">
 		<p>
 			A feature rich text sorter based on the unix sort, avaliable through vscode, npm and cli. You
-			can use this on regular lists or markdown lists. This project was not made for programming
-			related things like objects, imports or html, but in certain instances it can still sort them.
+			can use this on regular lists or markdown lists. It operates in a different way than most as
+			it takes scope/indentation into account. This project was not made for programming related
+			things like objects, imports or html, but in certain instances it can still sort them.
 			<br /><br />There are many options, such as:
 		</p>
 
@@ -46,17 +47,11 @@
 			would be because this service provides more options, and an interface in which they can all be
 			used together. Read the <a class="docs" href="/docs">documentation</a> for more.
 			<br /> <br />
-			If there's any issues or questions, you can create a github issue or email me at karizma7@protonmail.com
+			If there's any issues, suggestions or questions, you can create a github issue or email me at sixskys@proton.me
 		</p>
 	</div>
-	<nav class="icons">
-		<ul>
-			<li><a href="/github"><Icon width="1.4rem" height="1.4rem" name="github" /></a></li>
-			<li><a href="/vscode"><Icon width="1.4rem" height="1.4rem" name="edit" /></a></li>
-			<li><a href="/npm"><Icon width="1.4rem" height="1.4rem" name="package" /></a></li>
-			<li><a href="/cli"><Icon width="1.4rem" height="1.4rem" name="terminal" /></a></li>
-		</ul>
-	</nav>
+
+	<IconBar />
 </header>
 
 <style lang="scss">
@@ -70,17 +65,6 @@
 
 	.options li {
 		list-style: outside;
-	}
-
-	.icons ul {
-		display: flex;
-		justify-content: space-between;
-		margin-top: 20px;
-	}
-
-	.icons li {
-		text-decoration: none;
-		list-style-type: none;
 	}
 
 	.secondary-text {
@@ -102,11 +86,11 @@
 	}
 
 	h1 {
-		display: flex;
+		// display: flex;
 		font-family: Ordinary, Roboto, Arial;
 		font-size: 4rem;
-		align-items: center;
-		justify-content: space-between;
+		// align-items: center;
+		// justify-content: space-between;
 		line-height: 3.2rem;
 		font-weight: 200;
 	}
@@ -128,21 +112,6 @@
 	p {
 		font-size: 1.2rem;
 		margin-top: 20px;
-	}
-
-	li > a {
-		color: $primary-accent;
-	}
-
-	p > a {
-		color: $c-blue-1;
-		text-decoration: none;
-	}
-
-	a:hover {
-		color: $c-blue-1;
-		text-decoration: underline;
-		cursor: pointer;
 	}
 
 	@media screen and (min-width: $size-1) {
