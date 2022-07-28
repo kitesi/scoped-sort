@@ -193,12 +193,12 @@
 
 	main {
 		height: 100%;
+		overflow: scroll;
 	}
 
 	main > section {
 		padding: 10px;
 		width: 100%;
-		overflow: scroll;
 	}
 
 	form {
