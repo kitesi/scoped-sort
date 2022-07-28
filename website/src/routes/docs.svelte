@@ -345,4 +345,10 @@ comparing indentations.`,
 			display: flex;
 		}
 	}
+
+	@media screen and (min-width: $size-2) {
+		:root {
+			font-size: 18px;
+		}
+	}
 </style>
