@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { transformToId } from '../transform-to-id';
 	import type { Heading } from '../routes/Heading';
 	export let headings: Heading[];
 
-	const transformToId = (text: string) => text.toLowerCase().split(/\s+/).join('-');
-	let isChecked = false;
+	let isChecked = true;
 
 	function removeChecked() {
 		isChecked = false;
@@ -20,6 +20,12 @@
 	<ul class="first-level">
 		<li>
 			<a href="/">Home</a>
+		</li>
+		<li>
+			<a href="/docs">Documentation</a>
+		</li>
+		<li>
+			<a href="/examples">Examples</a>
 		</li>
 		{#each headings as heading (heading.name)}
 			<li class="first-level">
@@ -55,13 +61,17 @@
 		left: 0;
 		width: 100%;
 		max-width: 10rem;
-		min-width: 250px;
+		min-width: 280px;
 		height: 100%;
 		background-color: darken($c-black-2, 5%);
 		transform: translateX(-100%);
 		transition: 100ms linear;
 		padding: 15px;
 		overflow: auto;
+		z-index: 2;
+		box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+		-webkit-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+		-moz-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
 	}
 
 	ul {
@@ -79,6 +89,7 @@
 	li {
 		list-style: none;
 		padding: 5px;
+		max-width: 80%;
 	}
 
 	li.first-level a {
@@ -140,6 +151,9 @@
 		div {
 			position: static;
 			transform: translateX(0);
+			box-shadow: none;
+			-webkit-box-shadow: none;
+			-moz-box-shadow: none;
 		}
 
 		label {
