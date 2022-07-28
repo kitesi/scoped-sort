@@ -1,14 +1,25 @@
 <!-- credit to docsify (https://docsify.js.org) for a lot of the styling -->
 <script lang="ts">
-	import Prism from 'prismjs';
-
 	import Sidebar from '$lib/Sidebar.svelte';
-	import type { Heading } from './Heading';
+	import Prism from 'prismjs';
+	import { transformToId } from '../transform-to-id';
 	import { onMount } from 'svelte';
+
+	import type { Heading } from './Heading';
+
+	interface DocumentionHeading extends Heading {
+		content?: string;
+		children?: {
+			name: string;
+			content: string;
+			type: string;
+			objectPropertyName: string;
+			cliPropertyName: string;
+		}[];
+	}
 
 	const link = (href: string) => `<a href="#${href}">${href}</a>`;
 	const bold = (text: string) => `<b>${text}</b>`;
-	const transformToId = (text: string) => text.toLowerCase().split(/\s+/).join('-');
 
 	const codeBlock = (codeExample: CodeExample) =>
 		`<pre spellcheck="false"><code class="language-${codeExample.language || 'no'}">${
@@ -32,7 +43,7 @@ import isIsOdd from 'is-is-odd';
 		}
 	];
 
-	const headings: Heading[] = [
+	const headings: DocumentionHeading[] = [
 		{
 			name: 'Introduction',
 			content: `This page will serve as a reference for the website, the npm package, the cli and vscode.
@@ -196,9 +207,7 @@ comparing indentations.`,
 	];
 
 	onMount(() => {
-		// const preCodes = document.querySelectorAll('pre');
 		Prism.highlightAll();
-		// preCodes.forEach((p) => Prism.highlightElement(p));
 	});
 </script>
 
@@ -208,11 +217,7 @@ comparing indentations.`,
 	<section>
 		{#each headings as heading (heading.name)}
 			<h2 id={transformToId(heading.name)}>{heading.name}</h2>
-			{#if heading.content}
-				<p>{@html heading.content}</p>
-			{:else}
-				<p />
-			{/if}
+			<p>{@html heading.content || ''}</p>
 			{#if heading.children}
 				{#each heading.children as subheading}
 					<h3 id={transformToId(subheading.name)}>{subheading.name}</h3>
@@ -286,69 +291,10 @@ comparing indentations.`,
 <style lang="scss">
 	@use '../colors.scss' as *;
 	@use '../numerical.scss' as *;
-
-	main {
-		height: 100%;
-	}
-
-	section {
-		padding: 20px;
-		height: 100%;
-		width: 100%;
-		overflow: auto;
-	}
-
-	h2:not(:first-of-type) {
-		margin-top: 40px;
-	}
-
-	ul {
-		padding-left: 1.5rem;
-		margin: 10px 0;
-		line-height: 1.6rem;
-	}
-
-	li {
-		word-break: keep-all;
-	}
-
-	code,
-	:global(code) {
-		display: inline-block;
-		background-color: $c-black-2;
-		color: lighten($c-red-1, 30%);
-		padding: 3px 5px;
-		margin: 0 2px;
-		white-space: pre-warp;
-		border-radius: 2px;
-		line-height: normal;
-	}
-
-	:global(pre) {
-		background-color: darken($c-black-2, 5%) !important;
-		margin: 20px 0 !important;
-		border-radius: 5px;
-	}
+	@use '../doc-style-page.scss';
 
 	p {
 		margin: 20px 0;
 		line-height: 1.6rem;
-	}
-
-	li,
-	p {
-		max-width: 800px;
-	}
-
-	@media screen and (min-width: $size-1) {
-		main {
-			display: flex;
-		}
-	}
-
-	@media screen and (min-width: $size-2) {
-		:root {
-			font-size: 18px;
-		}
 	}
 </style>
