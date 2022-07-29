@@ -5,7 +5,6 @@ pre[class*='language-'] {
 	color: #ccc;
 	background: 0 0;
 	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-	font-size: 1em;
 	text-align: left;
 	white-space: pre;
 	word-spacing: normal;
@@ -126,7 +125,7 @@ pre[data-line] {
 		 * It's necessary because the element is layered on top of the displayed code.
 		 */
 		-webkit-print-color-adjust: exact;
-		color-adjust: exact;
+		print-color-adjust: exact;
 	}
 }
 
@@ -205,4 +204,10 @@ pre[class*='language-'].line-numbers > code {
 	display: block;
 	padding-right: 0.8em;
 	text-align: right;
+}
+
+/* custom rule for line highlight since they for some reason go past code element's width */
+
+div.line-highlight[aria-hidden='true'] {
+	max-width: 100%;
 }

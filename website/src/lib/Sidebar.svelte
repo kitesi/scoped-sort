@@ -5,8 +5,12 @@
 
 	let isChecked = false;
 
-	function removeChecked() {
+	function removeChecked(ev: Event) {
 		isChecked = false;
+
+		// const target = ev.target as HTMLAnchorElement;
+		// const id = target.href.split('#')[1];
+		// document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 	}
 </script>
 
@@ -27,6 +31,7 @@
 		<li>
 			<a href="/examples">Examples</a>
 		</li>
+		<hr />
 		{#each headings as heading (heading.name)}
 			<li class="first-level">
 				<a on:click={removeChecked} href={'#' + transformToId(heading.name)}>{heading.name}</a>
@@ -71,12 +76,18 @@
 		z-index: 2;
 	}
 
+	hr {
+		border-color: white;
+		margin: 20px 0;
+		width: 50%;
+	}
+
 	ul {
 		margin-left: 10px;
 	}
 
 	li.first-level {
-		font-weight: 800;
+		font-weight: 700;
 	}
 
 	li.second-level {
@@ -86,15 +97,15 @@
 	li {
 		list-style: none;
 		padding: 5px;
-		max-width: 80%;
+		max-width: 90%;
 	}
 
 	li.first-level a {
-		color: $c-green-1;
+		font-weight: 700;
 	}
 
 	li.second-level a {
-		color: white;
+		font-weight: 400;
 	}
 
 	input:checked ~ div {
@@ -144,11 +155,12 @@
 	}
 
 	a {
-		color: white;
+		color: inherit;
 	}
 
 	@media screen and (min-width: $size-1) {
-		div {
+		div,
+		input:checked ~ div {
 			position: static;
 			transform: translateX(0);
 			box-shadow: none;

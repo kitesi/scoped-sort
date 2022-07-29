@@ -98,7 +98,8 @@
 		padding: 20px;
 		background-color: darken($c-black-1, 3%);
 		color: white;
-		overflow: scroll;
+		height: 100%;
+		overflow: auto;
 	}
 
 	h1 {

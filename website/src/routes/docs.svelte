@@ -1,4 +1,3 @@
-<!-- credit to docsify (https://docsify.js.org) for a lot of the styling -->
 <script lang="ts">
 	import Sidebar from '$lib/Sidebar.svelte';
 	import Prism from 'prismjs';
