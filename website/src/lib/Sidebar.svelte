@@ -3,7 +3,7 @@
 	import type { Heading } from '../routes/Heading';
 	export let headings: Heading[];
 
-	let isChecked = true;
+	let isChecked = false;
 
 	function removeChecked() {
 		isChecked = false;
@@ -69,9 +69,6 @@
 		padding: 15px;
 		overflow: auto;
 		z-index: 2;
-		box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		-webkit-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		-moz-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
 	}
 
 	ul {
@@ -102,6 +99,9 @@
 
 	input:checked ~ div {
 		transform: translateX(0);
+		box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+		-webkit-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+		-moz-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
 	}
 
 	span {
