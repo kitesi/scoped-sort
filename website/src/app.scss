@@ -4,14 +4,21 @@
 @font-face {
 	font-family: 'Roboto';
 	src: url('/fonts/roboto-regular.woff') format('woff');
-	font-weight: normal;
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Roboto';
+	src: url('/fonts/roboto-medium.woff') format('woff');
+	font-weight: 700;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Roboto';
 	src: url('/fonts/roboto-bold.woff') format('woff');
-	font-weight: bold;
+	font-weight: 900;
 	font-style: normal;
 }
 
@@ -32,7 +39,6 @@ html {
 	font-family: Roboto, Arial;
 	background-color: $c-black-1;
 	color: white;
-	scroll-behavior: smooth;
 }
 
 html,

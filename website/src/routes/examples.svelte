@@ -93,4 +93,13 @@
 <style lang="scss">
 	@use '../numerical.scss' as *;
 	@use '../doc-style-page.scss';
+
+	@media screen and (min-width: $size-2) {
+		section div {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			// align-items: flex-start;
+			gap: 20px;
+		}
+	}
 </style>

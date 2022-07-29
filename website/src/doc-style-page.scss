@@ -1,6 +1,8 @@
 @use './colors.scss' as *;
 @use './numerical.scss' as *;
 
+// credit to docsify (https://docsify.js.org) for a lot of the styling
+
 main {
 	height: 100%;
 }
@@ -10,6 +12,7 @@ section {
 	height: 100%;
 	width: 100%;
 	overflow: auto;
+	scroll-behavior: smooth;
 }
 
 h2:not(:first-of-type) {
@@ -19,6 +22,7 @@ h2:not(:first-of-type) {
 p {
 	margin: 20px 0;
 	line-height: 1.6rem;
+	font-weight: 400;
 }
 
 ul {
@@ -44,14 +48,31 @@ ul {
 	border-radius: 5px;
 }
 
+li {
+	font-size: 0.9rem;
+}
+
 li,
 p {
 	max-width: 800px;
 }
 
+:global(pre code) {
+	font-size: 0.9rem;
+}
+
 @media screen and (min-width: $size-1) {
 	main {
 		display: flex;
+	}
+
+	li {
+		font-size: 1rem;
+		line-height: 35px;
+	}
+
+	:global(pre code) {
+		font-size: 1.1rem;
 	}
 }
 
