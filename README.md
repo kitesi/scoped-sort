@@ -4,9 +4,9 @@
     <img src="assets/banner.png" alt="banner: scoped sort" />
 </p>
 
-<p align="center"><b>A feature rich text sorter</b></p>
+<p align="center"><b>A fetaure rich text sorter based on the unix sort. Avaliable on vscode, npm, cli and a website.</b></p>
 
-Scoped Sort is a project to help sort text. It differs from tools like the standard unix tool sort, by having a scoped sort and recursive sort.
+Scoped Sort is a project to help sort text. It differs from tools like the standard unix tool sort, by having a scoped and recursive sort.
 
 Here's what I mean:
 
@@ -14,7 +14,7 @@ Here's what I mean:
 
 In that image you can also see how the items underneath editors and languages are also sorted in the expected part.
 
-This repo contains all it's mediums, [the npm package](/npm), [the vscode package](/vscode), and [the cli](/cli).
+This repo contains all it's mediums, [the npm package](/npm), [the vscode package](/vscode), [the website](https://scopedsort.netlify.app/) and [the cli](/cli).
 
 # Contributing / Help
 
