@@ -3,6 +3,7 @@
     "version": "1.0.6",
     "description": "sort the content inside of a string",
     "main": "dist/main.js",
+    "homepage": "https://scopedsort.netlify.app",
     "repository": {
         "type": "git",
         "url": "https://github.com/sixskys/scoped-sort"

@@ -6,6 +6,7 @@
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
     "main": "./dist/extension.js",
+    "homepage": "https://scopedsort.netlify.app",
     "repository": {
         "type": "git",
         "url": "https://github.com/sixskys/scoped-sort"

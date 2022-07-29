@@ -2,7 +2,7 @@
     <img src="assets/banner.png" alt="banner: scoped sort" />
 </p>
 
-<p align="center"><b>A feature rich sorter for Visual Studio Code.</b></p>
+<p align="center"><b>A feature rich text sorter for Visual Studio Code.</b></p>
 
 [![version](https://vsmarketplacebadge.apphb.com/version/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
 [![installs](https://vsmarketplacebadge.apphb.com/installs-short/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
@@ -21,10 +21,8 @@ This is a vscode extension to help sort text & lists in a scoped manner.
 - [Usage](#usage)
 - [Arguments](#arguments)
   - [Examples](#examples)
-  - [Combinations](#combinations)
 - [Configuration](#configuration)
 - [Adding Keybindings](#adding-keybindings)
-- [Future](#future)
 - [Acknowledgements](#acknowledgements)
 - [Contributing / Help](#contributing--help)
 
@@ -112,7 +110,7 @@ You can also include the text `{ sort-ignore-file }` (probably want it at the to
 to ignore a whole file.
 
 The other command, `scoped-sort.addSurroundingSortComments` aids the sort-on-save feature.
-If you select the below text, and execute the command:
+If you select the text below, and execute the command:
 
 ```text
 3
@@ -134,32 +132,15 @@ Although personally I would advise against using sort-on-save, and instead use t
 
 # Arguments
 
-To learn the arguments you should read the npm packages [string-content-sort](https://www.npmjs.com/package/string-content-sort)
+To learn the arguments you should read the [documentation](https://scopedsort.netlify.app/docs)
 
-Instead of using object properties it uses flairs though like [string-content-sort-cli](https://www.npmjs.com/package/string-content-sort).
-
-Here are the correlations:
-
-```
---reverse | -s => .reverse
---recursive | -r => .recursive
---unique | -u => .unique
---case-insensitive | -i => .caseInsensitive
---sort-numerically | -n => .sortNumerically
---sort-by-float | -f => .sortByFloat
---sort-by-length | -l => .sortByLength
---sort-randomly | -z => .sortRandomly
---markdown | -m => .markdown
---regex => .regex
---use-matched-regex | -p => .useMatchedRegex
---section-seperator => .sectionSeperator
-```
+This program uses flairs in the format of a cli program.
 
 ## Examples
 
 Example: `-usr` => get unique values, sort descendingly and recursively.
 
-Example: `/title-/` => sort using the text after the text 'title-' in each section/item.
+Example: `--regex /title-/` => sort using the text after the text 'title-' in each section/item.
 
 Example: `-u /c\w+/ -p` => sort using the matched word that starts with c in each
 section/item and remove duplicates.
@@ -225,7 +206,7 @@ Default: `true`
 
 # Adding Keybindings
 
-If you are planning to add keybindings, you can add `.args` to provide arguments. This will make it so no prompt shows
+If you are planning on adding keybindings, you can use the `scoped-sort.sort` command. You can also use the `.args` property to provide arguments. This will make it so no prompt shows
 
 For example:
 
@@ -237,43 +218,6 @@ For example:
 }
 ```
 
-# Future
-
-Here are some plans for the future, these features might be added in
-the future. Some of these features need a more defined api, or I need to know
-if people actually want them.
-
-<!-- prettier-ignore -->
-- Seperate sections with blank lines
-
-  For example you might have some text like this:
-
-  ```text
-  Theme: Material Dark
-  Link: https://example.com
-
-  Theme: Horizon
-  Link: https://example.com
-
-  Theme: Ayu Dark
-  Link: https://example.com
-
-  Theme: Atom One Dark
-  Link: https://example.com
-  ```
-
-- GUI arguments, doubt
-
-  Uses the method `vscode.window.showQuickPick`
-
-- Confirmation `c`, doubt
-
-  This would open up a webview of the transformations and stats,
-  you can then confirm if you want to go ahead with the transformation.
-
-- Website
-- vim/nvim plugin
-
 # Acknowledgements
 
 <!-- prettier-ignore -->
@@ -281,12 +225,6 @@ if people actually want them.
 - Font in banner is [Ordinary](https://www.dafont.com/ordinary.font)
 - Font in previews is [Cascadia Code](https://github.com/microsoft/cascadia-code)
 
-# Contributing / Help
+# Questions & Contribution
 
-Contributions are very welcome and appreciated.
-
-If you need help with something, found a bug, or want to request a feature,
-feel free to make an issue.
-
-If you want to fix a bug or contribute a feature, first create an issue, and
-then you can work on a pull request.
+If you need help, found bugs or want to contribute create a github issue.

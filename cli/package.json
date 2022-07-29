@@ -2,7 +2,7 @@
     "name": "string-content-sort-cli",
     "version": "1.1.0",
     "description": "a cli for the npm package: string-content-sort",
-    "main": "index.js",
+    "homepage": "https://scopedsort.netlify.app",
     "repository": {
         "type": "git",
         "url": "https://github.com/sixskys/scoped-sort"
