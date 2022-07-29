@@ -24,7 +24,7 @@
 
 	<div class="centent">
 		<p>
-			A feature rich text sorter based on the unix sort, avaliable through vscode, npm and cli. You
+			A feature rich text sorter based on the unix sort. Avaliable through vscode, npm and cli. You
 			can use this on regular lists or markdown lists. It operates in a different way than most as
 			it takes scope/indentation into account. This project was not made for programming related
 			things like objects, imports or html, but in certain instances it can still sort them.

@@ -7,14 +7,15 @@
 
 	function removeChecked(ev: Event) {
 		isChecked = false;
-
-		// const target = ev.target as HTMLAnchorElement;
-		// const id = target.href.split('#')[1];
-		// document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 	}
 </script>
 
-<input type="checkbox" id="menu-toggle" bind:checked={isChecked} />
+<input
+	aria-label={isChecked ? 'Close' : 'Open'}
+	type="checkbox"
+	id="menu-toggle"
+	bind:checked={isChecked}
+/>
 <label for="menu-toggle">
 	<span class="top" />
 	<span class="middle" />

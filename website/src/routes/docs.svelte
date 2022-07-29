@@ -201,7 +201,10 @@ comparing indentations.`,
 				'{ sort-START }'
 			)} would not work. In the sort-start line you can also specify options after the text ${'sort-start'}. Just make sure you have a space after that text, and before the ${inlineCode(
 				'}'
-			)}. It uses the same syntax of the cli program, just make sure to have a space before. `
+			)}. It uses the same syntax of the cli program, just make sure to have a space before. If you are sorting multiple files
+			at once, and want to ignore a particular file, you can include a line with the text ${inlineCode(
+				'{ sort-ignore-file }'
+			)}. It follows the same rules of ${inlineCode('sort-start')} and ${inlineCode('sort-end')}.`
 		}
 	];
 
