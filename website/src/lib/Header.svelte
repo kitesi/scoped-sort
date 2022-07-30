@@ -99,8 +99,6 @@
 		padding: 20px;
 		background-color: darken($c-black-1, 3%);
 		color: white;
-		height: 100%;
-		overflow: auto;
 	}
 
 	h1 {
@@ -143,7 +141,7 @@
 		}
 	}
 
-	@media screen and (min-width: $size-2) and (min-height: 1220px) {
+	@media screen and (min-width: $size-1) and (min-height: 1220px) {
 		nav ul {
 			display: block;
 		}

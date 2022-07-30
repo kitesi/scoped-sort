@@ -193,6 +193,7 @@
 
 	main {
 		height: 100%;
+		overflow: auto;
 	}
 
 	main > section {
