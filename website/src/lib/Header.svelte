@@ -134,6 +134,8 @@
 		header {
 			width: min-content;
 			min-width: 400px;
+			height: 100%;
+			overflow: auto;
 		}
 
 		:root {
