@@ -3,184 +3,191 @@
 const test = require('tape');
 
 const { parseStringArguments } = require('../dist/parse-string-arguments.js');
-
 const { possibleArguments } = require('../../test-utils.js');
+const { sort } = require('string-content-sort');
 
 test('main parse-string-arguments', (t) => {
-    for (const stringArguments of possibleArguments) {
-        t.doesNotThrow(() => parseStringArguments(stringArguments));
+    /** @param {string} args */
+    function helper(args) {
+        const options = parseStringArguments(args);
+        sort('', options);
+
+        const sectionSeperator = options.sectionSeperator;
+        const regex = options.regexFilter;
+        options.reportErrors = undefined;
+
+        const cleanOptions = JSON.parse(JSON.stringify(options));
+
+        if (regex) {
+            cleanOptions.regexFilter = regex;
+        }
+
+        if (sectionSeperator) {
+            cleanOptions.sectionSeperator = sectionSeperator;
+        }
+
+        return cleanOptions;
     }
 
-    t.deepEquals(parseStringArguments('-s'), {
+    for (const stringArguments of possibleArguments) {
+        t.doesNotThrow(() => helper(stringArguments));
+    }
+
+    t.deepEquals(helper('-s'), {
         reverse: true,
     });
 
-    t.deepEquals(parseStringArguments('--reverse'), {
+    t.deepEquals(helper('--reverse'), {
         reverse: true,
     });
 
-    t.deepEquals(parseStringArguments('-r'), {
+    t.deepEquals(helper('-r'), {
         recursive: true,
     });
 
-    t.deepEquals(parseStringArguments('--recursive'), {
+    t.deepEquals(helper('--recursive'), {
         recursive: true,
     });
 
-    t.deepEquals(parseStringArguments('-n'), {
+    t.deepEquals(helper('-n'), {
         sortNumerically: true,
     });
 
-    t.deepEquals(parseStringArguments('--sort-numerically'), {
+    t.deepEquals(helper('--sort-numerically'), {
         sortNumerically: true,
     });
 
-    t.deepEquals(parseStringArguments('-i'), {
+    t.deepEquals(helper('-i'), {
         caseInsensitive: true,
     });
 
-    t.deepEquals(parseStringArguments('--case-insensitive'), {
+    t.deepEquals(helper('--case-insensitive'), {
         caseInsensitive: true,
     });
 
-    t.deepEquals(parseStringArguments('-m'), {
+    t.deepEquals(helper('-m'), {
         markdown: true,
     });
 
-    t.deepEquals(parseStringArguments('--markdown'), {
+    t.deepEquals(helper('--markdown'), {
         markdown: true,
     });
 
-    t.deepEquals(parseStringArguments('-l'), {
+    t.deepEquals(helper('-l'), {
         sortByLength: true,
     });
 
-    t.deepEquals(parseStringArguments('--sort-by-length'), {
+    t.deepEquals(helper('--sort-by-length'), {
         sortByLength: true,
     });
 
-    t.deepEquals(parseStringArguments('-u'), {
+    t.deepEquals(helper('-u'), {
         unique: true,
     });
 
-    t.deepEquals(parseStringArguments('--unique'), {
+    t.deepEquals(helper('--unique'), {
         unique: true,
     });
 
-    t.deepEquals(parseStringArguments('-f'), {
+    t.deepEquals(helper('-f'), {
         sortByFloat: true,
     });
 
-    t.deepEquals(parseStringArguments('--sort-by-float'), {
+    t.deepEquals(helper('--sort-by-float'), {
         sortByFloat: true,
     });
 
-    t.deepEquals(parseStringArguments('-z'), {
+    t.deepEquals(helper('-z'), {
         sortRandomly: true,
     });
 
-    t.deepEquals(parseStringArguments('--sort-randomly'), {
+    t.deepEquals(helper('--sort-randomly'), {
         sortRandomly: true,
     });
 
-    t.deepEquals(parseStringArguments('-su'), {
+    t.deepEquals(helper('-su'), {
         reverse: true,
         unique: true,
     });
 
-    t.deepEquals(parseStringArguments('-nu'), {
+    t.deepEquals(helper('-nu'), {
         sortNumerically: true,
         unique: true,
     });
 
-    t.deepEquals(parseStringArguments('-s --regex /\\w/'), {
+    t.deepEquals(helper('-s --regex /\\w/'), {
         reverse: true,
         regexFilter: /\w/,
     });
 
-    t.deepEquals(parseStringArguments('-sp --regex /\\w/'), {
+    t.deepEquals(helper('-sp --regex /\\w/'), {
         reverse: true,
         regexFilter: /\w/,
         useMatchedRegex: true,
     });
 
-    t.deepEquals(parseStringArguments('-s --regex /\\w/ -p'), {
+    t.deepEquals(helper('-s --regex /\\w/ -p'), {
         reverse: true,
         regexFilter: /\w/,
         useMatchedRegex: true,
     });
 
-    t.deepEquals(parseStringArguments('--sectionSeperator /^Title/'), {
+    t.deepEquals(helper('--sectionSeperator /^Title/'), {
         sectionSeperator: /^Title/,
     });
 
-    t.deepEquals(parseStringArguments('--section-seperator "/^  <div/"'), {
+    t.deepEquals(helper('--section-seperator "/^  <div/"'), {
         sectionSeperator: /^  <div/,
     });
 
-    t.doesNotThrow(() => parseStringArguments(''));
+    t.doesNotThrow(() => helper(''));
 
     t.doesNotThrow(
-        () => parseStringArguments('-p'),
+        () => helper('-p'),
         'does not throw error on m with no regex'
     );
 
-    t.throws(
-        () => parseStringArguments('alskjdLKASJDLK'),
-        'throws error on random mess'
-    );
+    t.throws(() => helper('alskjdLKASJDLK'), 'throws error on random mess');
 
     t.throws(
-        () => parseStringArguments('{'),
+        () => helper('{'),
         'throws error on random non alphanumerical character'
     );
 
-    t.throws(
-        () => parseStringArguments('/[.++/'),
-        'throws error on invalid regex'
-    );
+    t.throws(() => helper('/[.++/'), 'throws error on invalid regex');
+
+    t.throws(() => helper('/\\d+/'), 'throws on positional regex');
+
+    t.throws(() => helper('-fl'), 'throws on fl');
+    t.throws(() => helper('-fn'), 'throws on fn');
+    t.throws(() => helper('-fz'), 'throws on fz');
+    t.throws(() => helper('-fe'), 'throws on fe');
+
+    t.throws(() => helper('-ln'), 'throws on ln');
+    t.throws(() => helper('-lz'), 'throws on lz');
+    t.throws(() => helper('-le'), 'throws on le');
+
+    t.throws(() => helper('-nz'), 'throws on nz');
+    t.throws(() => helper('-ne'), 'throws on ne');
+
+    t.throws(() => helper('-ze'), 'throws on ze');
+
+    t.throws(() => helper('-ie'), 'throws on ie');
+    t.throws(() => helper('-in'), 'throws on in');
+    t.throws(() => helper('-if'), 'throws on if');
+    t.throws(() => helper('-il'), 'throws on il');
+    t.throws(() => helper('-iz'), 'throws on iz');
+
+    t.throws(() => helper('-z --regex /me/'), 'throws on random + pattern');
+    t.throws(() => helper('-e --regex /me/'), 'throws on natural + pattern');
 
     t.throws(
-        () => parseStringArguments('/\\d+/'),
-        'throws on positional regex'
-    );
-
-    t.throws(() => parseStringArguments('-fl'), 'throws on fl');
-    t.throws(() => parseStringArguments('-fn'), 'throws on fn');
-    t.throws(() => parseStringArguments('-fz'), 'throws on fz');
-    t.throws(() => parseStringArguments('-fe'), 'throws on fe');
-
-    t.throws(() => parseStringArguments('-ln'), 'throws on ln');
-    t.throws(() => parseStringArguments('-lz'), 'throws on lz');
-    t.throws(() => parseStringArguments('-le'), 'throws on le');
-
-    t.throws(() => parseStringArguments('-nz'), 'throws on nz');
-    t.throws(() => parseStringArguments('-ne'), 'throws on ne');
-
-    t.throws(() => parseStringArguments('-ze'), 'throws on ze');
-
-    t.throws(() => parseStringArguments('-ie'), 'throws on ie');
-    t.throws(() => parseStringArguments('-in'), 'throws on in');
-    t.throws(() => parseStringArguments('-if'), 'throws on if');
-    t.throws(() => parseStringArguments('-il'), 'throws on il');
-    t.throws(() => parseStringArguments('-iz'), 'throws on iz');
-
-    t.throws(
-        () => parseStringArguments('-z --regex /me/'),
-        'throws on random + pattern'
-    );
-    t.throws(
-        () => parseStringArguments('-e --regex /me/'),
-        'throws on natural + pattern'
-    );
-
-    t.throws(
-        () => parseStringArguments('-in --regex /\\d+/'),
+        () => helper('-in --regex /\\d+/'),
         'still throws on in when pattern is specified'
     );
 
     t.doesNotThrow(
-        () => parseStringArguments('-inu'),
+        () => helper('-inu'),
         'does not throw on in when u is specified'
     );
 

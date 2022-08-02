@@ -8,23 +8,29 @@ import {
     languageComments,
     defaultLanguageComment,
 } from './language-comments.js';
+interface DefaultArgs {
+    prompt?: string;
+    'no-prompt'?: string;
+    addSurroundingSortComments?: string;
+}
+
+function parseOptionsFromArgs(args: string) {
+    try {
+        const options = parseStringArguments(args);
+        sort('', options);
+
+        return options;
+    } catch (err) {
+        return err as Error;
+    }
+}
 
 function sortOverRangeOrSelection(
     editor: vscode.TextEditor,
     location: vscode.Range | vscode.Selection,
-    args: string,
+    options: Options,
     isCommand: boolean
 ) {
-    let options: Options = {};
-
-    if (args) {
-        try {
-            options = parseStringArguments(args);
-        } catch (err) {
-            return vscode.window.showErrorMessage((err as Error)!.message);
-        }
-    }
-
     return editor.edit((edit) => {
         let replacementText = sort(editor.document.getText(location), options);
 
@@ -43,12 +49,6 @@ function sortOverRangeOrSelection(
 
         edit.replace(location, replacementText);
     });
-}
-
-interface DefaultArgs {
-    prompt?: string;
-    'no-prompt'?: string;
-    addSurroundingSortComments?: string;
 }
 
 async function sortCommand(
@@ -97,9 +97,16 @@ async function sortCommand(
         sortArgs = promptResponse;
     }
 
-    // could use nested if statement in the prev if statement, but I like this better
     if (!userExplicitArgs && !shouldPrompt && defaultArgs['no-prompt']) {
         sortArgs = defaultArgs['no-prompt'];
+    }
+
+    const options = parseOptionsFromArgs(sortArgs);
+
+    if (options instanceof Error) {
+        return vscode.window.showErrorMessage(
+            options.message.replace(/\n/g, '. ')
+        );
     }
 
     const document = editor.document;
@@ -115,13 +122,13 @@ async function sortCommand(
         return sortOverRangeOrSelection(
             editor,
             documentWholeRange,
-            sortArgs,
+            options,
             true
         );
     }
 
     for (const selection of editor.selections) {
-        return sortOverRangeOrSelection(editor, selection, sortArgs, true);
+        return sortOverRangeOrSelection(editor, selection, options, true);
     }
 }
 
@@ -188,11 +195,16 @@ function onWillSaveTextDocument(ev: vscode.TextDocumentWillSaveEvent) {
     const editor = vscode.window.visibleTextEditors.find(
         (editor) => editor.document === ev.document
     );
-    // const editor = vscode.window.activeTextEditor;
 
     for (const { range, args } of ranges) {
         if (editor) {
-            sortOverRangeOrSelection(editor, range, args, false);
+            const options = parseOptionsFromArgs(args);
+
+            if (options instanceof Error) {
+                vscode.window.showErrorMessage(options.message);
+            } else {
+                sortOverRangeOrSelection(editor, range, options, false);
+            }
         } else {
             console.log("Didn't match any text editor?");
         }
