@@ -19,10 +19,61 @@ export interface Options {
     useMatchedRegex?: boolean;
     regexFilter?: RegExp;
     sectionSeperator?: RegExp;
+    reportErrors?: boolean;
 }
 
 function calculateSpaceLength(str: string) {
     return str.replace('\t', '    ').length;
+}
+
+function validateOptions(options: Options) {
+    const errors: string[] = [];
+
+    if (options.regexFilter) {
+        if (options.sortRandomly) {
+            errors.push("You can't sort by random and use a regex pattern");
+        }
+
+        if (options.sortNaturally) {
+            errors.push("You can't sort naturally and use a regex pattern");
+        }
+    }
+
+    const sorterDescriptions: {
+        [Key in keyof Options]: string;
+    } = {
+        sortNaturally: 'naturally',
+        sortByFloat: 'by float',
+        sortByLength: 'by length',
+        sortNumerically: 'numerically',
+        sortRandomly: 'randomly',
+    };
+
+    const possibleSorters = Object.keys(
+        sorterDescriptions
+    ) as (keyof Options)[];
+    const usedSorters: (keyof Options)[] = [];
+
+    for (const sorter of possibleSorters) {
+        if (options[sorter]) {
+            usedSorters.push(sorter);
+        }
+    }
+
+    if (usedSorters.length > 1) {
+        errors.push(
+            "You can't use more than one sorter: " +
+                usedSorters.map((s) => sorterDescriptions[s]).join(', ')
+        );
+    }
+
+    if (options.caseInsensitive && !options.unique) {
+        errors.push(
+            "You can't use sort case-insensitive and a sorter without the unique option"
+        );
+    }
+
+    return errors;
 }
 
 function generateSortByRegex(regex: RegExp, options: Options) {
@@ -188,6 +239,14 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
 }
 
 export function sort(text: string, options: Options = {}) {
+    if (options.reportErrors) {
+        const errors = validateOptions(options);
+
+        if (errors.length) {
+            throw new Error(errors.join('\n'));
+        }
+    }
+
     const lines = text.trimEnd().split(/\r?\n/);
     let sections = [];
     let currentSection: string[] = [];
