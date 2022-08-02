@@ -1,3 +1,9 @@
+# 2.3.0 (8/1/22)
+
+<!-- prettier-ignore -->
+- mainly metadata and internal changes, nothing new
+- all the errors are now sent in one message. So if you have multiple errors you don't keep changing and getting new errors.
+
 # 2.2.1 (2/6/22)
 
 <!-- prettier-ignore -->
