@@ -1,3 +1,9 @@
+# 1.0.7 (8/1/22)
+
+<!-- prettier-ignore -->
+- changes in meta data 
+- add `reportErrors` option
+
 # 1.0.5 (2/6/22)
 
 <!-- prettier-ignore -->
