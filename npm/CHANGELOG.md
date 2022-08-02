@@ -1,3 +1,9 @@
+# 1.0.8 (8/1/22)
+
+<!-- prettier-ignore -->
+- fix error where `case-insensitive` and no `unique` resulted in error, when it
+was only supposed to result in error when a sorter is also specified
+
 # 1.0.7 (8/1/22)
 
 <!-- prettier-ignore -->
