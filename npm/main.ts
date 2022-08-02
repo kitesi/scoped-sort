@@ -67,7 +67,7 @@ function validateOptions(options: Options) {
         );
     }
 
-    if (options.caseInsensitive && !options.unique) {
+    if (usedSorters.length >= 1 && options.caseInsensitive && !options.unique) {
         errors.push(
             "You can't use sort case-insensitive and a sorter without the unique option"
         );
