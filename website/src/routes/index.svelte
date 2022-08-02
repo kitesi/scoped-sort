@@ -124,8 +124,16 @@
 				<h2>Universal Modifiers</h2>
 				<div class="universal-modifiers">
 					{#each universalModifiers as modifier (modifier.name)}
-						<div>
+						<div
+							class:not-valid-use={modifier.name === 'caseInsensitive' &&
+								sorterBinding !== '' &&
+								!universalModifiersBindings.unique}
+							class="tooltip-container"
+						>
 							<label for={modifier.name}>{modifier.label}</label>
+							<span class="tooltip"
+								>Can't use case-insensitive when a sorter is selected but unique is not</span
+							>
 							<input
 								bind:checked={universalModifiersBindings[modifier.name]}
 								type="checkbox"
@@ -155,8 +163,15 @@
 			<div>
 				<h2>Other</h2>
 				<div class="other">
-					<div>
+					<div
+						class:not-valid-use={sorterBinding === 'sortNaturally' ||
+							sorterBinding === 'sortRandomly'}
+						class="tooltip-container"
+					>
 						<label for="regex">Regex:</label>
+						<span class="tooltip"
+							>Regex is unavaliable when using sort-naturally or sort-randomly</span
+						>
 						<input type="text" bind:value={regex} name="regex" id="regex" />
 					</div>
 					<div>
@@ -190,6 +205,38 @@
 <style lang="scss">
 	@use '../colors.scss' as *;
 	@use '../numerical.scss' as *;
+
+	.not-valid-use {
+		color: lighten($c-red-1, 20%);
+	}
+
+	.not-valid-use label {
+		border-bottom-width: 1px;
+		border-bottom-style: dotted;
+	}
+
+	.tooltip-container {
+		position: relative;
+	}
+
+	.tooltip-container label:hover + .tooltip {
+		opacity: 1;
+	}
+
+	.tooltip {
+		position: absolute;
+		top: -40px;
+		background-color: black;
+		color: white;
+		padding: 5px;
+		border-radius: 5px;
+		// width: 220px;
+		max-width: 220px;
+		font-size: 0.8rem;
+		text-align: center;
+		opacity: 0;
+		transition: 200ms opacity ease;
+	}
 
 	main {
 		height: 100%;

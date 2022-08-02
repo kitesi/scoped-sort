@@ -51,7 +51,8 @@ of documentation, but it should still be easy to follow.`
 		},
 		{
 			name: 'Universal Modifiers',
-			content: 'These options work on everything.',
+			content:
+				'These options work on everything. Except case-insensitive which does not work when a sorter is specified but unique is not on.',
 			children: [
 				{
 					name: 'Case Insensitive',
