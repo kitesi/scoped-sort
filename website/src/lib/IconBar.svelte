@@ -4,10 +4,21 @@
 
 <div>
 	<ul>
-		<li><a href="/github"><Icon width="1.4rem" height="1.4rem" name="github" /></a></li>
-		<li><a href="/vscode"><Icon width="1.4rem" height="1.4rem" name="edit" /></a></li>
-		<li><a href="/npm"><Icon width="1.4rem" height="1.4rem" name="package" /></a></li>
-		<li><a href="/cli"><Icon width="1.4rem" height="1.4rem" name="terminal" /></a></li>
+		<li>
+			<a href="/github" title="github repo"><Icon width="1.4rem" height="1.4rem" name="github" /></a
+			>
+		</li>
+		<li>
+			<a href="/vscode" title="vscode package"
+				><Icon width="1.4rem" height="1.4rem" name="edit" /></a
+			>
+		</li>
+		<li>
+			<a href="/npm" title="npm package"><Icon width="1.4rem" height="1.4rem" name="package" /></a>
+		</li>
+		<li>
+			<a href="/cli" title="cli on npm"><Icon width="1.4rem" height="1.4rem" name="terminal" /></a>
+		</li>
 	</ul>
 </div>
 

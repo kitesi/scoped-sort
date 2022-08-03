@@ -115,6 +115,7 @@
 		margin: 10px 0;
 		border-color: white;
 		transform: translateX(-30px);
+		max-width: 80%;
 	}
 
 	h1 div {
@@ -130,6 +131,18 @@
 		margin-top: 20px;
 	}
 
+	@media screen and (min-width: $size-1) and (min-height: 1220px) {
+		nav ul {
+			display: block;
+		}
+	}
+
+	@media screen and (min-width: $size-2) and (max-height: 1480px) {
+		nav ul {
+			display: flex;
+		}
+	}
+
 	@media screen and (min-width: $size-2) {
 		header {
 			width: min-content;
@@ -142,10 +155,9 @@
 			font-size: 17px;
 		}
 	}
-
-	@media screen and (min-width: $size-1) and (min-height: 1220px) {
-		nav ul {
-			display: block;
+	@media screen and (min-width: $size-3) {
+		header {
+			min-width: 450px;
 		}
 	}
 </style>
