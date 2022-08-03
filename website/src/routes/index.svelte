@@ -231,7 +231,7 @@
 		padding: 5px;
 		border-radius: 5px;
 		// width: 220px;
-		max-width: 220px;
+		max-width: 260px;
 		font-size: 0.8rem;
 		text-align: center;
 		opacity: 0;
@@ -306,6 +306,11 @@
 			display: flex;
 		}
 
+		form {
+			align-content: center;
+			height: 100%;
+		}
+
 		form > div > div {
 			max-width: unset;
 		}
@@ -314,10 +319,6 @@
 	@media screen and (min-width: $size-3) {
 		form {
 			grid-template-columns: 500px 600px;
-			// grid-template-areas:
-			// 	'modifiers text'
-			// 	'sorters text'
-			// 	'other text';
 			grid-template-areas:
 				'modifiers other'
 				'sorters text';
@@ -334,6 +335,12 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
+		}
+	}
+
+	@media screen and (min-width: $size-4) {
+		form {
+			gap: 50px;
 		}
 	}
 </style>
