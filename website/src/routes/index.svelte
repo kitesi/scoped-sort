@@ -1,3 +1,7 @@
+<script context="module">
+	export const prerender = true;
+</script>
+
 <script lang="ts">
 	import Header from '$lib/Header.svelte';
 	import Button from '$lib/Button.svelte';

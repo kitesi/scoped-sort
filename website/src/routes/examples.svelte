@@ -1,3 +1,7 @@
+<script context="module">
+	export const prerender = true;
+</script>
+
 <!-- 
     preview is the programmer version of the entry 
     example will be the user version which has the
