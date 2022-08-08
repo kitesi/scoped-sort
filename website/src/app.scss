@@ -59,12 +59,12 @@ button:hover {
 }
 
 a {
-	color: $c-blue-1;
+	color: #ccc;
 	text-decoration: none;
 }
 
 a:hover {
-	color: $c-blue-1;
+	// color: $c-blue-1;
 	text-decoration: underline;
 	cursor: pointer;
 }

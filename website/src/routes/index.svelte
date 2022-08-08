@@ -234,7 +234,6 @@
 		color: white;
 		padding: 5px;
 		border-radius: 5px;
-		// width: 220px;
 		max-width: 260px;
 		font-size: 0.8rem;
 		text-align: center;
@@ -243,6 +242,8 @@
 	}
 
 	main {
+		display: flex;
+		flex-direction: column;
 		height: 100%;
 		overflow: auto;
 	}
@@ -251,6 +252,7 @@
 		padding: 10px;
 		width: 100%;
 		overflow: auto;
+		height: 100%;
 	}
 
 	form {
@@ -306,32 +308,13 @@
 	}
 
 	@media screen and (min-width: $size-2) {
-		main {
-			display: flex;
-		}
-
 		form {
-			align-content: center;
-			height: 100%;
-		}
-
-		form > div > div {
-			max-width: unset;
-		}
-	}
-
-	@media screen and (min-width: $size-3) {
-		form {
-			grid-template-columns: 500px 600px;
-			grid-template-areas:
-				'modifiers other'
-				'sorters text';
-			gap: 10px;
-		}
-
-		form > section {
-			grid-template-rows: 1/2;
-			grid-area: text;
+			width: 80%;
+			max-width: 1200px;
+			// gap: 5vw;
+			// justify-content: center;
+			// height: 100%;
+			overflow: auto;
 		}
 
 		main > section {
@@ -339,6 +322,12 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
+			overflow: auto;
+		}
+
+		form > div > div,
+		textarea {
+			max-width: 600px;
 		}
 	}
 

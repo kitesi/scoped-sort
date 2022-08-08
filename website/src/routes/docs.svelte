@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import Sidebar from '$lib/Sidebar.svelte';
+	import Sidebar from '$lib/DocStyleSidebar.svelte';
 	import Prism from 'prismjs';
 	import { transformToId } from '../transform-to-id';
 	import { onMount } from 'svelte';
@@ -49,9 +49,21 @@ import isIsOdd from 'is-is-odd';
 	const headings: DocumentionHeading[] = [
 		{
 			name: 'Introduction',
-			content: `This page will serve as a reference for the website, the npm package, the cli and vscode.
+			content: `This is a feature rich sorter based on the unix sort. It is avaliable on vscode, npm, cli, and here. 
+You can use this on regular lists or markdown lists. It operates in a different way
+than most as it takes scope/indentation into account. This project was not made for
+programming related things like objects, imports or html, but in certain instances it can
+still sort them.
+<br /> <br />
+There are many sites and applications already have most of these, so why use this? 1. this
+service provides more options, and 2. it provides an interface in which they can all be used
+together. 
+<br /> <br />
+This page will serve as a reference for the website, the npm package, the cli and vscode.
 Since three of those are programming related, it will lean towards more programming type
-of documentation, but it should still be easy to follow.`
+of documentation, but it should still be easy to follow.
+
+If there's any issues, suggestions or questions, you can create a github issue or email me at sixskys@proton.me`
 		},
 		{
 			name: 'Universal Modifiers',

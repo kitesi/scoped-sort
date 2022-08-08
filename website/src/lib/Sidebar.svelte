@@ -1,56 +1,16 @@
 <script lang="ts">
-	import { transformToId } from '../transform-to-id';
-	import type { Heading } from '../routes/Heading';
-	export let headings: Heading[];
-
 	let isChecked = false;
-
-	function removeChecked(ev: Event) {
-		isChecked = false;
-	}
+	export let attach = false;
 </script>
 
-<input
-	aria-label={isChecked ? 'Close' : 'Open'}
-	type="checkbox"
-	id="menu-toggle"
-	bind:checked={isChecked}
-/>
-<label for="menu-toggle">
+<input class:attach aria-label={isChecked ? 'Close' : 'Open'} type="checkbox" id="menu-toggle" />
+<label class:attach for="menu-toggle">
 	<span class="top" />
 	<span class="middle" />
 	<span class="bottom" />
 </label>
-<div>
-	<ul class="first-level">
-		<li>
-			<a href="/">Home</a>
-		</li>
-		<li>
-			<a href="/docs">Documentation</a>
-		</li>
-		<li>
-			<a href="/examples">Examples</a>
-		</li>
-		<hr />
-		{#each headings as heading (heading.name)}
-			<li class="first-level">
-				<a on:click={removeChecked} href={'#' + transformToId(heading.name)}>{heading.name}</a>
-				{#if heading.children}
-					<ul class="second-lebel">
-						{#each heading.children as subheading}
-							<li class="second-level">
-								<a on:click={removeChecked} href={'#' + transformToId(subheading.name)}
-									>{subheading.name}</a
-								>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-			</li>
-		{/each}
-	</ul>
-</div>
+
+<div class:attach><slot /></div>
 
 <style lang="scss">
 	@use '../colors.scss' as *;
@@ -60,60 +20,22 @@
 		opacity: 0;
 		position: absolute;
 	}
-
 	div {
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 100%;
-		max-width: 10rem;
-		min-width: 280px;
 		height: 100%;
-		background-color: darken($c-black-2, 5%);
 		transform: translateX(-100%);
-		transition: 100ms linear;
-		padding: 15px;
-		overflow: auto;
+		transition: 100ms ease-in;
 		z-index: 2;
 	}
 
-	hr {
-		border-color: white;
-		margin: 20px 0;
-		width: 50%;
-	}
-
-	ul {
-		margin-left: 10px;
-	}
-
-	li.first-level {
-		font-weight: 700;
-	}
-
-	li.second-level {
-		font-weight: 100;
-	}
-
-	li {
-		list-style: none;
-		padding: 5px;
-		max-width: 90%;
-	}
-
-	li.first-level a {
-		font-weight: 700;
-	}
-
-	li.second-level a {
-		font-weight: 400;
+	div:not(.attach) {
+		width: 100%;
 	}
 
 	input:checked ~ div {
 		transform: translateX(0);
-		box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		-webkit-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		-moz-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
 	}
 
 	span {
@@ -138,9 +60,8 @@
 		flex-direction: column;
 		justify-content: space-between;
 		height: 16px;
-		z-index: 1;
+		z-index: 3;
 		cursor: pointer;
-		// padding: 20px;
 	}
 
 	input:checked ~ label .middle {
@@ -154,14 +75,8 @@
 	input:checked ~ label .bottom {
 		transform: rotate(135deg) translate(-10px, 10px);
 	}
-
-	a {
-		color: inherit;
-	}
-
 	@media screen and (min-width: $size-1) {
-		div,
-		input:checked ~ div {
+		div.attach {
 			position: static;
 			transform: translateX(0);
 			box-shadow: none;
@@ -169,7 +84,7 @@
 			-moz-box-shadow: none;
 		}
 
-		label {
+		label.attach {
 			opacity: 0;
 		}
 	}
