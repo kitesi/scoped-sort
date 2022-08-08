@@ -8,7 +8,7 @@
     formal name and description
 -->
 <script lang="ts">
-	import Sidebar from '$lib/Sidebar.svelte';
+	import Sidebar from '$lib/DocStyleSidebar.svelte';
 	import PrismJS from 'prismjs';
 	import 'prismjs/plugins/line-highlight/prism-line-highlight.js';
 	import { transformToId } from '../transform-to-id';
