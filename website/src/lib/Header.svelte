@@ -29,29 +29,12 @@
 			than most as it takes scope/indentation into account. This project was not made for
 			programming related things like objects, imports or html, but in certain instances it can
 			still sort them.
-			<br /><br />There are many options, such as:
 		</p>
 
-		<ul class="options">
-			<li>Case insensitive sort</li>
-			<li class="web-special">Removing duplicates</li>
-			<li>Reverse sort</li>
-			<li class="both-special">Recursive sort</li>
-			<li>Markdown list sort</li>
-			<hr />
-			<li>Natural sort</li>
-			<li>Numerical sort</li>
-			<li>Float sort</li>
-			<li>Line length sort</li>
-			<li>Random sort</li>
-			<li>Sorting by regex</li>
-		</ul>
-
 		<p>
-			The first section consists of universal modifiers and the second consists of actual sorters.
-			Many sites and applications already have most of these, so why use this? The main reasons
-			would be because this service provides more options, and an interface in which they can all be
-			used together. Read the <a class="docs" href="/docs">documentation</a> for more.
+			There are many sites and applications already have most of these, so why use this? 1. this
+			service provides more options, and 2. it provides an interface in which they can all be used
+			together. Read the <a class="docs" href="/docs">documentation</a> for more.
 			<br /> <br />
 			If there's any issues, suggestions or questions, you can create a github issue or email me at sixskys@proton.me
 		</p>
@@ -63,16 +46,6 @@
 <style lang="scss">
 	@use '../colors.scss' as *;
 	@use '../numerical.scss' as *;
-
-	.options {
-		margin-left: 30px;
-		margin-top: 10px;
-	}
-
-	.options li {
-		list-style: outside;
-	}
-
 	.secondary-text {
 		color: $primary-accent;
 	}
