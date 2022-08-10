@@ -9,7 +9,9 @@ import * as path from 'path';
 
 import {
     genericSortYargsBuilder,
+    getCleanOptions,
     parseStringArguments,
+    YargsCliArgumentsReturn,
 } from './parse-string-arguments.js';
 import { EOL } from 'os';
 
@@ -18,14 +20,22 @@ export const commentRegexs = {
     sortEnd: /\{ sort-end \}/,
 };
 
-interface DefaultCommandArgs extends Options {
-    files?: string[];
-    modify?: boolean;
-    useSortComments?: boolean;
-}
-
-async function defaultCommandHandler(args: DefaultCommandArgs) {
+async function defaultCommandHandler(args: YargsCliArgumentsReturn) {
     const { files } = args;
+
+    const options = getCleanOptions(args);
+    options.reportErrors = true;
+
+    // need another try/catch?
+    try {
+        // quick test to see if options are valid
+        sort('', options);
+    } catch (err: any) {
+        console.log('Error: ' + err?.message);
+        return;
+    }
+
+    options.reportErrors = false;
 
     if (files && files.length !== 0) {
         const content: Promise<string>[] = [];
@@ -61,7 +71,7 @@ async function defaultCommandHandler(args: DefaultCommandArgs) {
                         );
                     }
                 } else {
-                    const changedContent = sort(content, args);
+                    const changedContent = sort(content, options);
 
                     if (content !== changedContent) {
                         writeFile(file, changedContent, 'utf-8');
@@ -84,7 +94,7 @@ async function defaultCommandHandler(args: DefaultCommandArgs) {
                 console.log(changedContent.lines.join('\n'));
             }
         } else {
-            console.log(sort(allContent, args));
+            console.log(sort(allContent, options));
         }
 
         return;
@@ -97,7 +107,7 @@ async function defaultCommandHandler(args: DefaultCommandArgs) {
     });
 
     process.stdin.on('close', () => {
-        console.log(sort(stdinData, args));
+        console.log(sort(stdinData, options));
     });
 }
 
@@ -166,6 +176,7 @@ function sortComments(content: string, file: string, logInfo: boolean) {
                 }
             }
 
+            // not gonna throw errors for this one, maybe later
             const sortedSection = sort(section, options);
 
             if (sortedSection !== section) {
@@ -204,7 +215,7 @@ try {
     yargs(process.argv.slice(2))
         .command({
             command: '$0 [files..]',
-            description:
+            describe:
                 'feature rich text sorter, takes in from stdin or from files/directories.\nDirectories will be looped through.\n\nUse https://scopedsort.netlify.app/ for full documentation.',
             builder: (y: any) =>
                 genericSortYargsBuilder(y)
