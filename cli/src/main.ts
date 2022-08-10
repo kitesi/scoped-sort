@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+
 import yargs from 'yargs';
 import { Options, sort } from 'string-content-sort';
 
-import * as fs from 'fs';
-import { join } from 'path';
+import { statSync, existsSync } from 'fs';
+import { readdir, readFile, writeFile } from 'fs/promises';
+import * as path from 'path';
 
 import {
     genericSortYargsBuilder,
@@ -17,13 +19,74 @@ export const commentRegexs = {
 };
 
 interface DefaultCommandArgs extends Options {
-    file?: string;
+    files?: string[];
+    modify?: boolean;
+    useSortComments?: boolean;
 }
 
-function defaultCommandHandler(args: DefaultCommandArgs) {
-    // yargs has this bug (i think it's a bug) where when you use the modify command,
-    // the default command is also called
-    if (process.argv[2] === 'modify') {
+async function defaultCommandHandler(args: DefaultCommandArgs) {
+    const { files } = args;
+
+    if (files && files.length !== 0) {
+        const content: Promise<string>[] = [];
+
+        for (const file of files) {
+            if (!existsSync(file)) {
+                console.log(`Error: File ${file} does not exist`);
+                continue;
+            }
+
+            if (statSync(file).isDirectory()) {
+                pushContentFromDirectory(file, content);
+            } else {
+                content.push(readFile(file, 'utf-8'));
+            }
+        }
+
+        const resolvedContent = await Promise.all(content);
+
+        if (args.modify) {
+            for (let i = 0; i < resolvedContent.length; i++) {
+                const content = resolvedContent[i];
+                const file = files[i];
+
+                if (args.useSortComments) {
+                    const changedContent = sortComments(content, file, true);
+
+                    if (changedContent?.hasOperatedOnFile) {
+                        writeFile(
+                            file,
+                            changedContent.lines.join(EOL),
+                            'utf-8'
+                        );
+                    }
+                } else {
+                    const changedContent = sort(content, args);
+
+                    if (content !== changedContent) {
+                        writeFile(file, changedContent, 'utf-8');
+                    }
+                }
+            }
+
+            return;
+        }
+
+        // arguable whether to sort each content individually and then join
+        // them or just sort them once they have been concatenate
+        // the unix sort command concatenates them first so yea
+        const allContent = resolvedContent.join(EOL);
+
+        if (args.useSortComments) {
+            const changedContent = sortComments(allContent, 'N/A', false);
+
+            if (changedContent?.lines) {
+                console.log(changedContent.lines.join('\n'));
+            }
+        } else {
+            console.log(sort(allContent, args));
+        }
+
         return;
     }
 
@@ -33,46 +96,29 @@ function defaultCommandHandler(args: DefaultCommandArgs) {
         stdinData += data;
     });
 
-    const { file } = args;
-
-    if (file) {
-        args.file = undefined;
-
-        if (!fs.existsSync(file)) {
-            throw new Error('File does not exist');
-        }
-
-        if (fs.statSync(file).isDirectory()) {
-            throw new Error(
-                'Input is a directory. Maybe you meant to use the modify command?'
-            );
-        }
-
-        console.log(sort(fs.readFileSync(file, 'utf-8'), args));
-        process.exit(0);
-    } else {
-        process.stdin.on('close', () => {
-            console.log(sort(stdinData, args));
-        });
-    }
+    process.stdin.on('close', () => {
+        console.log(sort(stdinData, args));
+    });
 }
 
-async function handleDirectory(dir: string) {
-    const files = await fs.promises.readdir(dir);
+async function pushContentFromDirectory(
+    dir: string,
+    content: Promise<string>[]
+) {
+    const files = await readdir(dir);
 
     for (const file of files) {
-        const next = join(dir, file);
+        const next = path.join(dir, file);
 
-        if (fs.statSync(next).isDirectory()) {
-            handleDirectory(next);
+        if (statSync(next).isDirectory()) {
+            pushContentFromDirectory(next, content);
         } else {
-            handleFile(next);
+            content.push(readFile(next, 'utf-8'));
         }
     }
 }
 
-async function handleFile(file: string) {
-    const content = await fs.promises.readFile(file, 'utf-8');
+function sortComments(content: string, file: string, logInfo: boolean) {
     let lines = content.split('\n');
 
     let hasOperatedOnFile = false;
@@ -124,14 +170,21 @@ async function handleFile(file: string) {
 
             if (sortedSection !== section) {
                 if (!hasOperatedOnFile) {
-                    console.log(`Modifiying ${file}:`);
+                    if (logInfo) {
+                        console.log(`Modifiying ${file}:`);
+                    }
+
                     hasOperatedOnFile = true;
                 }
 
-                console.log(
-                    // +2 because of 0-index & the comment
-                    `    sort changed from lines ${currentStartLine + 2}-${i}`
-                );
+                if (logInfo) {
+                    console.log(
+                        // +2 because of 0-index & the comment
+                        `    sort changed from lines ${
+                            currentStartLine + 2
+                        }-${i}`
+                    );
+                }
 
                 const deleteCount = i - currentStartLine - 1;
                 const itemsToAdd = sortedSection.split(EOL);
@@ -142,49 +195,38 @@ async function handleFile(file: string) {
 
             currentStartLine = undefined;
         }
-
-        if (hasOperatedOnFile) {
-            fs.writeFile(file, lines.join('\n'), (err) => {
-                if (err) throw err;
-            });
-        }
     }
-}
 
-function modifyCommandHandler(argv: { paths: string[] }) {
-    for (const file of argv.paths) {
-        if (!fs.existsSync(file)) {
-            console.log(`[Warning]: ${file} doesn't exist`);
-            continue;
-        }
-
-        if (fs.statSync(file).isDirectory()) {
-            handleDirectory(file);
-        } else {
-            handleFile(file);
-        }
-    }
+    return { hasOperatedOnFile, lines };
 }
 
 try {
     yargs(process.argv.slice(2))
         .command({
-            command: '$0 [file]',
-            description: 'regular sort, takes in from stdin or takes a file',
-            builder: (y) => genericSortYargsBuilder(y).strict(),
+            command: '$0 [files..]',
+            description:
+                'feature rich text sorter, takes in from stdin or from files/directories.\nDirectories will be looped through.\n\nUse https://scopedsort.netlify.app/ for full documentation.',
+            builder: (y: any) =>
+                genericSortYargsBuilder(y)
+                    .option('useSortComments', {
+                        type: 'boolean',
+                        describe:
+                            'sorts using sort comments rather than line by line',
+                        alias: 'c',
+                    })
+                    .option('modify', {
+                        type: 'boolean',
+                        describe: 'modify the files in place',
+                    })
+                    .strict(),
             // @ts-ignore
             handler: defaultCommandHandler,
         })
-        .command({
-            command: 'modify <paths..>',
-            description: 'command to modify files in place',
-            builder: (y) => y,
-            // @ts-ignore
-            handler: modifyCommandHandler,
-        })
-        .fail(false)
+        .alias('h', 'help')
         .strict()
-        .parserConfiguration({ 'dot-notation': false }).argv;
+        .fail(false)
+        .wrap(90)
+        .parse();
 } catch (err) {
     if (err) {
         // @ts-ignore

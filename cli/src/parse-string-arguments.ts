@@ -1,4 +1,4 @@
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 
 import type { Argv } from 'yargs';
 import type { Options } from 'string-content-sort';
@@ -78,7 +78,7 @@ export function genericSortYargsBuilder(y: Argv) {
 }
 
 export function parseStringArguments(args: string) {
-    const parsedArgs = genericSortYargsBuilder(yargs)
+    const parsedArgs = genericSortYargsBuilder(yargs([]))
         .help(false)
         .fail((msg, err) => {
             throw new Error(msg);
@@ -144,11 +144,11 @@ export function parseStringArguments(args: string) {
         }
     }
 
-    /* 
+    /*
         commented it out because there is a valid use case,
         when users by default want to use the matched regex,
         but of course they won't always be using regexs,
-        if this threw an error, they would have to manunally 
+        if this threw an error, they would have to manunally
         type 'm' each time.
     */
     // if (options.useMatchedRegex && !options.regex) {
