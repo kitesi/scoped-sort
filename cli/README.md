@@ -6,20 +6,22 @@ This is a CLI for the npm package [string-content-sort](https://www.npmjs.com/pa
 
 ## Usage
 
-The commands are used through `ssort`.
+Command usage: `ssort [files..]`
 
-There are two commands, the default command, and the modify command.
+The command takes positional arguments of files or directories. Directories will be read through
+recursively.
 
-The default command works sort of like the unix sort commmand. It can take
-in a file or read from standard input.
+You can also specify text from standard input.
 
-I recommend reading the [documentation](https://scopedsort.netlify.app/docs) or using `--help` to understand the options.
+As for options I recommend reading the [documentation](https://scopedsort.netlify.app/docs).
+There are some options that are not listed on their though. By default the command does
+not modify the files. If you specify `--modify` it will.
 
-The modify command helps you modify files in-place. This does not sort the whole file as you might expect, you need to define sections to sort, and your options for those sections.
+There are times where you don't want to sort the entire file. This is where [sort comments](https://scopedsort.netlify.app/docs#sort-comments) come in.
 
 You define the start of a section by having a line with `{ sort-start [options] }`. And you define the end of a section by having a line with `{ sort-end }`.
 
-These are called [sort comments](https://scopedsort.netlify.app/docs#sort-comments).
+Make sure the spacing is exactly like that, other wise it will not work.
 
 An example might be something like:
 
@@ -32,6 +34,8 @@ Pokemon: 500
 Shaman King: 56
 <!-- { sort-end } -->
 ```
+
+You can tell the program to sort using sort comments rather than reading line by line with the `--use-sort-comments | -c`
 
 If you want to ignore a file, include a line with `{ sort-ignore-file }` somewhere in it.
 
