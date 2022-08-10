@@ -8,6 +8,8 @@
         "checkJs": true,
         "outDir": "dist",
         "target": "ES2015",
-        "module": "CommonJS"
+        "module": "ES2020",
+
+        "moduleResolution": "node"
     }
 }

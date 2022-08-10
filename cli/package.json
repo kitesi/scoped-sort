@@ -16,10 +16,12 @@
     "bin": {
         "ssort": "./dist/main.js"
     },
+    "type": "module",
     "keywords": [],
     "author": "karizma",
     "license": "MIT",
     "dependencies": {
+        "commander": "^9.4.0",
         "string-content-sort": "^1.0.1",
         "yargs": "^17.3.1"
     },
