@@ -1,4 +1,9 @@
-# 1.2.0
+# 1.2.1 (8/13/22)
+
+<!-- prettier-ignore -->
+- add completions
+
+# 1.2.0 (8/10/22)
 
 <!-- prettier-ignore -->
 - move both commands into one command

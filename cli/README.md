@@ -39,6 +39,31 @@ You can tell the program to sort using sort comments rather than reading line by
 
 If you want to ignore a file, include a line with `{ sort-ignore-file }` somewhere in it.
 
+# Completions
+
+If you want bash completions, you can use the following code.
+It's not reactive to valid options though. So you will still
+get auto completions for invalid options.
+
+If the completion word doesn't start with `-` then it will just use
+the default file completion otherwise it will show the actual options.
+
+```bash
+_ssort_completions() {
+    local generic_options="--reverse --recursive --unique --case-insensitive  --sort-naturally --sort-numerically --sort-by-float --sort-by-length --sort-randomly --regex --use-matched-regex --section-seperator --modify  --use-sort-comments"
+    local cur_word="${COMP_WORDS[COMP_CWORD]}"
+    local prev_word="${COMP_WORDS[COMP_CWORD - 1]}"
+
+    if [[ $cur_word = -* ]]; then
+        COMPREPLY=( $(compgen -W "$generic_options" -- $cur_word))
+    fi
+
+    return 0
+}
+
+complete -F _ssort_completions -o default ssort
+```
+
 # Questions & Contribution
 
 If you need help, found bugs or want to contribute create a github issue.
