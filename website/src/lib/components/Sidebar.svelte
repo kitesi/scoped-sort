@@ -1,9 +1,15 @@
 <script lang="ts">
-	let isChecked = false;
+	import { isSidebarOpen } from '../../stores';
 	export let attach = false;
 </script>
 
-<input class:attach aria-label={isChecked ? 'Close' : 'Open'} type="checkbox" id="menu-toggle" />
+<input
+	class:attach
+	aria-label={$isSidebarOpen ? 'Close' : 'Open'}
+	type="checkbox"
+	id="menu-toggle"
+	bind:checked={$isSidebarOpen}
+/>
 <label class:attach for="menu-toggle">
 	<span class="top" />
 	<span class="middle" />
