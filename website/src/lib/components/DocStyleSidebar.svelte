@@ -1,8 +1,15 @@
 <script lang="ts">
 	import Sidebar from './Sidebar.svelte';
 	import { transformToId } from '../../transform-to-id';
+	import { isSidebarOpen } from '../../stores';
+
 	import type { Heading } from '../../routes/Heading';
+
 	export let headings: Heading[];
+
+	function closeSidebar() {
+		isSidebarOpen.set(false);
+	}
 </script>
 
 <Sidebar attach={true}>
@@ -20,12 +27,14 @@
 			<hr />
 			{#each headings as heading (heading.name)}
 				<li class="first-level">
-					<a href={'#' + transformToId(heading.name)}>{heading.name}</a>
+					<a on:click={closeSidebar} href={'#' + transformToId(heading.name)}>{heading.name}</a>
 					{#if heading.children}
 						<ul class="second-lebel">
 							{#each heading.children as subheading}
 								<li class="second-level">
-									<a href={'#' + transformToId(subheading.name)}>{subheading.name}</a>
+									<a on:click={closeSidebar} href={'#' + transformToId(subheading.name)}
+										>{subheading.name}</a
+									>
 								</li>
 							{/each}
 						</ul>
