@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Sidebar from './Sidebar.svelte';
-	import { transformToId } from '../transform-to-id';
-	import type { Heading } from '../routes/Heading';
+	import { transformToId } from '../../transform-to-id';
+	import type { Heading } from '../../routes/Heading';
 	export let headings: Heading[];
 </script>
 
@@ -37,8 +37,8 @@
 </Sidebar>
 
 <style lang="scss">
-	@use '../colors.scss' as *;
-	@use '../numerical.scss' as *;
+	@use '../styles/colors.scss' as *;
+	@use '../styles/numerical.scss' as *;
 
 	div {
 		padding: 15px;

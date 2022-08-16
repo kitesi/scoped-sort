@@ -1,6 +1,13 @@
 <script>
 	import Icon from './Icon.svelte';
 	import Sidebar from './Sidebar.svelte';
+
+	const routes = {
+		github: 'https://github.com/sixskys/scoped-sort',
+		npm: 'https://www.npmjs.com/package/string-content-sort',
+		cli: 'https://www.npmjs.com/package/string-content-sort-cli',
+		vscode: 'https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort'
+	};
 </script>
 
 <header>
@@ -15,22 +22,22 @@
 					<li><a href="/docs">Docs</a></li>
 					<li><a href="/examples">Examples</a></li>
 					<li>
-						<a href="/github" title="github repo"
+						<a href={routes.github} title="github repo"
 							><Icon width="1.4rem" height="1.4rem" stroke="white" name="github" /> Github</a
 						>
 					</li>
 					<li>
-						<a href="/vscode" title="vscode package"
+						<a href={routes.npm} title="vscode package"
 							><Icon width="1.4rem" height="1.4rem" stroke="white" name="edit" /> VScode</a
 						>
 					</li>
 					<li>
-						<a href="/npm" title="npm package"
+						<a href={routes.npm} title="npm package"
 							><Icon width="1.4rem" height="1.4rem" stroke="white" name="package" /> NPM</a
 						>
 					</li>
 					<li>
-						<a href="/cli" title="cli on npm"
+						<a href={routes.cli} title="cli on npm"
 							><Icon width="1.4rem" height="1.4rem" stroke="white" name="terminal" /> CLI</a
 						>
 					</li>
@@ -41,8 +48,8 @@
 </header>
 
 <style lang="scss">
-	@use '../colors.scss' as *;
-	@use '../numerical.scss' as *;
+	@use '../styles/colors.scss' as *;
+	@use '../styles/numerical.scss' as *;
 	.secondary-text {
 		color: $primary-accent;
 	}

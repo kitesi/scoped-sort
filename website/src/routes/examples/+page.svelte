@@ -1,21 +1,17 @@
-<script context="module">
-	export const prerender = true;
-</script>
-
 <!-- 
     preview is the programmer version of the entry 
     example will be the user version which has the
     formal name and description
 -->
 <script lang="ts">
-	import Sidebar from '$lib/DocStyleSidebar.svelte';
+	import Sidebar from '$lib/components/DocStyleSidebar.svelte';
 	import PrismJS from 'prismjs';
 	import 'prismjs/plugins/line-highlight/prism-line-highlight.js';
-	import { transformToId } from '../transform-to-id';
-	import { previews } from '../previews.js';
+	import { transformToId } from '../../transform-to-id';
+	import { previews } from '../../previews.js';
 
-	import type { PreviewTest } from '../previews.js';
-	import type { Heading } from './Heading';
+	import type { PreviewTest } from '../../previews.js';
+	import type { Heading } from '../Heading';
 	import { onMount } from 'svelte';
 
 	interface ExampleHeading extends Heading {
@@ -95,8 +91,8 @@
 </main>
 
 <style lang="scss">
-	@use '../numerical.scss' as *;
-	@use '../doc-style-page.scss';
+	@use '../../lib/styles/numerical.scss' as *;
+	@use '../../lib/styles/doc-style-page.scss';
 
 	@media screen and (min-width: $size-2) {
 		section div {

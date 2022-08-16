@@ -1,10 +1,6 @@
-<script context="module">
-	export const prerender = true;
-</script>
-
 <script lang="ts">
-	import Header from '$lib/Header.svelte';
-	import Button from '$lib/Button.svelte';
+	import Header from '$lib/components/Header.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	import { sort } from 'string-content-sort';
 	import type { Options } from 'string-content-sort';
@@ -207,8 +203,8 @@
 </main>
 
 <style lang="scss">
-	@use '../colors.scss' as *;
-	@use '../numerical.scss' as *;
+	@use '../lib/styles/colors.scss' as *;
+	@use '../lib/styles/numerical.scss' as *;
 
 	.not-valid-use {
 		color: lighten($c-red-1, 20%);

@@ -1,14 +1,10 @@
-<script context="module">
-	export const prerender = true;
-</script>
-
 <script lang="ts">
-	import Sidebar from '$lib/DocStyleSidebar.svelte';
+	import Sidebar from '$lib/components/DocStyleSidebar.svelte';
 	import Prism from 'prismjs';
-	import { transformToId } from '../transform-to-id';
+	import { transformToId } from '../../transform-to-id';
 	import { onMount } from 'svelte';
 
-	import type { Heading } from './Heading';
+	import type { Heading } from '../Heading';
 
 	interface DocumentionHeading extends Heading {
 		content?: string;
@@ -308,9 +304,9 @@ comparing indentations.`,
 </main>
 
 <style lang="scss">
-	@use '../colors.scss' as *;
-	@use '../numerical.scss' as *;
-	@use '../doc-style-page.scss';
+	@use '../../lib/styles/colors.scss' as *;
+	@use '../../lib/styles/numerical.scss' as *;
+	@use '../../lib/styles/doc-style-page.scss';
 
 	p {
 		margin: 20px 0;
