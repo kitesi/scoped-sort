@@ -38,6 +38,12 @@
 		transform: translateX(0);
 	}
 
+	input:checked ~ div.attach {
+		box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+		-webkit-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+		-moz-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+	}
+
 	span {
 		display: block;
 		top: 20px;

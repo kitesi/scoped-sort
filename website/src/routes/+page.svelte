@@ -307,18 +307,13 @@
 		form {
 			width: 80%;
 			max-width: 1200px;
-			// gap: 5vw;
-			// justify-content: center;
-			// height: 100%;
-			overflow: auto;
+			margin-block: auto;
 		}
 
 		main > section {
 			display: flex;
 			flex-direction: column;
-			justify-content: center;
 			align-items: center;
-			overflow: auto;
 		}
 
 		form > div > div,

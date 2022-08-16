@@ -45,9 +45,6 @@
 		background-color: darken($c-black-2, 5%);
 		height: 100%;
 		width: 300px;
-		// box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		// -webkit-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		// -moz-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
 	}
 
 	hr {
