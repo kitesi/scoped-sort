@@ -6,7 +6,7 @@
 <button on:click type={submit ? 'submit' : 'button'}>{text}</button>
 
 <style lang="scss">
-	@use '../colors.scss' as *;
+	@use '../styles/colors.scss' as *;
 
 	button {
 		background-color: $c-red-1;

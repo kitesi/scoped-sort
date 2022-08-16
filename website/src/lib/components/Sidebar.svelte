@@ -13,8 +13,8 @@
 <div class:attach><slot /></div>
 
 <style lang="scss">
-	@use '../colors.scss' as *;
-	@use '../numerical.scss' as *;
+	@use '../styles/colors.scss' as *;
+	@use '../styles/numerical.scss' as *;
 
 	input {
 		opacity: 0;
