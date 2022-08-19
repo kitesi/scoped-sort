@@ -54,6 +54,7 @@
 		background-color: darken($c-black-2, 5%);
 		height: 100%;
 		width: 300px;
+		overflow: auto;
 	}
 
 	hr {
