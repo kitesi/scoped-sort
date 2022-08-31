@@ -68,7 +68,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 40px;
-		align-items: center;
+		align-content: center;
 		justify-content: space-around;
 		text-align: start;
 	}
