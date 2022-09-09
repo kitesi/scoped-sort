@@ -26,6 +26,8 @@
 		visibility: hidden;
 		transition: 100ms ease-in;
 		z-index: 2;
+		background-color: $c-black-1;
+		border-right: 1px solid $c-black-2;
 	}
 
 	div:not(.attach) {
@@ -76,9 +78,9 @@
 	}
 
 	button[aria-pressed='true'] ~ div.attach {
-		box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		-webkit-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
-		-moz-box-shadow: 27px 0px 43px -3px rgba(0, 0, 0, 0.27);
+		box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
+		-webkit-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
+		-moz-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
 	}
 
 	button[aria-pressed='true'] > span {

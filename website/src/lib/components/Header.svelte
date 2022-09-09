@@ -27,7 +27,7 @@
 						>
 					</li>
 					<li>
-						<a href={routes.npm} title="vscode package"
+						<a href={routes.vscode} title="vscode package"
 							><Icon width="1.4rem" height="1.4rem" stroke="white" name="edit" /> VScode</a
 						>
 					</li>
@@ -59,7 +59,7 @@
 		grid-template-rows: 1fr auto;
 		justify-content: center;
 		align-items: center;
-		background-color: darken($c-black-2, 5%);
+		background-color: ($c-black-1);
 		width: 100%;
 		height: 100%;
 	}
@@ -91,7 +91,8 @@
 		flex-direction: column;
 		gap: 20px;
 		padding: 10px;
-		background-color: darken($c-black-1, 3%);
+		background-color: lighten($c-black-1, 4%);
+		border-bottom: 2px solid $c-black-2;
 		color: white;
 	}
 

@@ -51,7 +51,6 @@
 
 	div {
 		padding: 15px;
-		background-color: darken($c-black-2, 5%);
 		height: 100%;
 		width: 300px;
 		overflow: auto;
@@ -59,8 +58,15 @@
 
 	hr {
 		border-color: white;
-		margin: 20px 0;
-		width: 50%;
+		margin: 10px 0;
+		box-sizing: content-box;
+		overflow: hidden;
+		background: transparent;
+		border-bottom: 1px solid #21262d;
+		height: 0.18em;
+		padding: 0;
+		background-color: #30363d;
+		border: 0;
 	}
 
 	ul {
