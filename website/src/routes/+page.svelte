@@ -3,6 +3,7 @@
 	import Button from '$lib/components/Button.svelte';
 
 	import { sort } from 'string-content-sort';
+
 	import type { Options } from 'string-content-sort';
 
 	function handleSubmit(ev: SubmitEvent) {
@@ -128,12 +129,8 @@
 							class:not-valid-use={modifier.name === 'caseInsensitive' &&
 								sorterBinding !== '' &&
 								!universalModifiersBindings.unique}
-							class="tooltip-container"
 						>
 							<label for={modifier.name}>{modifier.label}</label>
-							<span class="tooltip"
-								>Can't use case-insensitive when a sorter is selected but unique is not</span
-							>
 							<input
 								bind:checked={universalModifiersBindings[modifier.name]}
 								type="checkbox"
@@ -166,12 +163,8 @@
 					<div
 						class:not-valid-use={sorterBinding === 'sortNaturally' ||
 							sorterBinding === 'sortRandomly'}
-						class="tooltip-container"
 					>
 						<label for="regex">Regex:</label>
-						<span class="tooltip"
-							>Regex is unavaliable when using sort-naturally or sort-randomly</span
-						>
 						<input type="text" bind:value={regex} name="regex" id="regex" />
 					</div>
 					<div>
@@ -195,7 +188,7 @@
 				</div>
 			</div>
 			<section>
-				<textarea bind:value={sortingText} class="input" placeholder="Your text here" />
+				<textarea bind:value={sortingText} class="input" />
 				<Button text="Modify" submit={true} />
 			</section>
 		</form>
@@ -212,29 +205,7 @@
 
 	.not-valid-use label {
 		border-bottom-width: 1px;
-		border-bottom-style: dotted;
-	}
-
-	.tooltip-container {
-		position: relative;
-	}
-
-	.tooltip-container label:hover + .tooltip {
-		opacity: 1;
-	}
-
-	.tooltip {
-		position: absolute;
-		top: -40px;
-		background-color: black;
-		color: white;
-		padding: 5px;
-		border-radius: 5px;
-		max-width: 260px;
-		font-size: 0.8rem;
-		text-align: center;
-		opacity: 0;
-		transition: 200ms opacity ease;
+		text-decoration: line-through;
 	}
 
 	main {
@@ -258,12 +229,14 @@
 
 	form > div > div {
 		border: 2px solid $c-black-2;
-		border-radius: 5px;
+		border-radius: 0 5px 5px 5px;
 	}
 
 	form > div > div > div {
 		display: flex;
 		justify-content: space-between;
+		gap: 10px;
+		align-items: center;
 		padding: 10px;
 	}
 
@@ -271,35 +244,59 @@
 		border-bottom: 2px solid $c-black-2;
 	}
 
+	label {
+		flex: 1;
+	}
+
 	input[type='text'] {
+		background-color: $c-black-3;
+		color: white;
 		width: 150px;
-		padding-left: 5px;
+		padding-block: 0.6em;
+		padding-left: 0.6em;
+		border: 2px solid $c-black-2;
+		border-radius: 2px;
+		font-family: monospace;
 	}
 
 	h2 {
 		width: max-content;
-		padding: 5px;
-		border-radius: 5px;
-		margin-bottom: 2px;
+		padding: 5px 10px;
+		border: 2px solid $c-black-2;
+		border-bottom: none;
 	}
 
 	textarea {
 		display: block;
-		background-color: transparent;
+		background-color: $c-black-3;
+		border: none;
 		color: white;
 		resize: none;
 		width: 100%;
 		height: 400px;
 		border: 2px solid $c-black-2;
+		border-radius: 5px;
 		padding: 10px;
 		font-size: 1rem;
 		max-width: 1000px;
 	}
 
+	textarea:focus {
+		outline: none;
+		border-color: $c-blue-1;
+	}
+
 	@media screen and (min-width: $size-1) {
 		form {
 			grid-template-columns: 1fr 1fr;
-			gap: 10px;
+			margin: auto;
+			width: 100%;
+		}
+
+		main > section {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 		}
 	}
 
@@ -308,12 +305,6 @@
 			width: 80%;
 			max-width: 1200px;
 			margin-block: auto;
-		}
-
-		main > section {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
 		}
 
 		form > div > div,

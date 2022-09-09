@@ -9,15 +9,20 @@
 	@use '../styles/colors.scss' as *;
 
 	button {
-		background-color: $c-red-1;
-		padding: 20px;
+		background-color: #952d2d;
+		font-size: 1.3rem;
+		padding: 0.7em;
 		border: none;
 		border-radius: 5px;
 		color: white;
-		font-size: 1.3rem;
 		width: 150px;
 		margin-top: 10px;
 		text-transform: uppercase;
 		font-weight: bold;
+	}
+
+	button:focus-visible {
+		outline-offset: 4px;
+		outline: 2px solid #952d2d;
 	}
 </style>
