@@ -1,17 +1,16 @@
 <!-- credit to: https://www.youtube.com/watch?v=b3OKONiAA80&t=211s -->
 <script lang="ts">
 	import { isSidebarOpen } from '../../stores';
-	export let attach = false;
+	export let maxWidth: boolean;
 </script>
 
 <button
-	class:attach
 	on:click={() => isSidebarOpen.set(!$isSidebarOpen)}
 	aria-pressed={$isSidebarOpen ? 'true' : 'false'}
 	aria-label="toggle sidebar"><span /></button
 >
 
-<div class:attach><slot /></div>
+<div class:max-width={maxWidth}><slot /></div>
 
 <style lang="scss">
 	@use '../styles/colors.scss' as *;
@@ -26,11 +25,10 @@
 		visibility: hidden;
 		transition: 100ms ease-in;
 		z-index: 2;
-		background-color: $c-black-1;
 		border-right: 1px solid $c-black-2;
 	}
 
-	div:not(.attach) {
+	.max-width {
 		width: 100%;
 	}
 
@@ -75,9 +73,6 @@
 	button[aria-pressed='true'] ~ div {
 		transform: translateX(0);
 		visibility: visible;
-	}
-
-	button[aria-pressed='true'] ~ div.attach {
 		box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
 		-webkit-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
 		-moz-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
@@ -96,21 +91,25 @@
 	}
 
 	@media screen and (min-width: $size-1) {
-		div.attach {
+		div {
 			position: static;
 			transform: translateX(0);
 			visibility: visible;
 		}
 
-		button[aria-pressed='true'] ~ div.attach {
+		button[aria-pressed='true'] ~ div {
 			box-shadow: none;
 			-webkit-box-shadow: none;
 			-moz-box-shadow: none;
 		}
 
-		button.attach {
+		button {
 			opacity: 0;
 			pointer-events: none;
+		}
+
+		.max-width {
+			width: auto;
 		}
 	}
 </style>

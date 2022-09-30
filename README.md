@@ -16,7 +16,7 @@ In that image you can also see how the items underneath editors and languages ar
 
 This repo contains all it's mediums, [the npm package](/npm), [the vscode package](/vscode), [the website](https://scopedsort.netlify.app/) and [the cli](/cli).
 
-# Contributing / Help
+## Contributing / Help
 
 Contributions are very welcome and appreciated.
 

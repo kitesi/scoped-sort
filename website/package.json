@@ -29,7 +29,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"feather-icons": "^4.29.0",
 		"prismjs": "^1.28.0",
 		"string-content-sort": "^1.0.6"
 	}
