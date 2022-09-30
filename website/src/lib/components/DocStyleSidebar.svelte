@@ -12,7 +12,7 @@
 	}
 </script>
 
-<Sidebar attach={true}>
+<Sidebar maxWidth={false}>
 	<div>
 		<ul class="first-level">
 			<li>
@@ -50,10 +50,10 @@
 	@use '../styles/numerical.scss' as *;
 
 	div {
-		padding: 15px;
 		height: 100%;
 		width: 300px;
 		overflow: auto;
+		background-color: $c-black-1;
 	}
 
 	hr {
@@ -63,14 +63,14 @@
 		overflow: hidden;
 		background: transparent;
 		border-bottom: 1px solid #21262d;
-		height: 0.18em;
+		height: 0.1em;
 		padding: 0;
 		background-color: #30363d;
 		border: 0;
 	}
 
-	ul {
-		margin-left: 10px;
+	ul:not(:first-child) {
+		margin-left: 16px;
 	}
 
 	li.first-level {
@@ -84,6 +84,7 @@
 	li {
 		list-style: none;
 		padding: 5px;
+		padding-left: 15px;
 		max-width: 90%;
 	}
 

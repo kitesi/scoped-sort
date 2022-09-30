@@ -1,6 +1,9 @@
 <script>
-	import Icon from './Icon.svelte';
 	import Sidebar from './Sidebar.svelte';
+	import GithubIcon from './icons/GithubIcon.svelte';
+	import NpmIcon from './icons/NPMIcon.svelte';
+	import TerminalIcon from './icons/TerminalIcon.svelte';
+	import VscodeIcon from './icons/VscodeIcon.svelte';
 
 	const routes = {
 		github: 'https://github.com/sixskys/scoped-sort',
@@ -15,30 +18,34 @@
 		<span>Scoped</span><span class="secondary-text">Sort</span>
 	</h1>
 
-	<Sidebar>
+	<Sidebar maxWidth={true}>
 		<div>
 			<nav>
 				<ul>
 					<li><a href="/docs">Docs</a></li>
 					<li><a href="/examples">Examples</a></li>
-					<li>
-						<a href={routes.github} title="github repo"
-							><Icon width="1.4rem" height="1.4rem" stroke="white" name="github" /> Github</a
-						>
+					<li class="has-icon">
+						<a href={routes.vscode} title="vscode package">
+							<VscodeIcon size="1.4rem" />
+							<span>Vscode</span>
+						</a>
 					</li>
-					<li>
-						<a href={routes.vscode} title="vscode package"
-							><Icon width="1.4rem" height="1.4rem" stroke="white" name="edit" /> VScode</a
-						>
+					<li class="has-icon">
+						<a href={routes.github} title="github repo">
+							<GithubIcon size="1.4rem" />
+							<span>Github</span>
+						</a>
 					</li>
-					<li>
-						<a href={routes.npm} title="npm package"
-							><Icon width="1.4rem" height="1.4rem" stroke="white" name="package" /> NPM</a
-						>
+					<li class="has-icon">
+						<a href={routes.npm} title="npm package">
+							<NpmIcon size="1.4rem" />
+							<span>NPM</span>
+						</a>
 					</li>
-					<li>
-						<a href={routes.cli} title="cli on npm"
-							><Icon width="1.4rem" height="1.4rem" stroke="white" name="terminal" /> CLI</a
+					<li class="has-icon">
+						<a href={routes.cli} title="cli on npm">
+							<TerminalIcon />
+							<span>CLI</span></a
 						>
 					</li>
 				</ul>
@@ -77,7 +84,7 @@
 		list-style-type: none;
 		font-weight: 800;
 		text-transform: uppercase;
-		font-size: 1.2rem;
+		font-size: 1.3rem;
 	}
 
 	a[title] {
@@ -104,5 +111,40 @@
 
 	h1 span {
 		margin-right: 2px;
+	}
+
+	@media screen and (min-width: $size-1) {
+		div {
+			background-color: transparent;
+			display: block;
+			justify-content: unset;
+			align-items: unset;
+			padding-right: 5px;
+		}
+
+		ul {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+		}
+
+		header {
+			flex-direction: row;
+			justify-content: space-between;
+		}
+
+		header :global(div) {
+			border-right: none !important;
+		}
+
+		.has-icon span {
+			display: none;
+		}
+	}
+
+	@media screen and (min-width: $size-2) {
+		.has-icon span {
+			display: unset;
+		}
 	}
 </style>
