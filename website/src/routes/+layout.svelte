@@ -3,6 +3,8 @@
 
 	import '$lib/styles/prism-tommorow-night.css';
 	import '$lib/styles/app.scss';
+	import '$lib/styles/colors.css';
+
 	import { fade } from 'svelte/transition';
 
 	export let data: LayoutData;

@@ -1,34 +1,25 @@
-@use './colors.scss' as *;
-@use './numerical.scss' as *;
+@use './sizes.scss' as *;
 
 @font-face {
-	font-family: 'Roboto';
-	src: url('/fonts/roboto-regular.woff') format('woff');
-	font-weight: 400;
+	font-family: 'Source Sans Pro';
+	src: url('/fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf') format('truetype');
+	font-weight: 500;
 	font-style: normal;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Roboto';
-	src: url('/fonts/roboto-medium.woff') format('woff');
+	font-family: 'Source Sans Pro';
+	src: url('/fonts/Source_Sans_Pro/SourceSansPro-Bold.ttf') format('truetype');
 	font-weight: 700;
 	font-style: normal;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Roboto';
-	src: url('/fonts/roboto-bold.woff') format('woff');
+	font-family: 'Source Sans Pro';
+	src: url('/fonts/Source_Sans_Pro/SourceSansPro-Black.ttf') format('truetype');
 	font-weight: 900;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Ordinary';
-	src: url('/fonts/Ordinary.ttf') format('truetype');
-	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
 }
@@ -40,9 +31,8 @@
 }
 
 html {
-	font-family: Roboto, Arial;
-	background-color: $c-black-1;
-	color: white;
+	background-color: var(--clr-bg-primary);
+	color: var(--clr-bg-primary-content);
 }
 
 html,
@@ -50,8 +40,10 @@ body {
 	height: 100%;
 }
 
-button {
-	font-family: Roboto, Arial;
+html,
+button,
+textarea {
+	font-family: 'Source Sans Pro', Roboto, sans-serif;
 }
 
 button:hover {
@@ -59,7 +51,7 @@ button:hover {
 }
 
 a {
-	color: #ccc;
+	color: inherit;
 	text-decoration: none;
 }
 

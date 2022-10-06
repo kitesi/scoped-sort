@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Sidebar from './Sidebar.svelte';
 	import { transformToId } from '../../transform-to-id';
 	import { isSidebarOpen } from '../../stores';
 
 	import type { Heading } from '../../routes/Heading';
+	import HamburgerMenu from './HamburgerMenu.svelte';
 
 	export let headings: Heading[];
 
@@ -12,48 +12,73 @@
 	}
 </script>
 
-<Sidebar maxWidth={false}>
-	<div>
-		<ul class="first-level">
-			<li>
-				<a href="/">Home</a>
+<div>
+	<HamburgerMenu />
+</div>
+
+<nav class:show={$isSidebarOpen}>
+	<ul class="first-level">
+		<li>
+			<a href="/" data-sveltekit-reload>Home</a>
+		</li>
+		<li>
+			<a href="/docs">Documentation</a>
+		</li>
+		<li>
+			<a href="/examples">Examples</a>
+		</li>
+		<hr />
+		{#each headings as heading (heading.name)}
+			<li class="first-level">
+				<a on:click={closeSidebar} href={'#' + transformToId(heading.name)}>{heading.name}</a>
+				{#if heading.children}
+					<ul class="second-lebel">
+						{#each heading.children as subheading}
+							<li class="second-level">
+								<a on:click={closeSidebar} href={'#' + transformToId(subheading.name)}
+									>{subheading.name}</a
+								>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</li>
-			<li>
-				<a href="/docs">Documentation</a>
-			</li>
-			<li>
-				<a href="/examples">Examples</a>
-			</li>
-			<hr />
-			{#each headings as heading (heading.name)}
-				<li class="first-level">
-					<a on:click={closeSidebar} href={'#' + transformToId(heading.name)}>{heading.name}</a>
-					{#if heading.children}
-						<ul class="second-lebel">
-							{#each heading.children as subheading}
-								<li class="second-level">
-									<a on:click={closeSidebar} href={'#' + transformToId(subheading.name)}
-										>{subheading.name}</a
-									>
-								</li>
-							{/each}
-						</ul>
-					{/if}
-				</li>
-			{/each}
-		</ul>
-	</div>
-</Sidebar>
+		{/each}
+	</ul>
+</nav>
 
 <style lang="scss">
-	@use '../styles/colors.scss' as *;
-	@use '../styles/numerical.scss' as *;
+	@use '../styles/sizes.scss' as *;
 
 	div {
+		position: absolute;
+		top: 1em;
+		right: 1em;
+		z-index: 2;
+	}
+
+	nav {
+		position: absolute;
+		top: 0;
+		left: 0;
 		height: 100%;
-		width: 300px;
-		overflow: auto;
-		background-color: $c-black-1;
+		max-width: 100%;
+		width: var(--sidebar-width, unset);
+		background-color: var(--clr-bg-primary);
+		color: var(--clr-bg-primary-content);
+		border-right: 0.1em solid var(--clr-bg-code-block);
+		transform: translateX(-100%);
+		transition: transform 100ms ease-in;
+		z-index: 1;
+		padding: 1em;
+		font-size: min(1.25rem, 20px);
+	}
+
+	nav.show {
+		transform: translateX(0);
+		box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
+		-webkit-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
+		-moz-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
 	}
 
 	hr {
@@ -62,9 +87,6 @@
 		box-sizing: content-box;
 		overflow: hidden;
 		background: transparent;
-		border-bottom: 1px solid #21262d;
-		height: 0.1em;
-		padding: 0;
 		background-color: #30363d;
 		border: 0;
 	}
@@ -73,7 +95,7 @@
 		margin-left: 16px;
 	}
 
-	li.first-level {
+	.first-level {
 		font-weight: 700;
 	}
 
@@ -96,7 +118,21 @@
 		font-weight: 400;
 	}
 
-	a {
-		color: white;
+	@media screen and (min-width: $medium-screen) {
+		div :global(button) {
+			display: none;
+		}
+
+		nav {
+			position: static;
+			transform: translateX(0);
+			overflow-y: auto;
+		}
+
+		nav.show {
+			box-shadow: none;
+			-webkit-box-shadow: none;
+			-moz-box-shadow: none;
+		}
 	}
 </style>
