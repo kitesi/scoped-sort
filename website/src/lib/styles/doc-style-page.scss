@@ -1,26 +1,39 @@
-@use './colors.scss' as *;
-@use './numerical.scss' as *;
-
-// credit to docsify (https://docsify.js.org) for a lot of the styling
+@use './sizes.scss' as *;
 
 main {
 	height: 100%;
 }
 
 section {
-	padding: 20px;
+	padding: 1.1em;
 	height: 100%;
 	width: 100%;
 	overflow: auto;
 	scroll-behavior: smooth;
+	scrollbar-width: none;
+	scroll-padding-top: 20em;
+}
+
+section::-webkit-scrollbar {
+	display: none;
+}
+
+section > div {
+	max-width: var(--max-width);
+	margin-inline: auto;
+	padding-block: min(100px, calc((100% - var(--max-width)) / 2));
 }
 
 h2:not(:first-of-type) {
-	margin-top: 40px;
+	margin-top: 1.4em;
+}
+
+h2 {
+	font-size: 1.75rem;
 }
 
 p {
-	margin: 20px 0;
+	margin: 1em 0;
 	line-height: 1.6rem;
 	font-weight: 400;
 }
@@ -31,53 +44,43 @@ ul {
 	line-height: 1.8rem;
 }
 
-:global(code) {
-	display: inline-block;
-	background-color: $c-black-2;
-	color: lighten($c-red-1, 30%);
-	padding: 3px 5px;
-	margin: 0 2px;
-	white-space: pre-warp;
-	border-radius: 2px;
-	line-height: normal;
-}
-
-:global(pre) {
-	background-color: darken($c-black-2, 5%) !important;
-	margin: 20px 0 !important;
-	border-radius: 5px;
-}
-
 li {
 	font-size: 0.9rem;
 }
 
-li,
-p {
-	max-width: 800px;
+section :global {
+	code:not([class*='language-']) {
+		display: inline-block;
+		background-color: var(--clr-bg-inline-code-block) !important;
+		color: var(--clr-bg-inline-code-block-content);
+		padding: 0.2em 0.4em;
+		margin: 0.2em 0.1em;
+		white-space: pre-warp;
+		border-radius: 2px;
+		line-height: normal;
+		font-weight: 800;
+	}
+
+	pre {
+		margin: 20px 0 !important;
+		border-radius: 5px;
+	}
+
+	pre code {
+		font-size: 0.9rem;
+	}
+
+	a {
+		color: var(--clr-link);
+	}
 }
 
-:global(pre code) {
-	font-size: 0.9rem;
+:root {
+	font-size: clamp(16px, 2vw, 22px);
 }
 
-@media screen and (min-width: $size-1) {
+@media screen and (min-width: $small-screen) {
 	main {
 		display: flex;
-	}
-
-	li {
-		font-size: 1rem;
-		line-height: 35px;
-	}
-
-	:global(pre code) {
-		font-size: 1.1rem;
-	}
-}
-
-@media screen and (min-width: $size-2) {
-	:root {
-		font-size: 18px;
 	}
 }

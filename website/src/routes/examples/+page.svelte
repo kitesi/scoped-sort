@@ -1,18 +1,14 @@
-<!-- 
-    preview is the programmer version of the entry 
-    example will be the user version which has the
-    formal name and description
--->
 <script lang="ts">
-	import Sidebar from '$lib/components/DocStyleSidebar.svelte';
+	import DocStyleSidebar from '$lib/components/DocStyleSidebar.svelte';
 	import PrismJS from 'prismjs';
-	import 'prismjs/plugins/line-highlight/prism-line-highlight.js';
+	import { onMount } from 'svelte';
+
 	import { transformToId } from '../../transform-to-id';
 	import { previews } from '../../previews.js';
+	import 'prismjs/plugins/line-highlight/prism-line-highlight.js';
 
 	import type { PreviewTest } from '../../previews.js';
 	import type { Heading } from '../Heading';
-	import { onMount } from 'svelte';
 
 	interface ExampleHeading extends Heading {
 		preview: PreviewTest;
@@ -41,7 +37,7 @@
 		{
 			name: 'Switch Inner Case Statements',
 			description:
-				"This is an example of how this program's indentation awareness works. You might see that certain lines are highlighted, those lines are the actual lines that are being sorted. It will not work if you sort the whole text.",
+				"This is an example of how this program's indentation awareness works. You might see that certain lines are highlighted, those lines are the actual lines that are being sorted. It will not work if you sort the whole text. (line highlights not currently working)",
 			preview: previews.switchCaseNormal
 		},
 		{
@@ -52,7 +48,8 @@
 		},
 		{
 			name: 'Section Seperator HTML',
-			description: "This in example which show's the possibilities of section-seperator.",
+			description:
+				"This in example which show's the possibilities of section-seperator. Note this has a selection in the content which excludes the first and last line (working on styling line highlights).",
 			preview: previews.sectionSeperatorHtml
 		}
 	];
@@ -63,43 +60,57 @@
 </script>
 
 <main>
-	<Sidebar headings={examples} />
-
+	<DocStyleSidebar headings={examples} />
 	<section>
-		{#each examples as example (example.name)}
-			<h2 id={transformToId(example.name)}>{example.name}</h2>
-			<p>{example.description || ''}</p>
-			{@const preview = example.preview}
-			{@const input = preview.display?.input || preview.input}
-			{@const output = preview.display?.output || preview.output}
-			{#if preview.options}
-				<ul>
-					{#each Object.entries(preview.options) as [key, value]}
-						<li><code>{kebabize(key)}</code> = <code>{value}</code></li>
-					{/each}
-				</ul>
-			{/if}
-			<div>
-				<pre data-line={preview.display?.highlightRange} spellcheck="false"><code
-						class={'language-' + (preview.language || '')}>{input}</code
-					></pre>
-				<pre spellcheck="false"><code class={'language-' + (preview.language || '')}>{output}</code
-					></pre>
-			</div>
-		{/each}
+		<div>
+			{#each examples as example (example.name)}
+				<h2 id={transformToId(example.name)}>{example.name}</h2>
+				<p>{example.description || ''}</p>
+				{@const preview = example.preview}
+				{@const input = preview.display?.input || preview.input}
+				{@const output = preview.display?.output || preview.output}
+				{#if preview.options}
+					<ul>
+						{#each Object.entries(preview.options) as [key, value]}
+							<li><code>{kebabize(key)}</code> = <code>{value}</code></li>
+						{/each}
+					</ul>
+				{/if}
+				<div class="pre-container">
+					<pre data-line={preview.display?.highlightRange} spellcheck="false"><code
+							class={'language-' + (preview.language || '')}>{input}</code
+						></pre>
+					<pre spellcheck="false"><code class={'language-' + (preview.language || '')}
+							>{output}</code
+						></pre>
+				</div>
+			{/each}
+		</div>
 	</section>
 </main>
 
 <style lang="scss">
-	@use '../../lib/styles/numerical.scss' as *;
 	@use '../../lib/styles/doc-style-page.scss';
+	@use '../../lib/styles/sizes.scss' as *;
 
-	@media screen and (min-width: $size-2) {
-		section div {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			// align-items: flex-start;
-			gap: 20px;
-		}
+	main {
+		--sidebar-width: 400px;
+	}
+
+	.pre-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1em;
+		margin-top: 1em;
+	}
+
+	pre {
+		flex: 1;
+		min-width: 20em;
+		margin: 0 !important;
+	}
+
+	section > div {
+		--max-width: 80rem;
 	}
 </style>

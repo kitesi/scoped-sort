@@ -2,7 +2,7 @@
 https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+clike+javascript */
 code[class*='language-'],
 pre[class*='language-'] {
-	color: #ccc;
+	/* color: #ccc; */
 	background: 0 0;
 	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
 	text-align: left;
@@ -20,13 +20,14 @@ pre[class*='language-'] {
 	hyphens: none;
 }
 pre[class*='language-'] {
-	padding: 1em;
+	padding: 1.2em;
 	margin: 0.5em 0;
 	overflow: auto;
 }
 :not(pre) > code[class*='language-'],
 pre[class*='language-'] {
-	background: #2d2d2d;
+	background: var(--clr-bg-code-block);
+	color: var(--clr-bg-code-block-content);
 }
 :not(pre) > code[class*='language-'] {
 	padding: 0.1em;
@@ -102,11 +103,12 @@ pre[data-line] {
 }
 
 .line-highlight {
-	position: absolute;
+	/* position: absolute; */
+	display: none;
 	left: 0;
 	right: 0;
 	padding: inherit 0;
-	margin-top: 1.2em;
+	margin-top: 1rem;
 	z-index: -1;
 
 	/* background: rgba(293, 252, 98, 0.2); */

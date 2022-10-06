@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Sidebar from '$lib/components/DocStyleSidebar.svelte';
+	import DocStyleSidebar from '$lib/components/DocStyleSidebar.svelte';
 	import Prism from 'prismjs';
 	import { transformToId } from '../../transform-to-id';
 	import { onMount } from 'svelte';
@@ -17,7 +17,8 @@
 		}[];
 	}
 
-	const link = (href: string) => `<a href="#${href}">${href}</a>`;
+	const fragmentLink = (href: string) => `<a href="#${href}">#${href}</a>`;
+	const link = (href: string, name: string) => `<a href="${href}">${name}</a>`;
 	const bold = (text: string) => `<b>${text}</b>`;
 
 	const codeBlock = (codeExample: CodeExample) =>
@@ -45,15 +46,10 @@ import isIsOdd from 'is-is-odd';
 	const headings: DocumentionHeading[] = [
 		{
 			name: 'Introduction',
-			content: `This is a feature rich sorter based on the unix sort. It is avaliable on vscode, npm, cli, and here. 
-You can use this on regular lists or markdown lists. It operates in a different way
-than most as it takes scope/indentation into account. This project was not made for
+			content: `Scoped Sort is a tool to help sort text. It differs from other text sorters by seperating items with respect to indentation. It has many options and is implemented on npm, the command line, vscode and here.
+You can use this on regular lists or markdown lists. This project was not made for
 programming related things like objects, imports or html, but in certain instances it can
 still sort them.
-<br /> <br />
-There are many sites and applications already have most of these, so why use this? 1. this
-service provides more options, and 2. it provides an interface in which they can all be used
-together. 
 <br /> <br />
 This page will serve as a reference for the website, the npm package, the cli and vscode.
 Since three of those are programming related, it will lean towards more programming type
@@ -97,14 +93,23 @@ this option to true will sort the inner items.`,
 					type: 'boolean',
 					objectPropertyName: '.unique',
 					cliPropertyName: '--unique | -u'
+				},
+				{
+					name: 'Markdown',
+					content: `Treats the text as a markdown list. You won't need this
+option for most markdown lists but in certain instances
+you will.`,
+					type: 'boolean',
+					objectPropertyName: '.markdown',
+					cliPropertyName: '--markdown | -m'
 				}
 			]
 		},
 		{
 			name: 'Sorters',
-			content: `You can only have one sorter. There is no such thing as a fallback sorting here, if two lines are
-equal in their sort position, they won't use the second sorter if specified.
-Example: you might expect ${link('length-sort')} and ${link(
+			content: `You can only have one sorter. There is no fallback sorting here, if two lines are
+equal in their sort position, they can't use a second sorter.
+Example: you might expect ${fragmentLink('length-sort')} and ${fragmentLink(
 				'numerical-sort'
 			)} to work as in, sort by
 length, and fallback to sort numerically if two lines have the same length; but
@@ -120,7 +125,10 @@ which do not have a number will be left in place.`,
 				},
 				{
 					name: 'Natural Sort',
-					content: 'Sorts based on natural sort.',
+					content: `Sorts based on the ${link(
+						'https://en.wikipedia.org/wiki/Natural_sort_order',
+						'natural sort'
+					)}.`,
 					type: 'boolean',
 					objectPropertyName: '.sortNaturally',
 					cliPropertyName: '--sort-naturally | -e'
@@ -135,7 +143,7 @@ which do not have a float will be left in place.`,
 				},
 				{
 					name: 'Length Sort',
-					content: 'Sorts based on the length of each line. Short to long.',
+					content: 'Sorts based on the length of each line, short to long.',
 					type: 'boolean',
 					objectPropertyName: '.sortByLength',
 					cliPropertyName: '--sort-by-length | -l'
@@ -153,18 +161,9 @@ which do not have a float will be left in place.`,
 			name: 'Other',
 			children: [
 				{
-					name: 'Markdown',
-					content: `Treats the text as a markdown list. You won't need this
-option for most markdown lists but in certain instances
-you will.`,
-					type: 'boolean',
-					objectPropertyName: '.markdown',
-					cliPropertyName: '--markdown | -m'
-				},
-				{
 					name: 'Regex',
 					content: `a regex to match text in each item/line, the sorter will sort based on the text
-${bold('after')} the match (unless ${link(
+${bold('after')} the match (unless ${fragmentLink(
 						'use-matched-regex'
 					)} is checked). Text that do not match will
 be left in place, and will be at the top. The regex language is javascript.`,
@@ -174,7 +173,7 @@ be left in place, and will be at the top. The regex language is javascript.`,
 				},
 				{
 					name: 'Use Matched Regex',
-					content: `Combined with ${link(
+					content: `Combined with ${fragmentLink(
 						'regex'
 					)}, this will instead sort using the matched text rather than the text after 
 the matched text.`,
@@ -188,7 +187,7 @@ the matched text.`,
 comparing indentations.`,
 					type: 'RegExp',
 					objectPropertyName: '.sectionSeperator',
-					cliPropertyName: '--section-seperator'
+					cliPropertyName: '--section-seperator | -p'
 				}
 			]
 		},
@@ -227,89 +226,99 @@ comparing indentations.`,
 </script>
 
 <main>
-	<Sidebar {headings} />
+	<DocStyleSidebar {headings} />
 
 	<section>
-		{#each headings as heading (heading.name)}
-			<h2 id={transformToId(heading.name)}>{heading.name}</h2>
-			<p>{@html heading.content || ''}</p>
-			{#if heading.children}
-				{#each heading.children as subheading}
-					<h3 id={transformToId(subheading.name)}>{subheading.name}</h3>
+		<div>
+			{#each headings as heading (heading.name)}
+				<h2 id={transformToId(heading.name)}>{heading.name}</h2>
+				<p>{@html heading.content || ''}</p>
+				{#if heading.children}
+					{#each heading.children as subheading}
+						<h3 id={transformToId(subheading.name)}>{subheading.name}</h3>
+						<ul>
+							<li>type: <code>{subheading.type}</code></li>
+							<li>object property: <code>{subheading.objectPropertyName}</code></li>
+							<li>cli parameter: <code>{subheading.cliPropertyName}</code></li>
+						</ul>
+						<p>{@html subheading.content}</p>
+					{/each}
+				{/if}
+				{#if heading.name === 'Combinations'}
 					<ul>
-						<li>type: <code>{subheading.type}</code></li>
-						<li>object property: <code>{subheading.objectPropertyName}</code></li>
-						<li>cli parameter: <code>{subheading.cliPropertyName}</code></li>
+						<li>
+							<code>markdown</code>, <code>unique</code>, <code>recursive</code>,
+							<code>reverse</code>
+							work on everything
+						</li>
+						<li>
+							<code>case-insensitive</code> and <code>unique</code>: removes duplicates case
+							insensitively
+						</li>
+						<li>
+							<code>regex</code> and <code>case-insensitive</code>: doesn't make the regex case
+							insensitive, only makes the sort insensitive
+						</li>
+						<li>
+							<code>regex</code> and <code>sort-by-length</code>: sorts by the length of the text
+							<b>after</b> the matched text insensitive
+						</li>
+						<li>
+							<code>regex</code>, <code>sort-by-length</code> and <code>use-matched-regex</code>:
+							sorts by the length of the text matched
+						</li>
+						<li>
+							<code>regex</code> and <code>sort-numerically</code>: tries to parse the text
+							<b>after</b>
+							the matched text as a number
+						</li>
+						<li>
+							<code>regex</code>, <code>sort-numerically</code> and <code>use-matched-regex</code>:
+							tries to parse the matched text as a number
+						</li>
+						<li>
+							<code>regex</code> and <code>sort-by-float</code>: tries to parse the text
+							<b>after</b>
+							the matched text as a float
+						</li>
+						<li>
+							<code>regex</code>, <code>sort-by-float</code> and <code>use-matched-regex</code>:
+							tries to parse the matched text as a float
+						</li>
 					</ul>
-					<p>{@html subheading.content}</p>
-				{/each}
-			{/if}
-			{#if heading.name === 'Combinations'}
-				<ul>
-					<li>
-						<code>markdown</code>, <code>unique</code>, <code>recursive</code>, <code>reverse</code>
-						work on everything
-					</li>
-					<li>
-						<code>case-insensitive</code> and <code>unique</code>: removes duplicates case
-						insensitively
-					</li>
-					<li>
-						<code>regex</code> and <code>case-insensitive</code>: doesn't make the regex case
-						insensitive, only makes the sort insensitive
-					</li>
-					<li>
-						<code>regex</code> and <code>sort-by-length</code>: sorts by the length of the text
-						<b>after</b> the matched text insensitive
-					</li>
-					<li>
-						<code>regex</code>, <code>sort-by-length</code> and <code>use-matched-regex</code>:
-						sorts by the length of the text matched
-					</li>
-					<li>
-						<code>regex</code> and <code>sort-numerically</code>: tries to parse the text
-						<b>after</b>
-						the matched text as a number
-					</li>
-					<li>
-						<code>regex</code>, <code>sort-numerically</code> and <code>use-matched-regex</code>:
-						tries to parse the matched text as a number
-					</li>
-					<li>
-						<code>regex</code> and <code>sort-by-float</code>: tries to parse the text <b>after</b>
-						the matched text as a float
-					</li>
-					<li>
-						<code>regex</code>, <code>sort-by-float</code> and <code>use-matched-regex</code>: tries
-						to parse the matched text as a float
-					</li>
-				</ul>
-				<p>These do not compute and will throw an error:</p>
-				<ul>
-					<li>Using more than one sorter</li>
-					<li><code>regex</code> and <code>sort-naturally</code></li>
-					<li><code>regex</code> and <code>sort-randomly</code></li>
-					<li>
-						<code>case-insensitive</code> when options include one of:
-						<code>sort-numerically</code>,
-						<code>sort-naturally</code>,
-						<code>sort-randomly</code>,
-						<code>sort-by-float</code>,
-						<code>sort-by-length</code> but does not include <code>unique</code>
-					</li>
-				</ul>
-			{/if}
-		{/each}
+					<p>These do not compute and will throw an error:</p>
+					<ul>
+						<li>Using more than one sorter</li>
+						<li><code>regex</code> and <code>sort-naturally</code></li>
+						<li><code>regex</code> and <code>sort-randomly</code></li>
+						<li>
+							<code>case-insensitive</code> when options include one of:
+							<code>sort-numerically</code>,
+							<code>sort-naturally</code>,
+							<code>sort-randomly</code>,
+							<code>sort-by-float</code>,
+							<code>sort-by-length</code> but does not include <code>unique</code>
+						</li>
+					</ul>
+				{/if}
+			{/each}
+		</div>
 	</section>
 </main>
 
 <style lang="scss">
-	@use '../../lib/styles/colors.scss' as *;
-	@use '../../lib/styles/numerical.scss' as *;
 	@use '../../lib/styles/doc-style-page.scss';
+
+	main {
+		--sidebar-width: 400px;
+	}
 
 	p {
 		margin: 20px 0;
 		line-height: 1.6rem;
+	}
+
+	section > div {
+		--max-width: 100ch;
 	}
 </style>
