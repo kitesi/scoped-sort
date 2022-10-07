@@ -1,0 +1,90 @@
+/*  Start of Shiki Twoslash CSS:
+
+Code blocks structurally look like: 
+
+<pre class='shiki lsp twoslash [theme-name]'>
+  <div class='language-id'>[lang-id]</div>
+    <div class='code-container'>
+      <code>[the code as a series of spans]</code>
+      <a href='playground...'>Try</a> (optional)
+    </div>
+  </pre> 
+*/
+
+pre {
+	overflow-x: auto;
+	position: relative;
+}
+
+pre.shiki {
+	--space: 1em;
+	padding: var(--space) 0;
+	overflow-x: auto;
+}
+
+pre.shiki:hover div.dim,
+pre.shiki:hover div:empty {
+	opacity: 1;
+}
+
+pre.shiki div.dim,
+pre.shiki div:empty {
+	width: 100%;
+	/* opacity: 0.5; */
+}
+
+pre.shiki div.dim,
+pre.shiki div.highlight {
+	margin: 0;
+	padding: 0;
+}
+
+pre.shiki div.highlight {
+	opacity: 1;
+	position: relative;
+	background-color: rgba(135, 203, 230, 0.09);
+	box-shadow: inset 0.12em 0 0 skyblue;
+	width: 100%;
+}
+
+pre.shiki div.line {
+	min-height: 1rem;
+}
+
+/** Don't show the language identifiers */
+pre.shiki .language-id {
+	display: none;
+}
+
+pre .code-container {
+	overflow: auto;
+}
+
+pre code {
+	font-family: 'JetBrains Mono', Menlo, Monaco, Consolas, Courier New, monospace;
+	white-space: pre;
+	-webkit-overflow-scrolling: touch;
+	counter-reset: step;
+	counter-increment: step 0;
+	width: 100%;
+	display: grid;
+}
+
+code .line {
+	flex: 1;
+}
+
+/* https://github.com/shikijs/shiki/issues/3#issuecomment-830564854 */
+code .line::before {
+	content: counter(step);
+	counter-increment: step;
+	width: 1rem;
+	margin-inline: var(--space);
+	display: inline-block;
+	text-align: right;
+	color: rgba(115, 138, 148, 0.4);
+}
+
+pre .code-container:not(:has(code div)) {
+	padding: 0.5em;
+}

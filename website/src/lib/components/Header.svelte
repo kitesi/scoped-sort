@@ -4,7 +4,7 @@
 	import TerminalIcon from './icons/TerminalIcon.svelte';
 	import VscodeIcon from './icons/VscodeIcon.svelte';
 	import HamburgerMenu from './HamburgerMenu.svelte';
-	import { isSidebarOpen } from '../../stores';
+	import { isSidebarOpen } from '$lib/js/stores';
 
 	const routes = {
 		github: 'https://github.com/sixskys/scoped-sort',
@@ -12,6 +12,10 @@
 		cli: 'https://www.npmjs.com/package/string-content-sort-cli',
 		vscode: 'https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort'
 	};
+
+	function closeSidebar() {
+		isSidebarOpen.set(false);
+	}
 </script>
 
 <!-- 
@@ -26,8 +30,8 @@ back to /, :global() and :root styles from /docs or /examples remain
 		<div class="same-website-pages">
 			<nav>
 				<ul>
-					<li><a href="/docs">Docs</a></li>
-					<li><a href="/examples">Examples</a></li>
+					<li><a on:click={closeSidebar} href="/docs">Docs</a></li>
+					<li><a on:click={closeSidebar} href="/examples">Examples</a></li>
 				</ul>
 			</nav>
 		</div>
@@ -35,10 +39,10 @@ back to /, :global() and :root styles from /docs or /examples remain
 		<div class="other-websites">
 			<nav>
 				<ul>
-					<li><a href={routes.github}>Github</a></li>
-					<li><a href={routes.vscode}>Vscode</a></li>
-					<li><a href={routes.npm}>NPM</a></li>
-					<li><a href={routes.cli}>CLI</a></li>
+					<li><a on:click={closeSidebar} href={routes.github}>Github</a></li>
+					<li><a on:click={closeSidebar} href={routes.vscode}>Vscode</a></li>
+					<li><a on:click={closeSidebar} href={routes.npm}>NPM</a></li>
+					<li><a on:click={closeSidebar} href={routes.cli}>CLI</a></li>
 				</ul>
 			</nav>
 		</div>
@@ -48,28 +52,28 @@ back to /, :global() and :root styles from /docs or /examples remain
 
 	<nav class:show={$isSidebarOpen}>
 		<ul>
-			<li><a href="/docs">Docs</a></li>
-			<li><a href="/examples">Examples</a></li>
+			<li><a on:click={closeSidebar} href="/docs">Docs</a></li>
+			<li><a on:click={closeSidebar} href="/examples">Examples</a></li>
 			<li class="has-icon">
-				<a href={routes.vscode} title="vscode package">
+				<a on:click={closeSidebar} href={routes.vscode} title="vscode package">
 					<VscodeIcon size="1.4rem" />
 					<span>Vscode</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.github} title="github repo">
+				<a on:click={closeSidebar} href={routes.github} title="github repo">
 					<GithubIcon size="1.4rem" />
 					<span>Github</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.npm} title="npm package">
+				<a on:click={closeSidebar} href={routes.npm} title="npm package">
 					<NpmIcon size="1.4rem" />
 					<span>NPM</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.cli} title="cli on npm">
+				<a on:click={closeSidebar} href={routes.cli} title="cli on npm">
 					<TerminalIcon size="1.4rem" />
 					<span>CLI</span></a
 				>
