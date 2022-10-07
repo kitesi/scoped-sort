@@ -2,7 +2,7 @@
 	import Header from '$lib/components/Header.svelte';
 	import { sort } from 'string-content-sort';
 
-	import { isSidebarOpen } from '../stores';
+	import { isSidebarOpen } from '$lib/js/stores';
 
 	import type { Options } from 'string-content-sort';
 

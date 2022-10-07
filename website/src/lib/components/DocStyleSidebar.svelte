@@ -1,11 +1,69 @@
 <script lang="ts">
-	import { transformToId } from '../../transform-to-id';
-	import { isSidebarOpen } from '../../stores';
-
-	import type { Heading } from '../../routes/Heading';
 	import HamburgerMenu from './HamburgerMenu.svelte';
+	import SidebarOutlineItem from './SidebarOutlineItem.svelte';
 
-	export let headings: Heading[];
+	import { isSidebarOpen } from '$lib/js/stores';
+
+	import type { OutlineItem } from './outline-item';
+
+	function getItemFromHeading(heading: Element): OutlineItem {
+		return {
+			level: Number.parseInt(heading.tagName[1]),
+			name: heading.textContent || '',
+			id: heading.id,
+			children: []
+		};
+	}
+
+	function searchParent(lookThrough: OutlineItem, lookFor: OutlineItem): OutlineItem | undefined {
+		if (lookThrough === lookFor) return;
+
+		for (const heading of lookThrough.children) {
+			if (heading === lookFor) {
+				return lookThrough;
+			}
+
+			const cache = searchParent(heading, lookFor);
+			if (cache) return cache;
+		}
+	}
+
+	export function transformOutlineHeadings(headings: NodeListOf<Element>) {
+		const outerMostOutlineItem = {
+			id: headings[0].id,
+			name: headings[0].textContent || '',
+			level: -1,
+			children: [] as OutlineItem[]
+		};
+
+		let history: OutlineItem[] = [outerMostOutlineItem];
+
+		for (const heading of headings) {
+			const item = getItemFromHeading(heading);
+
+			if (outerMostOutlineItem.children.length === 0) {
+				outerMostOutlineItem.children.push(item);
+				history.push(item);
+				continue;
+			}
+
+			for (let i = history.length - 1; i >= 0; i--) {
+				if (item.level > history[i].level) {
+					history[i].children.push(item);
+					history.push(item);
+					break;
+				} else if (item.level === history[i].level || i === 1) {
+					searchParent(outerMostOutlineItem, history[i])?.children.push(item);
+					history.push(item);
+					break;
+				}
+			}
+		}
+
+		return outerMostOutlineItem;
+	}
+
+	export let headings: NodeListOf<Element> | null;
 
 	function closeSidebar() {
 		isSidebarOpen.set(false);
@@ -19,31 +77,20 @@
 <nav class:show={$isSidebarOpen}>
 	<ul class="first-level">
 		<li>
-			<a href="/" data-sveltekit-reload>Home</a>
+			<a on:click={closeSidebar} href="/" data-sveltekit-reload>Home</a>
 		</li>
 		<li>
-			<a href="/docs">Documentation</a>
+			<a on:click={closeSidebar} href="/docs">Documentation</a>
 		</li>
 		<li>
-			<a href="/examples">Examples</a>
+			<a on:click={closeSidebar} href="/examples">Examples</a>
 		</li>
 		<hr />
-		{#each headings as heading (heading.name)}
-			<li class="first-level">
-				<a on:click={closeSidebar} href={'#' + transformToId(heading.name)}>{heading.name}</a>
-				{#if heading.children}
-					<ul class="second-lebel">
-						{#each heading.children as subheading}
-							<li class="second-level">
-								<a on:click={closeSidebar} href={'#' + transformToId(subheading.name)}
-									>{subheading.name}</a
-								>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-			</li>
-		{/each}
+		{#if headings}
+			{#each transformOutlineHeadings(headings).children as heading}
+				<SidebarOutlineItem item={heading} />
+			{/each}
+		{/if}
 	</ul>
 </nav>
 
@@ -51,14 +98,14 @@
 	@use '../styles/sizes.scss' as *;
 
 	div {
-		position: absolute;
+		position: fixed;
 		top: 1em;
 		right: 1em;
 		z-index: 2;
 	}
 
 	nav {
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
 		height: 100%;
@@ -72,6 +119,7 @@
 		z-index: 1;
 		padding: 1em;
 		font-size: min(1.25rem, 20px);
+		overflow-y: auto;
 	}
 
 	nav.show {
@@ -96,11 +144,7 @@
 	}
 
 	.first-level {
-		font-weight: 700;
-	}
-
-	li.second-level {
-		font-weight: 100;
+		// font-weight: 700;
 	}
 
 	li {
@@ -108,14 +152,6 @@
 		padding: 5px;
 		padding-left: 15px;
 		max-width: 90%;
-	}
-
-	li.first-level a {
-		font-weight: 700;
-	}
-
-	li.second-level a {
-		font-weight: 400;
 	}
 
 	@media screen and (min-width: $medium-screen) {

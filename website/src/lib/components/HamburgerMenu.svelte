@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { isSidebarOpen } from '../../stores';
+	import { isSidebarOpen } from '$lib/js/stores';
 </script>
 
 <button

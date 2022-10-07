@@ -19,9 +19,9 @@ section::-webkit-scrollbar {
 }
 
 section > div {
-	max-width: var(--max-width);
+	max-width: var(--max-content-width);
 	margin-inline: auto;
-	padding-block: min(100px, calc((100% - var(--max-width)) / 2));
+	padding-block: min(100px, calc((100% - var(--max-content-width)) / 2));
 }
 
 h2:not(:first-of-type) {
@@ -32,24 +32,28 @@ h2 {
 	font-size: 1.75rem;
 }
 
+h2 + h3 {
+	margin-top: 0.5em;
+}
+
 p {
 	margin: 1em 0;
 	line-height: 1.6rem;
 	font-weight: 400;
 }
 
-ul {
+section ul {
 	padding-left: 1.5rem;
 	margin: 10px 0;
 	line-height: 1.8rem;
 }
 
-li {
+section li {
 	font-size: 0.9rem;
 }
 
-section :global {
-	code:not([class*='language-']) {
+section {
+	*:not(.code-container) > code {
 		display: inline-block;
 		background-color: var(--clr-bg-inline-code-block) !important;
 		color: var(--clr-bg-inline-code-block-content);
@@ -67,11 +71,16 @@ section :global {
 	}
 
 	pre code {
-		font-size: 0.9rem;
+		font-size: 0.8rem;
 	}
 
 	a {
 		color: var(--clr-link);
+	}
+
+	pre {
+		background-color: var(--clr-bg-code-block) !important;
+		color: var(--clr-bg-code-block-content) !important;
 	}
 }
 

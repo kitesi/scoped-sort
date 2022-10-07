@@ -1,3 +1,4 @@
+// export const prerender = true;
 export const load = ({ url }: { url: URL }) => {
 	const currentRoute = url.pathname;
 
@@ -5,5 +6,3 @@ export const load = ({ url }: { url: URL }) => {
 		currentRoute
 	};
 };
-
-export const prerender = true;

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { LayoutData } from './$types';
 
-	import '$lib/styles/prism-tommorow-night.css';
 	import '$lib/styles/app.scss';
 	import '$lib/styles/colors.css';
 
@@ -11,7 +10,7 @@
 </script>
 
 {#key data.currentRoute}
-	<div in:fade={{ duration: 150, delay: 150 }} out:fade={{ duration: 150 }}>
+	<div in:fade={{ duration: 250, delay: 0 }} out:fade={{ duration: 250 }}>
 		<slot />
 	</div>
 {/key}
