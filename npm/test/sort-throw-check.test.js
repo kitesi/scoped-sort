@@ -47,11 +47,6 @@ test('testing if throws', (t) => {
     );
 
     helper(
-        { sortNaturally: true, regexFilter: /me/ },
-        'throws on natural + pattern'
-    );
-
-    helper(
         { caseInsensitive: true, sortNumerically: true, regexFilter: /\d+/ },
         'still throws on in when pattern is specified'
     );
@@ -66,6 +61,14 @@ test('testing if throws', (t) => {
             }),
         'does not throw on in when u is specified'
     );
+
+    t.doesNotThrow(() => {
+        sort('', {
+            sortNaturally: true,
+            regexFilter: /my/,
+            reportErrors: true,
+        });
+    }, 'does not throw on natural + pattern');
 
     t.end();
 });
