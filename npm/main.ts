@@ -30,10 +30,10 @@ export interface Options {
     sortByFloat?: boolean;
     /** Sorts based on the length of each line, short to long. */
     sortByLength?: boolean;
-    /** Combined with .regex, this will instead sort using the matched text rather than the text afer. */
-    useMatchedRegex?: boolean;
     /** A regex to match text in each item/line, the sorter will sort based on the text after the match. text that do no match will be left in place, and will be at the top. The regex language is javascript */
     regexFilter?: RegExp;
+    /** Combined with .regex, this will instead sort using the matched text rather than the text afer. */
+    useMatchedRegex?: boolean;
     /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
     sectionSeperator?: RegExp;
     /** if true, checks for option errors and throws if one or more is found */
