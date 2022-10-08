@@ -6,19 +6,37 @@ export const floatRegex = /[+-]?([0-9]*[.])?[0-9]+/;
 const isBlankLineRegexTest = /^\s*$/;
 
 export interface Options {
-    recursive?: boolean;
-    reverse?: boolean;
-    unique?: boolean;
+    /** Makes the sort case insensitively. */
     caseInsensitive?: boolean;
-    sortNumerically?: boolean;
-    sortRandomly?: boolean;
-    sortNaturally?: boolean;
-    sortByFloat?: boolean;
-    sortByLength?: boolean;
+    /**
+     * This project takes scope/indentation into account. Most sorters just read line by line, so when you have nested lists you end up with undesired sorts.
+
+     * This program by default keeps nested content in place and does not sort the inner items, but setting this option to true will sort the inner items.
+     */
+    recursive?: boolean;
+    /** Reverses the sort after completely finishing. */
+    reverse?: boolean;
+    /** Removes duplicate items. */
+    unique?: boolean;
+    /** Treats the text as a markdown list. You won’t need this option for most markdown lists but in certain instances you will. */
     markdown?: boolean;
+    /** Sorts based on the number in each line. All the lines which do not have a number will be left in place. */
+    sortNumerically?: boolean;
+    /** Sorts randomly (psuedo). */
+    sortRandomly?: boolean;
+    /** Sorts based on the [natural sort](https://en.wikipedia.org/wiki/Natural_sort_order). */
+    sortNaturally?: boolean;
+    /** Sorts based on the float in each line. All the lines which do not have a float will be left in place. */
+    sortByFloat?: boolean;
+    /** Sorts based on the length of each line, short to long. */
+    sortByLength?: boolean;
+    /** Combined with .regex, this will instead sort using the matched text rather than the text afer. */
     useMatchedRegex?: boolean;
+    /** A regex to match text in each item/line, the sorter will sort based on the text after the match. text that do no match will be left in place, and will be at the top. The regex language is javascript */
     regexFilter?: RegExp;
+    /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
     sectionSeperator?: RegExp;
+    /** if true, checks for option errors and throws if one or more is found */
     reportErrors?: boolean;
 }
 
@@ -29,14 +47,8 @@ function calculateSpaceLength(str: string) {
 function validateOptions(options: Options) {
     const errors: string[] = [];
 
-    if (options.regexFilter) {
-        if (options.sortRandomly) {
-            errors.push("You can't sort by random and use a regex pattern");
-        }
-
-        if (options.sortNaturally) {
-            errors.push("You can't sort naturally and use a regex pattern");
-        }
+    if (options.regexFilter && options.sortRandomly) {
+        errors.push("You can't sort by random and use a regex pattern");
     }
 
     const sorterDescriptions: {
@@ -76,76 +88,31 @@ function validateOptions(options: Options) {
     return errors;
 }
 
-function generateSortByRegex(regex: RegExp, options: Options) {
-    return function (a: string, b: string) {
-        const matchedA = a.match(regex);
-        const matchedB = b.match(regex);
+function getModifiedSections(sections: string[], options: Options) {
+    const collators = {
+        caseInsensitive: new Intl.Collator('en', { sensitivity: 'base' }),
+        natural: new Intl.Collator('en', {
+            sensitivity: 'base',
+            numeric: true,
+        }),
+    };
 
-        if (!matchedB || typeof matchedB.index === 'undefined') {
-            return 1;
-        }
+    if (options.sortNumerically || options.sortByFloat) {
+        options.useMatchedRegex = true;
+    }
 
-        if (!matchedA || typeof matchedA.index === 'undefined') {
-            return -1;
-        }
-
-        let compareA = matchedA[0];
-        let compareB = matchedB[0];
-
-        if (!options.useMatchedRegex) {
-            compareA = a.slice(matchedA.index + compareA.length);
-            compareB = b.slice(matchedB.index + compareB.length);
-        }
-
-        if (options.caseInsensitive) {
-            compareA = compareA.toLowerCase();
-            compareB = compareB.toLowerCase();
-        }
-
+    if (!options.regexFilter) {
         if (options.sortNumerically) {
-            return parseInt(compareA) - parseInt(compareB);
+            options.regexFilter = /-?\d+/;
         }
 
         if (options.sortByFloat) {
-            return parseFloat(compareA) - parseFloat(compareB);
+            options.regexFilter = floatRegex;
         }
+    }
 
-        if (options.sortByLength) {
-            return [...compareA].length - [...compareB].length;
-        }
-
-        if (compareA > compareB) {
-            return 1;
-        } else if (compareB > compareA) {
-            return -1;
-        }
-
-        return 0;
-    };
-}
-
-function getModifiedSections(sections: string[], options: Options) {
-    if (options.regexFilter) {
-        sections.sort(generateSortByRegex(options.regexFilter, options));
-    } else if (options.sortNaturally) {
-        sections.sort((a, b) =>
-            a.localeCompare(b, 'en', { sensitivity: 'base', numeric: true })
-        );
-    } else if (options.sortNumerically) {
-        sections.sort(
-            generateSortByRegex(/-?\d+/, { ...options, useMatchedRegex: true })
-        );
-    } else if (options.sortByFloat) {
-        sections.sort(
-            generateSortByRegex(floatRegex, {
-                ...options,
-                useMatchedRegex: true,
-            })
-        );
-    } else if (options.sortByLength) {
-        sections.sort((a, b) => [...a].length - [...b].length);
-    } else if (options.sortRandomly) {
-        //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
+    //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
+    if (options.sortRandomly) {
         let currentIndex = sections.length;
         let randomIndex: number;
 
@@ -158,12 +125,52 @@ function getModifiedSections(sections: string[], options: Options) {
                 sections[currentIndex],
             ];
         }
-    } else if (options.caseInsensitive) {
-        // faster: https://stackoverflow.com/a/52369951/15021883
-        const collator = new Intl.Collator('en', { sensitivity: 'base' });
-        sections.sort((a, b) => collator.compare(a, b));
     } else {
-        sections.sort();
+        sections.sort((a, b) => {
+            let compareA = a;
+            let compareB = b;
+
+            if (options.regexFilter) {
+                let matchedA = a.match(options.regexFilter);
+                let matchedB = b.match(options.regexFilter);
+
+                if (!matchedA || typeof matchedA.index === 'undefined') {
+                    return -1;
+                }
+
+                if (!matchedB || typeof matchedB.index === 'undefined') {
+                    return 1;
+                }
+
+                if (options.useMatchedRegex) {
+                    compareA = matchedA[0];
+                    compareB = matchedB[0];
+                } else {
+                    compareA = a.slice(matchedA.index + matchedA[0].length);
+                    compareB = b.slice(matchedB.index + matchedB[0].length);
+                }
+            }
+
+            if (options.caseInsensitive) {
+                return collators.caseInsensitive.compare(compareA, compareB);
+            } else if (options.sortNumerically) {
+                return parseInt(compareA) - parseInt(compareB);
+            } else if (options.sortNaturally) {
+                return collators.natural.compare(compareA, compareB);
+            } else if (options.sortByFloat) {
+                return parseFloat(compareA) - parseFloat(compareB);
+            } else if (options.sortByLength) {
+                return [...compareA].length - [...compareB].length;
+            }
+
+            if (compareA > compareB) {
+                return 1;
+            } else if (compareB > compareA) {
+                return -1;
+            }
+
+            return 0;
+        });
     }
 
     if (options.reverse) {

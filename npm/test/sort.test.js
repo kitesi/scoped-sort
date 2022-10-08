@@ -462,6 +462,34 @@ no number here
 z123`
     );
 
+    testString(
+        t,
+        sort(
+            `c12 my a28
+b23 my 95
+a51 my88
+a100  my 01
+d91 my 22
+z123
+i could only see her once
+g12
+a20
+no number herea`,
+            { sortNaturally: true, regexFilter: /my / }
+        ),
+        `no number herea
+a20
+g12
+i could only see her once
+z123
+a51 my88
+a100  my 01
+d91 my 22
+b23 my 95
+c12 my a28`,
+        'natural with regex'
+    );
+
     t.end();
 });
 
