@@ -1,14 +1,13 @@
 {
-    "files": ["main.ts"],
+    "include": ["src/**/*"],
     "compilerOptions": {
         "strict": true,
         "noImplicitAny": true,
-        "removeComments": true,
         "declaration": true,
         "checkJs": true,
         "target": "ES2015",
         "module": "CommonJS",
-        "lib": ["ES2019"],
+        "lib": ["ES2019", "DOM"],
         "outDir": "dist"
     }
 }

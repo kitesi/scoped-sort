@@ -174,7 +174,7 @@ Commands
 test('case insensitive', (t) => {
     /** @type {Options} */
     const options = {
-        caseInsensitive: true,
+        sorter: 'case-insensitive',
     };
 
     testString(
@@ -273,7 +273,7 @@ zea
 
 test('sort numerically', (t) => {
     /** @type {Options} */
-    const options = { sortNumerically: true };
+    const options = { sorter: 'numerical' };
 
     testString(
         t,
@@ -362,7 +362,7 @@ Cats have 9 lives`
 test('length', (t) => {
     testString(
         t,
-        sort(inputs.regex.media, { sortByLength: true }),
+        sort(inputs.regex.media, { sorter: 'length' }),
         `media zn
 medical a
 media hater
@@ -376,7 +376,7 @@ the media Decimated my life`,
 
     testString(
         t,
-        sort(inputs.regex.number, { sortByLength: true }),
+        sort(inputs.regex.number, { sorter: 'length' }),
         `7's the game
 Cats have 9 lives
 top 10 anime betrayals
@@ -389,7 +389,7 @@ It's been 18 years since I've felt the touch of a woman`,
 
     testString(
         t,
-        sort(inputs.multiByteCharacters, { sortByLength: true }),
+        sort(inputs.multiByteCharacters, { sorter: 'length' }),
         inputs.multiByteCharacters,
         'multi byte characters'
     );
@@ -400,7 +400,7 @@ It's been 18 years since I've felt the touch of a woman`,
 test('floats', (t) => {
     testString(
         t,
-        sort(inputs.simpleFloatList, { sortByFloat: true }),
+        sort(inputs.simpleFloatList, { sorter: 'float' }),
         `1.20 max
 dax 1.61
 dax 2.3 hax
@@ -423,13 +423,13 @@ test('random', (t) => {
     for (let i = 0; i < 1000; i++) {
         nonRecursiveResults.add(
             sort(inputs.multiNestedList, {
-                sortRandomly: true,
+                sorter: 'random',
             })
         );
 
         recursiveResults.add(
             sort(inputs.multiNestedList, {
-                sortRandomly: true,
+                sorter: 'random',
                 recursive: true,
             })
         );
@@ -449,7 +449,7 @@ test('random', (t) => {
 test('sort naturally', (t) => {
     testString(
         t,
-        sort(inputs.simpleNaturalList, { sortNaturally: true }),
+        sort(inputs.simpleNaturalList, { sorter: 'natural' }),
         `a20
 a51
 a100
@@ -475,7 +475,7 @@ i could only see her once
 g12
 a20
 no number herea`,
-            { sortNaturally: true, regexFilter: /my / }
+            { sorter: 'natural', regexFilter: /my / }
         ),
         `no number herea
 a20
@@ -659,7 +659,10 @@ Commands
 test('unique, case insensitive, recursive', (t) => {
     testString(
         t,
-        sort(inputs.duplicates.simple, { caseInsensitive: true, unique: true }),
+        sort(inputs.duplicates.simple, {
+            sorter: 'case-insensitive',
+            unique: true,
+        }),
         `do
 lol
 make
@@ -671,7 +674,7 @@ There`,
     testString(
         t,
         sort(inputs.duplicates.nestedListWithDescriptions, {
-            caseInsensitive: true,
+            sorter: 'case-insensitive',
             unique: true,
         }),
         `do
@@ -693,7 +696,7 @@ There`,
     testString(
         t,
         sort(inputs.duplicates.nestedListWithDescriptions, {
-            caseInsensitive: true,
+            sorter: 'case-insensitive',
             unique: true,
             recursive: true,
         }),
@@ -714,7 +717,7 @@ There`,
     testString(
         t,
         sort(inputs.duplicates.oneLevelDeepNestedList, {
-            caseInsensitive: true,
+            sorter: 'case-insensitive',
             unique: true,
             recursive: true,
         }),
@@ -750,7 +753,7 @@ test('others with recursive', (t) => {
     testString(
         t,
         sort(inputs.duplicates.oneLevelDeepNestedList, {
-            caseInsensitive: true,
+            sorter: 'case-insensitive',
             recursive: true,
         }),
         `do
@@ -799,7 +802,7 @@ test('length with regex', (t) => {
     testString(
         t,
         sort(inputs.regex.number, {
-            sortByLength: true,
+            sorter: 'length',
             regexFilter: regexInputNumbersMatch,
         }),
         `the matched text isn't here
@@ -815,7 +818,7 @@ It's been 18 years since I've felt the touch of a woman`,
     testString(
         t,
         sort(inputs.regex.number, {
-            sortByLength: true,
+            sorter: 'length',
             regexFilter: regexInputNumbersMatch,
             useMatchedRegex: true,
         }),
@@ -832,7 +835,7 @@ It's been 18 years since I've felt the touch of a woman`,
     testString(
         t,
         sort(inputs.regex.media, {
-            sortByLength: true,
+            sorter: 'length',
             regexFilter: regexInputMediaMatch,
         }),
         `the matched text isn't here
@@ -849,7 +852,7 @@ the media Decimated my life`,
     testString(
         t,
         sort(inputs.regex.media, {
-            sortByLength: true,
+            sorter: 'length',
             regexFilter: regexInputMediaMatch,
             useMatchedRegex: true,
         }),
@@ -873,7 +876,7 @@ test('regex + n', (t) => {
         sort(inputs.regex.number, {
             regexFilter: regexInputNumbersMatch,
             useMatchedRegex: true,
-            sortNumerically: true,
+            sorter: 'numerical',
         }),
         `the matched text isn't here
 An approximation of pi is 3.1415
