@@ -1,13 +1,34 @@
-const getValuesRegex = /^(?<indentation>\s*)(?<char>[-*+])?/;
-// from https://stackoverflow.com/a/12643073/, doesn't support more complex floats
-// like 2.3e23, I'm not too experienced with those floats so I'll hold off for now
-export const floatRegex = /[+-]?([0-9]*[.])?[0-9]+/;
+import { parseArgsIntoOptions, tokenizeArgString } from './parser';
+import {
+    commentRegexs,
+    floatRegex,
+    getValuesRegex,
+    isBlankLineRegexTest,
+} from './utils';
 
-const isBlankLineRegexTest = /^\s*$/;
+export { parseArgsIntoOptions, tokenizeArgString };
 
 export interface Options {
-    /** Makes the sort case insensitively. */
-    caseInsensitive?: boolean;
+    /**
+     * case-insensitive: sorts case insensitively
+     *
+     * natural: sorts based on the [natural sort](https://en.wikipedia.org/wiki/Natural_sort_order)
+     *
+     * numerical: sorts based on the number in each line
+     *
+     * float: sorts based on the float in each line
+     *
+     * length: sorts based on the length of each item, short to long
+     *
+     * random: sorts randomly (psuedo)
+     */
+    sorter?:
+        | 'case-insensitive'
+        | 'natural'
+        | 'numerical'
+        | 'float'
+        | 'length'
+        | 'random';
     /**
      * This project takes scope/indentation into account. Most sorters just read line by line, so when you have nested lists you end up with undesired sorts.
 
@@ -20,16 +41,6 @@ export interface Options {
     unique?: boolean;
     /** Treats the text as a markdown list. You won’t need this option for most markdown lists but in certain instances you will. */
     markdown?: boolean;
-    /** Sorts based on the number in each line. All the lines which do not have a number will be left in place. */
-    sortNumerically?: boolean;
-    /** Sorts randomly (psuedo). */
-    sortRandomly?: boolean;
-    /** Sorts based on the [natural sort](https://en.wikipedia.org/wiki/Natural_sort_order). */
-    sortNaturally?: boolean;
-    /** Sorts based on the float in each line. All the lines which do not have a float will be left in place. */
-    sortByFloat?: boolean;
-    /** Sorts based on the length of each line, short to long. */
-    sortByLength?: boolean;
     /** A regex to match text in each item/line, the sorter will sort based on the text after the match. text that do no match will be left in place, and will be at the top. The regex language is javascript */
     regexFilter?: RegExp;
     /** Combined with .regex, this will instead sort using the matched text rather than the text afer. */
@@ -47,42 +58,8 @@ function calculateSpaceLength(str: string) {
 function validateOptions(options: Options) {
     const errors: string[] = [];
 
-    if (options.regexFilter && options.sortRandomly) {
+    if (options.regexFilter && options.sorter === 'random') {
         errors.push("You can't sort by random and use a regex pattern");
-    }
-
-    const sorterDescriptions: {
-        [Key in keyof Options]: string;
-    } = {
-        sortNaturally: 'naturally',
-        sortByFloat: 'by float',
-        sortByLength: 'by length',
-        sortNumerically: 'numerically',
-        sortRandomly: 'randomly',
-    };
-
-    const possibleSorters = Object.keys(
-        sorterDescriptions
-    ) as (keyof Options)[];
-    const usedSorters: (keyof Options)[] = [];
-
-    for (const sorter of possibleSorters) {
-        if (options[sorter]) {
-            usedSorters.push(sorter);
-        }
-    }
-
-    if (usedSorters.length > 1) {
-        errors.push(
-            "You can't use more than one sorter: " +
-                usedSorters.map((s) => sorterDescriptions[s]).join(', ')
-        );
-    }
-
-    if (usedSorters.length >= 1 && options.caseInsensitive && !options.unique) {
-        errors.push(
-            "You can't use sort case-insensitive and a sorter without the unique option"
-        );
     }
 
     return errors;
@@ -97,22 +74,22 @@ function getModifiedSections(sections: string[], options: Options) {
         }),
     };
 
-    if (options.sortNumerically || options.sortByFloat) {
+    if (options.sorter === 'numerical' || options.sorter === 'float') {
         options.useMatchedRegex = true;
     }
 
     if (!options.regexFilter) {
-        if (options.sortNumerically) {
+        if (options.sorter === 'numerical') {
             options.regexFilter = /-?\d+/;
         }
 
-        if (options.sortByFloat) {
+        if (options.sorter === 'float') {
             options.regexFilter = floatRegex;
         }
     }
 
     //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
-    if (options.sortRandomly) {
+    if (options.sorter === 'random') {
         let currentIndex = sections.length;
         let randomIndex: number;
 
@@ -151,16 +128,20 @@ function getModifiedSections(sections: string[], options: Options) {
                 }
             }
 
-            if (options.caseInsensitive) {
-                return collators.caseInsensitive.compare(compareA, compareB);
-            } else if (options.sortNumerically) {
-                return parseInt(compareA) - parseInt(compareB);
-            } else if (options.sortNaturally) {
-                return collators.natural.compare(compareA, compareB);
-            } else if (options.sortByFloat) {
-                return parseFloat(compareA) - parseFloat(compareB);
-            } else if (options.sortByLength) {
-                return [...compareA].length - [...compareB].length;
+            switch (options.sorter) {
+                case 'case-insensitive':
+                    return collators.caseInsensitive.compare(
+                        compareA,
+                        compareB
+                    );
+                case 'natural':
+                    return collators.natural.compare(compareA, compareB);
+                case 'numerical':
+                    return parseInt(compareA) - parseInt(compareB);
+                case 'float':
+                    return parseFloat(compareA) - parseFloat(compareB);
+                case 'length':
+                    return [...compareA].length - [...compareB].length;
             }
 
             if (compareA > compareB) {
@@ -182,9 +163,10 @@ function getModifiedSections(sections: string[], options: Options) {
         const unique = [];
 
         for (const section of sections) {
-            const adjustedSection = options.caseInsensitive
-                ? section.toLowerCase()
-                : section;
+            const adjustedSection =
+                options.sorter === 'case-insensitive'
+                    ? section.toLowerCase()
+                    : section;
 
             if (!haveSeen.has(adjustedSection)) {
                 unique.push(section);
@@ -209,7 +191,7 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
         const indentation = match?.groups?.indentation || '';
         const listChar = match?.groups?.char;
 
-        // in the main function doesn't check if the indentation is empty,
+        // in the main function, it doesn't check if the indentation is empty,
         // because that's fine for the outermost level, since this is an innerSection
         // sort, it can't be just an empty indentation or ''
         if (!currentIndentation && indentation !== '') {
@@ -245,6 +227,20 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
     };
 }
 
+/**
+ * Main functionality of package, sorts text and takes in options.
+ *
+ * ```js
+ * const result = sort(`Naruto
+ * Bleach
+ * Goku`);
+ *
+ * result;
+ * // Bleach
+ * // Goku
+ * // Naruto
+ * ```
+ */
 export function sort(text: string, options: Options = {}) {
     if (options.reportErrors) {
         const errors = validateOptions(options);
@@ -295,4 +291,151 @@ export function sort(text: string, options: Options = {}) {
     }
 
     return getModifiedSections(sections, options).join('\n');
+}
+
+interface CommentSection {
+    startLine: number;
+    endLine: number | null;
+    hasChanged: boolean;
+}
+
+/**
+ * Sorts [sort-comments](https://scopedsort.netlify.app/docs#sort-comments) inside of the provided content.
+ *
+ * ```js
+ * const result = sortComments(`// { sort-start --numerical-sort }
+ * there are 200 people here
+ * very much indeed, compared to our 20 back home
+ * // { sort-end }`);
+ *
+ * result;
+ * // // { sort-start --numerical-sort }
+ * // very much indeed, compared to our 20 back home
+ * // there are 200 people here
+ * // // { sort-end }`
+ * ```
+ */
+export function sortComments(content: string): {
+    commentSections: CommentSection[];
+    errors: string[];
+    result: string;
+} {
+    const lines = content.split('\n');
+    const commentSections: CommentSection[] = [];
+    const errors: string[] = [];
+    let result = content;
+
+    let currentStartLine: number | undefined = undefined;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (line.includes('{ sort-ignore-file }')) {
+            return { commentSections, errors, result };
+        }
+
+        if (commentRegexs.sortStart.test(line)) {
+            if (typeof currentStartLine !== 'undefined') {
+                errors.push(
+                    `Recieved sort-start comment at line: ${
+                        i + 1
+                    } but didn't finish the one at ${currentStartLine}`
+                );
+
+                return { commentSections, errors, result };
+            }
+
+            currentStartLine = i;
+
+            commentSections.push({
+                startLine: i,
+                endLine: null,
+                hasChanged: false,
+            });
+        } else if (commentRegexs.sortEnd.test(line)) {
+            if (typeof currentStartLine === 'undefined') {
+                errors.push(
+                    `Recieved sort-end comment at line: ${
+                        i + 1
+                    } but didn't receive any sort-start`
+                );
+
+                return { commentSections, errors, result };
+            }
+
+            commentSections[commentSections.length - 1].endLine = i;
+
+            const section = lines.slice(currentStartLine + 1, i).join('\n');
+            const sortArgs =
+                lines[currentStartLine].match(commentRegexs.sortStart)?.groups
+                    ?.args || '';
+            let options: Options = {};
+
+            if (sortArgs !== '') {
+                const optionsResult = parseArgsIntoOptions(
+                    tokenizeArgString(sortArgs)
+                );
+
+                if (optionsResult.errors.length > 0) {
+                    errors.push(
+                        ...optionsResult.errors.map(
+                            (e) => e + ' at line ' + (currentStartLine! + 1)
+                        )
+                    );
+                }
+
+                if (optionsResult.positionals.length > 0) {
+                    errors.push(
+                        'Recieved unknown positional arguments: ' +
+                            optionsResult.positionals.join(', ')
+                    );
+                }
+
+                if (
+                    optionsResult.positionals.length > 0 ||
+                    optionsResult.errors.length > 0
+                ) {
+                    currentStartLine = undefined;
+                    continue;
+                }
+
+                options = optionsResult.options;
+            }
+
+            try {
+                const sortedSection = sort(section, options);
+
+                if (sortedSection !== section) {
+                    commentSections[commentSections.length - 1].hasChanged =
+                        true;
+
+                    const deleteCount = i - currentStartLine - 1;
+                    const itemsToAdd = sortedSection.split(/\r?\n/);
+
+                    lines.splice(
+                        currentStartLine + 1,
+                        deleteCount,
+                        ...itemsToAdd
+                    );
+                    i -= deleteCount - itemsToAdd.length;
+                }
+            } catch (err: any) {
+                errors.push(err);
+            }
+
+            currentStartLine = undefined;
+        }
+    }
+
+    if (typeof currentStartLine !== 'undefined') {
+        errors.push(
+            'Did not finish sort-start comment at line: ' +
+                (currentStartLine + 1)
+        );
+    }
+    return {
+        errors,
+        commentSections: commentSections,
+        result: lines.join('\n'),
+    };
 }

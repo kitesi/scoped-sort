@@ -139,7 +139,7 @@ Meet me at the dark ally @ 2pm`,
 Hello 7, today's your lucky day
 To recieve your prize of $200
 You are our 5000th customer!`,
-        options: { sortNumerically: true },
+        options: { sorter: 'numerical' },
     },
     uniqueReverse: {
         input: `- Hot Dog
@@ -209,7 +209,7 @@ You are our 5000th customer!`,
   - Caroons
     - Family Guy
     - Simpsons`,
-        options: { recursive: true, sortNaturally: true },
+        options: { recursive: true, sorter: 'natural' },
     },
 };
 
