@@ -1,21 +1,26 @@
 import type { Options } from './main';
 
-function parseStringAsRegex(arg?: string) {
-    if (typeof arg === 'undefined') {
-        return undefined;
+function parseStringAsRegex(arg: string) {
+    if (!/\/.+\/[a-zA-Z]*/.test(arg)) {
+        throw new Error(`Expected regex, got: '${arg}'`);
     }
 
-    if (arg.startsWith('/') && arg.endsWith('/')) {
-        try {
-            return new RegExp(arg.slice(1, arg.length - 1));
-        } catch (e) {
-            throw new Error(
-                `Tried to parse "${arg}" as a regex, failed with: ` +
-                    (e as Error)?.message
-            );
-        }
-    } else {
-        throw new Error(`Could not understand argument: '${arg}'`);
+    const indexOfEndingSlash = arg.lastIndexOf('/');
+    const flags = arg.slice(indexOfEndingSlash + 1);
+
+    if (flags !== 'i' && flags !== '') {
+        throw new Error(
+            `The only regex flag allowed is 'i'. Recieved: '${flags}'`
+        );
+    }
+
+    try {
+        return new RegExp(arg.slice(1, indexOfEndingSlash), flags);
+    } catch (e) {
+        throw new Error(
+            `Tried to parse "${arg}" as a regex, failed with: ` +
+                (e as Error)?.message
+        );
     }
 }
 
@@ -24,11 +29,8 @@ function parseStringAsRegex(arg?: string) {
  *
  * ```js
  * tokenizeArgString('--random --hi there you -su');
- * // => ['--random', '--hi', 'there', 'you', '-s', '-u']
+ * // => ['--random', '--hi', 'there', 'you', '-su']
  * ```
- *
- * As you might see, '-su' turns into `['-s', '-u']`. `parseArgsIntoOptions()`
- * will not handle '-su' correctly.
  */
 export function tokenizeArgString(argString: string): string[] {
     const args: string[] = [];
@@ -126,7 +128,6 @@ export function parseArgsIntoOptions(
 
             if (shortHandOptions && shortHandOptions.length > 0) {
                 args.splice(i, 1, ...shortHandOptions.map((e) => '-' + e));
-                console.log(args);
                 i--;
                 continue;
             }
@@ -192,7 +193,13 @@ export function parseArgsIntoOptions(
                 break;
             case '--regex':
                 requireNextArg(i);
-                options.regexFilter = parseStringAsRegex(args[i + 1]);
+
+                try {
+                    options.regexFilter = parseStringAsRegex(args[i + 1]);
+                } catch (err: any) {
+                    errors.push(err.message);
+                }
+
                 break;
             case '--use-matched-regex':
             case '-p':
@@ -201,7 +208,18 @@ export function parseArgsIntoOptions(
                 break;
             case '--section-seperator':
                 requireNextArg(i);
-                options.sectionSeperator = parseStringAsRegex(args[i + 1]);
+
+                try {
+                    options.sectionSeperator = parseStringAsRegex(args[i + 1]);
+                } catch (err: any) {
+                    errors.push(err.message);
+                }
+
+                break;
+            case '--non-matching-to-bottom':
+            case '-a':
+                options.nonMatchingToBottom = assumedBoolValue;
+                consumedBool = true;
                 break;
             default:
                 matchedCase = false;

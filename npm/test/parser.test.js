@@ -2,6 +2,58 @@
 const { tokenizeArgString, parseArgsIntoOptions } = require('../dist/parser');
 const test = require('tape');
 
+test('test regex parser', (t) => {
+    /**
+     * @param {string} input
+     * @param {RegExp} expected
+     * @param {string} msg
+     */
+    function expectRegex(input, expected, msg) {
+        t.deepEquals(
+            parseArgsIntoOptions(tokenizeArgString('--regex ' + input)).options
+                .regexFilter,
+            expected,
+            msg
+        );
+    }
+
+    /**
+     * @param {string} input
+     * @param {string} expected
+     * @param {string} msg
+     */
+    function expectError(input, expected, msg) {
+        t.deepEquals(
+            parseArgsIntoOptions(tokenizeArgString('--regex ' + input)).errors,
+            [expected],
+            msg
+        );
+    }
+
+    expectRegex('/\\d/', /\d/, 'regular regex');
+    expectRegex('/\\d/i', /\d/i, 'regular regex');
+
+    // might seem weird how the program lists 'd' or 'd/' as the input,
+    // this is because the tokenizer ignores \\ if not inside of a regex
+    // /\\d is still outputed as /\\d because of the starting slash
+    //
+    // this is an issue, and thinking of how to fix it
+    expectError(
+        '\\d',
+        "Expected regex, got: 'd'",
+        'no starting and ending slash'
+    );
+    expectError('/\\d', "Expected regex, got: '/\\d'", 'no ending slash');
+    expectError('\\d/', "Expected regex, got: 'd/'", 'no starting slash');
+    expectError(
+        '/\\d/m',
+        "The only regex flag allowed is 'i'. Recieved: 'm'",
+        'invalid flag'
+    );
+
+    t.end();
+});
+
 test('string argument tokenizer', (t) => {
     t.deepEquals(
         tokenizeArgString('--hi there --my name is jake'),
@@ -144,6 +196,10 @@ test('arg array into options (single options)', (t) => {
 
     expectBooleanOptionsWithSingleAndAlias('--use-matched-regex', '-p', {
         useMatchedRegex: true,
+    });
+
+    expectBooleanOptionsWithSingleAndAlias('--non-matching-to-bottom', '-a', {
+        nonMatchingToBottom: true,
     });
 
     t.end();

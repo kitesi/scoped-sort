@@ -888,6 +888,24 @@ It's been 18 years since I've felt the touch of a woman`,
         'use number regex, use matched'
     );
 
+    testString(
+        t,
+        sort(inputs.regex.number, {
+            regexFilter: regexInputNumbersMatch,
+            useMatchedRegex: true,
+            sorter: 'numerical',
+            nonMatchingToBottom: true,
+        }),
+        `An approximation of pi is 3.1415
+King henry had 6 wives
+7's the game
+Cats have 9 lives
+top 10 anime betrayals
+It's been 18 years since I've felt the touch of a woman
+the matched text isn't here`,
+        'use number regex, use matched, matched to bottom'
+    );
+
     // not sure how to implement it, maybe something like --use-match-group {number}?
     //     testString(
     //         t,

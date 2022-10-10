@@ -47,6 +47,12 @@ export interface Options {
     useMatchedRegex?: boolean;
     /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
     sectionSeperator?: RegExp;
+    /**
+     * By default items that do not match a sorter (numerical, float, ...) or
+     * don't match the specified `.regexFilter` will stay in place but be at the
+     * top. If this is set to true, it will be at the bottom
+     */
+    nonMatchingToBottom?: boolean;
     /** if true, checks for option errors and throws if one or more is found */
     reportErrors?: boolean;
 }
@@ -112,11 +118,11 @@ function getModifiedSections(sections: string[], options: Options) {
                 let matchedB = b.match(options.regexFilter);
 
                 if (!matchedA || typeof matchedA.index === 'undefined') {
-                    return -1;
+                    return options.nonMatchingToBottom ? 1 : -1;
                 }
 
                 if (!matchedB || typeof matchedB.index === 'undefined') {
-                    return 1;
+                    return options.nonMatchingToBottom ? -1 : 1;
                 }
 
                 if (options.useMatchedRegex) {
