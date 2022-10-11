@@ -37,7 +37,6 @@ export function tokenizeArgString(argString: string): string[] {
 
     let opening = '';
     let currentArgIndex = 0;
-    let inRegex = false;
 
     for (let i = 0; i < argString.length; i++) {
         const char = argString[i];
@@ -65,11 +64,13 @@ export function tokenizeArgString(argString: string): string[] {
             }
         }
 
-        if (char === '/') {
-            inRegex = !inRegex;
-        }
-
-        if (char === '\\' && argString[i - 1] !== '\\' && !inRegex) {
+        if (
+            char === '\\' &&
+            (argString[i + 1] === "'" || argString[i + 1] === '"') &&
+            argString[i + 1] === opening
+        ) {
+            args[currentArgIndex] += argString[i + 1];
+            i++;
             continue;
         }
 
@@ -200,6 +201,8 @@ export function parseArgsIntoOptions(
                     errors.push(err.message);
                 }
 
+                i++;
+
                 break;
             case '--use-matched-regex':
             case '-p':
@@ -214,6 +217,8 @@ export function parseArgsIntoOptions(
                 } catch (err: any) {
                     errors.push(err.message);
                 }
+
+                i++;
 
                 break;
             case '--non-matching-to-bottom':

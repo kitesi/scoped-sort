@@ -10,9 +10,8 @@ test('test regex parser', (t) => {
      */
     function expectRegex(input, expected, msg) {
         t.deepEquals(
-            parseArgsIntoOptions(tokenizeArgString('--regex ' + input)).options
-                .regexFilter,
-            expected,
+            parseArgsIntoOptions(tokenizeArgString('--regex ' + input)),
+            { options: { regexFilter: expected }, errors: [], positionals: [] },
             msg
         );
     }
@@ -24,14 +23,16 @@ test('test regex parser', (t) => {
      */
     function expectError(input, expected, msg) {
         t.deepEquals(
-            parseArgsIntoOptions(tokenizeArgString('--regex ' + input)).errors,
-            [expected],
+            parseArgsIntoOptions(tokenizeArgString('--regex ' + input)),
+            { errors: [expected], positionals: [], options: {} },
             msg
         );
     }
 
     expectRegex('/\\d/', /\d/, 'regular regex');
-    expectRegex('/\\d/i', /\d/i, 'regular regex');
+    expectRegex('/\\d/i', /\d/i, 'regular regex with i flag');
+    expectRegex('/\\{/', /\{/, 'regex with escaped {');
+    expectRegex(`/\\"/`, /\"/, 'regex with blackslash for quote');
 
     // might seem weird how the program lists 'd' or 'd/' as the input,
     // this is because the tokenizer ignores \\ if not inside of a regex
@@ -40,11 +41,11 @@ test('test regex parser', (t) => {
     // this is an issue, and thinking of how to fix it
     expectError(
         '\\d',
-        "Expected regex, got: 'd'",
+        "Expected regex, got: '\\d'",
         'no starting and ending slash'
     );
     expectError('/\\d', "Expected regex, got: '/\\d'", 'no ending slash');
-    expectError('\\d/', "Expected regex, got: 'd/'", 'no starting slash');
+    expectError('\\d/', "Expected regex, got: '\\d/'", 'no starting slash');
     expectError(
         '/\\d/m',
         "The only regex flag allowed is 'i'. Recieved: 'm'",
@@ -68,12 +69,6 @@ test('string argument tokenizer', (t) => {
     );
 
     t.deepEquals(
-        tokenizeArgString('--hi "there --my" name is jake \'you feel me?\''),
-        ['--hi', 'there --my', 'name', 'is', 'jake', 'you feel me?'],
-        'quoted arguments'
-    );
-
-    t.deepEquals(
         tokenizeArgString('--hi there "/i love you/"'),
         ['--hi', 'there', '/i love you/'],
         'quoted arguments with multiple spaces'
@@ -81,7 +76,7 @@ test('string argument tokenizer', (t) => {
 
     t.deepEquals(
         tokenizeArgString(
-            `--hi "there \\"my\\"" name is jake 'you \\'feel\\' me?'`
+            `--hi "there \\\"my\\\"" name is jake 'you \\\'feel\\\' me?'`
         ),
         ['--hi', 'there "my"', 'name', 'is', 'jake', "you 'feel' me?"],
         'quoted arguments'
@@ -110,20 +105,17 @@ test('string argument tokenizer', (t) => {
     t.end();
 });
 
-/**
- * @param {string[]} args
- */
-function getOptions(args) {
-    return parseArgsIntoOptions(args).options;
-}
-
 test('arg array into options (single options)', (t) => {
     /**
      * @param {string[]} args
      * @param {import('../dist/main').Options} options
      */
     function expectOptions(args, options) {
-        t.deepEquals(getOptions(args), options);
+        t.deepEquals(parseArgsIntoOptions(args), {
+            options,
+            errors: [],
+            positionals: [],
+        });
     }
 
     /**
@@ -215,7 +207,11 @@ test('arg array into options (combining options)', (t) => {
             args = tokenizeArgString(args);
         }
 
-        t.deepEquals(getOptions(args), options);
+        t.deepEquals(parseArgsIntoOptions(args), {
+            options,
+            positionals: [],
+            errors: [],
+        });
     }
 
     /**
