@@ -2,11 +2,34 @@ import { parseArgsIntoOptions, tokenizeArgString } from './parser';
 import {
     commentRegexs,
     floatRegex,
-    getValuesRegex,
+    getIndentationAndCharRegex,
     isBlankLineRegexTest,
 } from './utils';
 
 export { parseArgsIntoOptions, tokenizeArgString };
+
+export type Sorter =
+    | 'case-insensitive'
+    | 'natural'
+    | 'numerical'
+    | 'float'
+    | 'length'
+    | 'none'
+    | 'random';
+
+export interface SortGroup {
+    /** the group to sort on */
+    group: number;
+    sorter?: Exclude<Sorter, 'random'>;
+    unique?: 'exact' | 'case-insensitive';
+    /**
+     * By default items that do not match a sorter (numerical, float, ...) or
+     * don't match the specified `.regexFilter` will stay in place but be at the
+     * top. If this is set to true, it will be at the bottom. Vise versa if `reverse` is set to true.
+     */
+    attachNonMatchingToBottom?: boolean;
+    reverse?: boolean;
+}
 
 export interface Options {
     /**
@@ -20,15 +43,11 @@ export interface Options {
      *
      * length: sorts based on the length of each item, short to long
      *
+     * none: don't sort, mainly used the unique option
+     *
      * random: sorts randomly (psuedo)
      */
-    sorter?:
-        | 'case-insensitive'
-        | 'natural'
-        | 'numerical'
-        | 'float'
-        | 'length'
-        | 'random';
+    sorter?: Sorter;
     /**
      * This project takes scope/indentation into account. Most sorters just read line by line, so when you have nested lists you end up with undesired sorts.
 
@@ -47,15 +66,42 @@ export interface Options {
     useMatchedRegex?: boolean;
     /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
     sectionSeperator?: RegExp;
+    /** The seperator to determine columns, defaults to `/\s+/` */
+    fieldSeperator?: string | RegExp;
+    /**
+     * Determines what group to use when sorting, used with `--regex` or `--field-seperator`
+     *
+     * An input of the following:
+     *
+     * ```js
+     * {
+     *      sortGroups: [{
+     *          group: 2,
+     *          sorter: 'length'
+     *      }]
+     * }
+     * ```
+     *
+     * Would mean to sort lines by the second group's length.
+     */
+    sortGroups?: SortGroup[];
     /**
      * By default items that do not match a sorter (numerical, float, ...) or
      * don't match the specified `.regexFilter` will stay in place but be at the
-     * top. If this is set to true, it will be at the bottom
+     * top. If this is set to true, it will be at the bottom. Vise versa if `reverse` is set to true.
      */
-    nonMatchingToBottom?: boolean;
+    attachNonMatchingToBottom?: boolean;
     /** if true, checks for option errors and throws if one or more is found */
     reportErrors?: boolean;
 }
+
+const collators = {
+    caseInsensitive: new Intl.Collator('en', { sensitivity: 'base' }),
+    natural: new Intl.Collator('en', {
+        sensitivity: 'base',
+        numeric: true,
+    }),
+};
 
 function calculateSpaceLength(str: string) {
     return str.replace('\t', '    ').length;
@@ -71,15 +117,104 @@ function validateOptions(options: Options) {
     return errors;
 }
 
-function getModifiedSections(sections: string[], options: Options) {
-    const collators = {
-        caseInsensitive: new Intl.Collator('en', { sensitivity: 'base' }),
-        natural: new Intl.Collator('en', {
-            sensitivity: 'base',
-            numeric: true,
-        }),
-    };
+function compareSections(
+    compareA: string,
+    compareB: string,
+    options: {
+        sorter?: Exclude<Sorter, 'random'>;
+        reverse?: boolean;
+        attachNonMatchingToBottom?: boolean;
+        [k: string]: any;
+    }
+) {
+    let numberA: number | undefined;
+    let numberB: number | undefined;
 
+    switch (options.sorter) {
+        case 'case-insensitive':
+            return collators.caseInsensitive.compare(compareA, compareB);
+        case 'natural':
+            return collators.natural.compare(compareA, compareB);
+        case 'length':
+            return [...compareA].length - [...compareB].length;
+        case 'numerical':
+            numberA = parseInt(compareA);
+            numberB = parseInt(compareB);
+            break;
+        case 'float':
+            numberA = parseFloat(compareA);
+            numberB = parseFloat(compareB);
+            break;
+    }
+
+    if (typeof numberA !== 'undefined' && typeof numberB !== 'undefined') {
+        if (Number.isNaN(numberA) && Number.isNaN(numberB)) {
+            return 0;
+        }
+
+        if (Number.isNaN(numberA)) {
+            return options.attachNonMatchingToBottom ? 1 : -1;
+        }
+
+        if (Number.isNaN(numberB)) {
+            return options.attachNonMatchingToBottom ? -1 : 1;
+        }
+
+        return numberA - numberB;
+    }
+
+    if (compareA > compareB) {
+        return 1;
+    } else if (compareB > compareA) {
+        return -1;
+    }
+
+    return 0;
+}
+
+function removeDuplicates(
+    sections: string[],
+    caseInsensitive: boolean,
+    sectionCallback?: (section: string) => string
+) {
+    const haveSeen: Set<string> = new Set();
+
+    for (let i = 0; i < sections.length; i++) {
+        let adjustedSection = sections[i];
+
+        if (sectionCallback) {
+            adjustedSection = sectionCallback(adjustedSection);
+        }
+
+        if (caseInsensitive) {
+            adjustedSection = adjustedSection.toLowerCase();
+        }
+
+        if (!haveSeen.has(adjustedSection)) {
+            haveSeen.add(adjustedSection);
+        } else {
+            sections.splice(i, 1);
+            i--;
+        }
+    }
+}
+
+function getComparasionFromSortGroup(
+    columnsA: string[],
+    columnsB: string[],
+    sortGroup: SortGroup
+) {
+    return compareSections(
+        columnsA[sortGroup.group - 1],
+        columnsB[sortGroup.group - 1],
+        {
+            sorter: sortGroup.sorter,
+            attachNonMatchingToBottom: sortGroup.attachNonMatchingToBottom,
+        }
+    );
+}
+
+function getModifiedSections(sections: string[], options: Options) {
     if (options.sorter === 'numerical' || options.sorter === 'float') {
         options.useMatchedRegex = true;
     }
@@ -92,6 +227,76 @@ function getModifiedSections(sections: string[], options: Options) {
         if (options.sorter === 'float') {
             options.regexFilter = floatRegex;
         }
+    }
+
+    if (options.sortGroups && !options.fieldSeperator) {
+        options.fieldSeperator = /\s+/;
+    }
+
+    if (options.fieldSeperator && options.sortGroups) {
+        const columnCache: Map<string, string[]> = new Map();
+
+        function getColumns(section: string) {
+            if (!columnCache.has(section)) {
+                columnCache.set(
+                    section,
+                    section.split(options.fieldSeperator!)
+                );
+            }
+
+            return columnCache.get(section)!;
+        }
+
+        let usedSorterOnce = false;
+
+        for (let i = 0; i < options.sortGroups.length; i++) {
+            const sortGroup = options.sortGroups[i];
+
+            if (sortGroup.sorter !== 'none') {
+                sections.sort((a, b) => {
+                    if (!options.sortGroups) return 0;
+
+                    const columnsA = getColumns(a);
+                    const columnsB = getColumns(b);
+
+                    const lastSortGroup = options.sortGroups[i - 1];
+
+                    if (!usedSorterOnce && lastSortGroup) {
+                        const lastResult = getComparasionFromSortGroup(
+                            columnsA,
+                            columnsB,
+                            lastSortGroup
+                        );
+
+                        if (lastResult !== 0) {
+                            return lastResult;
+                        }
+                    }
+
+                    const result = getComparasionFromSortGroup(
+                        columnsA,
+                        columnsB,
+                        sortGroup
+                    );
+
+                    return sortGroup.reverse ? -result : result;
+                });
+            }
+
+            if (!sortGroup.unique) {
+                continue;
+            }
+
+            removeDuplicates(
+                sections,
+                sortGroup.unique === 'case-insensitive',
+                (section) => getColumns(section)[sortGroup.group - 1]
+            );
+
+            usedSorterOnce = true;
+        }
+
+        return sections;
     }
 
     //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
@@ -108,7 +313,7 @@ function getModifiedSections(sections: string[], options: Options) {
                 sections[currentIndex],
             ];
         }
-    } else {
+    } else if (options.sorter !== 'none') {
         sections.sort((a, b) => {
             let compareA = a;
             let compareB = b;
@@ -117,12 +322,19 @@ function getModifiedSections(sections: string[], options: Options) {
                 let matchedA = a.match(options.regexFilter);
                 let matchedB = b.match(options.regexFilter);
 
+                if (
+                    (!matchedA || typeof matchedA.index === 'undefined') &&
+                    (!matchedB || typeof matchedB.index === 'undefined')
+                ) {
+                    return 0;
+                }
+
                 if (!matchedA || typeof matchedA.index === 'undefined') {
-                    return options.nonMatchingToBottom ? 1 : -1;
+                    return options.attachNonMatchingToBottom ? 1 : -1;
                 }
 
                 if (!matchedB || typeof matchedB.index === 'undefined') {
-                    return options.nonMatchingToBottom ? -1 : 1;
+                    return options.attachNonMatchingToBottom ? -1 : 1;
                 }
 
                 if (options.useMatchedRegex) {
@@ -134,53 +346,14 @@ function getModifiedSections(sections: string[], options: Options) {
                 }
             }
 
-            switch (options.sorter) {
-                case 'case-insensitive':
-                    return collators.caseInsensitive.compare(
-                        compareA,
-                        compareB
-                    );
-                case 'natural':
-                    return collators.natural.compare(compareA, compareB);
-                case 'numerical':
-                    return parseInt(compareA) - parseInt(compareB);
-                case 'float':
-                    return parseFloat(compareA) - parseFloat(compareB);
-                case 'length':
-                    return [...compareA].length - [...compareB].length;
-            }
-
-            if (compareA > compareB) {
-                return 1;
-            } else if (compareB > compareA) {
-                return -1;
-            }
-
-            return 0;
+            // @ts-expect-error
+            const result = compareSections(compareA, compareB, options);
+            return options.reverse ? -result : result;
         });
     }
 
-    if (options.reverse) {
-        sections.reverse();
-    }
-
     if (options.unique) {
-        const haveSeen: Set<string> = new Set();
-        const unique = [];
-
-        for (const section of sections) {
-            const adjustedSection =
-                options.sorter === 'case-insensitive'
-                    ? section.toLowerCase()
-                    : section;
-
-            if (!haveSeen.has(adjustedSection)) {
-                unique.push(section);
-                haveSeen.add(adjustedSection);
-            }
-        }
-
-        return unique;
+        removeDuplicates(sections, options.sorter === 'case-insensitive');
     }
 
     return sections;
@@ -193,7 +366,7 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
 
     for (let i = index; i < lines.length; i++) {
         const line = lines[i];
-        const match = line.match(getValuesRegex);
+        const match = line.match(getIndentationAndCharRegex);
         const indentation = match?.groups?.indentation || '';
         const listChar = match?.groups?.char;
 
@@ -263,7 +436,7 @@ export function sort(text: string, options: Options = {}) {
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const match = line.match(getValuesRegex);
+        const match = line.match(getIndentationAndCharRegex);
         const indentation = match?.groups?.indentation || '';
         const listChar = match?.groups?.char;
 

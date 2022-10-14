@@ -1,7 +1,26 @@
-import type { Options } from './main';
+import type { Options, Sorter, SortGroup } from './main';
+
+const isRegexTest = /\/.+\/[a-zA-Z]*/;
+
+// tests entire string/line
+export const isValidSortGroupTest =
+    /^(\{\d+(,\d+|\.\.\d+)*\}(_?(?<![a-zA-Z])[a-zA-Z]=[a-zA-Z0-9]+(_|$|{)|[a-zA-Z])*,?)*$/;
+
+// Since there is a big check upfront, the following regex(s) can be simplified
+// and just be things like {.+} instead of \{\d+(,\d+|\.\.\d+)*\}. Can also use the i flag
+// might be a future task
+
+// example: {34}abc,{1..2}cx_u=i, matches ["{3}abc", "{1..2}xc_u=i"]
+export const sortGroupMatchRegex =
+    /\{\d+(,\d+|\.\.\d+)*\}(_?(?<![a-zA-Z])[a-zA-Z]=[a-zA-Z0-9]+(_|$|{)|[a-zA-Z])*/g;
+
+// example: {34}abc, matches ["{34}abc", "34", "abc"]
+export const sortGroupInnerValuesMatchRegex = /\{(.+)\}(.*)/;
+// example: abc, matches ["a", "b", "c"]
+export const sortGroupArgsMatchRegex = /[a-zA-Z](=[^_$]+)?/g;
 
 function parseStringAsRegex(arg: string) {
-    if (!/\/.+\/[a-zA-Z]*/.test(arg)) {
+    if (!isRegexTest.test(arg)) {
         throw new Error(`Expected regex, got: '${arg}'`);
     }
 
@@ -80,6 +99,147 @@ export function tokenizeArgString(argString: string): string[] {
     return args;
 }
 
+export function parseSortGroupKeys(groupKeysString: string) {
+    const errors: string[] = [];
+
+    if (!isValidSortGroupTest.test(groupKeysString)) {
+        errors.push('Sort group key did not pass the regex test.');
+        return { errors };
+    }
+
+    const groupKeys = groupKeysString.match(sortGroupMatchRegex);
+
+    if (!groupKeys) {
+        errors.push('No sort groups found.');
+        return { errors };
+    }
+
+    type SortGroupArgsOnly = Omit<SortGroup, 'group'>;
+
+    const sortGroups: {
+        forNumbers: number[];
+        sortGroupArgs: SortGroupArgsOnly;
+    }[] = [];
+
+    function setSorter(
+        sortGroupArgs: SortGroupArgsOnly,
+        sorter: Exclude<Sorter, 'random'>
+    ) {
+        if (sortGroupArgs.sorter) {
+            errors.push("Can't have more than one sorter in sort group");
+            return true;
+        }
+
+        sortGroupArgs.sorter = sorter;
+        return true;
+    }
+
+    const currentGroups: number[] = [];
+
+    groupKeyForLoop: for (let i = 0; i < groupKeys.length; i++) {
+        const groupKey = groupKeys[i];
+        const innerValueMatches = groupKey.match(
+            sortGroupInnerValuesMatchRegex
+        );
+
+        // should not ever happen but better to check ig
+        if (!innerValueMatches) {
+            errors.push(
+                'Could not determine the values for sort group index: ' +
+                    (i + 1)
+            );
+            continue;
+        }
+
+        const [, forGroupsString, argString] = innerValueMatches;
+        const forGroups: number[] = [];
+        const sortGroupArgs: SortGroupArgsOnly = {};
+
+        sortGroups.push({ forNumbers: forGroups, sortGroupArgs });
+
+        for (const forGroupsStringFrag of forGroupsString.split(',')) {
+            // means its a range {x..y}
+            if (forGroupsStringFrag.includes('.')) {
+                const range = forGroupsStringFrag.split('..');
+                const start = parseInt(range[0]);
+                const end = parseInt(range[1]);
+
+                if (end <= start) {
+                    errors.push(
+                        `End range must be higher than the starting range for sort group: {${forGroupsString}}`
+                    );
+                    continue;
+                }
+
+                for (let j = start; j <= end; j++) {
+                    if (currentGroups.includes(j)) {
+                        errors.push(`Conflicting group numbers`);
+                        continue groupKeyForLoop;
+                    }
+
+                    forGroups.push(j);
+                    currentGroups.push(j);
+                }
+            } else {
+                const group = parseInt(forGroupsStringFrag);
+                forGroups.push(group);
+                currentGroups.push(parseInt(forGroupsStringFrag));
+            }
+        }
+
+        const args = argString.match(sortGroupArgsMatchRegex);
+
+        if (!args) {
+            continue;
+        }
+
+        for (const arg of args) {
+            const [key, value] = arg.split('=');
+            let usedValue = false;
+
+            switch (key) {
+                case 'i':
+                    setSorter(sortGroupArgs, 'case-insensitive');
+                    break;
+                case 'e':
+                    setSorter(sortGroupArgs, 'natural');
+                    break;
+                case 'n':
+                    setSorter(sortGroupArgs, 'numerical');
+                    break;
+                case 'f':
+                    setSorter(sortGroupArgs, 'float');
+                    break;
+                case 'l':
+                    setSorter(sortGroupArgs, 'length');
+                    break;
+                case 'x':
+                    setSorter(sortGroupArgs, 'none');
+                    break;
+                case 's':
+                    sortGroupArgs.reverse = true;
+                    break;
+                case 'a':
+                    sortGroupArgs.attachNonMatchingToBottom = true;
+                    break;
+                case 'u':
+                    sortGroupArgs.unique =
+                        value === 'i' ? 'case-insensitive' : 'exact';
+                    usedValue = true;
+                    break;
+            }
+
+            if (!usedValue && value) {
+                errors.push(
+                    `Recieved argument for an option that does not take an argument (${key}).`
+                );
+            }
+        }
+    }
+
+    return { errors, sortGroups };
+}
+
 /**
  * Takes in an array of arguments and parses it into options for `sort()`.
  */
@@ -98,9 +258,10 @@ export function parseArgsIntoOptions(
             ($, ofs) => (ofs ? '-' : '') + $.toLowerCase()
         );
 
-    function setSorter(sorter: Options['sorter']) {
+    function setSorter(sorter: Sorter) {
         if (options.sorter) {
             errors.push("Can't have more than one sorter");
+            return false;
         }
 
         options.sorter = sorter;
@@ -112,11 +273,18 @@ export function parseArgsIntoOptions(
             return false;
         }
 
+        if (args[currentIndex + 1].startsWith('-')) {
+            errors.push(
+                `The next argument after ${args[currentIndex]} can't be an option`
+            );
+            return false;
+        }
+
         return true;
     }
 
     for (let i = 0; i < args.length; i++) {
-        let arg = kebabize(args[i]);
+        let arg = args[i];
 
         if (!arg.startsWith('--') && !arg.startsWith('-')) {
             positionals.push(arg);
@@ -125,13 +293,27 @@ export function parseArgsIntoOptions(
 
         // parses short hand option groups like -su or -s3u
         if (arg.length !== 2 && /^-[a-zA-Z]/.test(arg)) {
-            const shortHandOptions = arg.match(/[a-zA-Z][^a-zA-Z]*/g);
+            const shortHandOptions = arg.match(/\{.+|[a-zA-Z]|[^a-zA-Z-]+/g);
 
             if (shortHandOptions && shortHandOptions.length > 0) {
-                args.splice(i, 1, ...shortHandOptions.map((e) => '-' + e));
+                args.splice(
+                    i,
+                    1,
+                    ...shortHandOptions.map((e) => {
+                        if (/[^a-zA-Z]/.test(e)) {
+                            return e;
+                        }
+
+                        return e.length === 1 ? '-' + e : '--' + e;
+                    })
+                );
                 i--;
                 continue;
             }
+        }
+
+        if (arg.length > 2) {
+            arg = kebabize(arg);
         }
 
         let assumedBoolValue = true;
@@ -168,6 +350,10 @@ export function parseArgsIntoOptions(
             case '-l':
                 setSorter('length');
                 break;
+            case '--none-sort':
+            case '-x':
+                setSorter('none');
+                break;
             case '--random-sort':
             case '-z':
                 setSorter('random');
@@ -193,7 +379,9 @@ export function parseArgsIntoOptions(
                 consumedBool = true;
                 break;
             case '--regex':
-                requireNextArg(i);
+                if (!requireNextArg(i)) {
+                    continue;
+                }
 
                 try {
                     options.regexFilter = parseStringAsRegex(args[i + 1]);
@@ -210,7 +398,9 @@ export function parseArgsIntoOptions(
                 consumedBool = true;
                 break;
             case '--section-seperator':
-                requireNextArg(i);
+                if (!requireNextArg(i)) {
+                    continue;
+                }
 
                 try {
                     options.sectionSeperator = parseStringAsRegex(args[i + 1]);
@@ -221,10 +411,58 @@ export function parseArgsIntoOptions(
                 i++;
 
                 break;
-            case '--non-matching-to-bottom':
+            case '--attach-non-matching-to-bottom':
             case '-a':
-                options.nonMatchingToBottom = assumedBoolValue;
+                options.attachNonMatchingToBottom = assumedBoolValue;
                 consumedBool = true;
+                break;
+            case '--use-sort-group':
+            case '-k':
+                if (!requireNextArg(i)) {
+                    continue;
+                }
+
+                const resultFromSortGroupParse = parseSortGroupKeys(
+                    args[i + 1]
+                );
+
+                if (resultFromSortGroupParse.errors.length) {
+                    errors.push(...resultFromSortGroupParse.errors);
+                } else if (resultFromSortGroupParse.sortGroups) {
+                    options.sortGroups = [];
+
+                    for (const {
+                        forNumbers,
+                        sortGroupArgs,
+                    } of resultFromSortGroupParse.sortGroups) {
+                        for (const group of forNumbers) {
+                            options.sortGroups.push({
+                                group,
+                                ...sortGroupArgs,
+                            });
+                        }
+                    }
+                }
+
+                i++;
+
+                break;
+            case '--field-seperator':
+            case '-F':
+                if (!requireNextArg(i)) {
+                    continue;
+                }
+
+                try {
+                    options.fieldSeperator = isRegexTest.test(args[i + 1])
+                        ? parseStringAsRegex(args[i + 1])
+                        : args[i + 1];
+                } catch (err: any) {
+                    errors.push(err.message);
+                }
+
+                i++;
+
                 break;
             default:
                 matchedCase = false;

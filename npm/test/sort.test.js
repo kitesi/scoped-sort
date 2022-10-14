@@ -477,12 +477,12 @@ a20
 no number herea`,
             { sorter: 'natural', regexFilter: /my / }
         ),
-        `no number herea
-a20
-g12
-i could only see her once
+        `a51 my88
 z123
-a51 my88
+i could only see her once
+g12
+a20
+no number herea
 a100  my 01
 d91 my 22
 b23 my 95
@@ -894,7 +894,7 @@ It's been 18 years since I've felt the touch of a woman`,
             regexFilter: regexInputNumbersMatch,
             useMatchedRegex: true,
             sorter: 'numerical',
-            nonMatchingToBottom: true,
+            attachNonMatchingToBottom: true,
         }),
         `An approximation of pi is 3.1415
 King henry had 6 wives
@@ -926,6 +926,368 @@ the matched text isn't here`,
     // but there lies 1 only tales of it 27`,
     //         'test double numbers, capture second'
     //     );
+
+    t.end();
+});
+
+test('field seperator', (t) => {
+    const csvTable = `Jake,Lil Peep,30
+Niel,The Neighbourhood,12
+Max,Arctic Monkeys,72
+Jo,AJR,65`;
+
+    testString(
+        t,
+        sort(csvTable, {
+            fieldSeperator: /,/,
+            sortGroups: [
+                {
+                    group: 2,
+                    sorter: 'length',
+                },
+            ],
+        }),
+        `Jo,AJR,65
+Jake,Lil Peep,30
+Max,Arctic Monkeys,72
+Niel,The Neighbourhood,12`,
+        'csv table: -F, -k {2}l'
+    );
+
+    testString(
+        t,
+        sort(csvTable, {
+            fieldSeperator: /,/,
+            sortGroups: [
+                {
+                    group: 3,
+                    sorter: 'numerical',
+                },
+            ],
+        }),
+        `Niel,The Neighbourhood,12
+Jake,Lil Peep,30
+Jo,AJR,65
+Max,Arctic Monkeys,72`,
+        'csv table: -F, -k {3}n'
+    );
+
+    t.end();
+});
+
+test('sort groups', (t) => {
+    const listOfPersonalInfoTables = `Sam    18  Male       140
+Jack   23  Non-Binary 120
+Niel   16  Female     135
+Max    17  Male       135
+Jane   22  Female     100
+max    17  male       135
+Jones  17  male       135
+Lydia  N/A N/A        120
+Mike   N/A male       N/A`;
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 2,
+                    sorter: 'numerical',
+                },
+            ],
+        }),
+        `Lydia  N/A N/A        120
+Mike   N/A male       N/A
+Niel   16  Female     135
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Sam    18  Male       140
+Jane   22  Female     100
+Jack   23  Non-Binary 120`,
+        'list of personal info: -k {2}n'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 2,
+                    sorter: 'numerical',
+                    reverse: true,
+                },
+            ],
+        }),
+        `Jack   23  Non-Binary 120
+Jane   22  Female     100
+Sam    18  Male       140
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Niel   16  Female     135
+Lydia  N/A N/A        120
+Mike   N/A male       N/A`,
+        'list of personal info: -k {2}ns'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 2,
+                    sorter: 'numerical',
+                    attachNonMatchingToBottom: true,
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Sam    18  Male       140
+Jane   22  Female     100
+Jack   23  Non-Binary 120
+Lydia  N/A N/A        120
+Mike   N/A male       N/A`,
+        'list of personal info -k {2}na'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 2,
+                    sorter: 'numerical',
+                    reverse: true,
+                    attachNonMatchingToBottom: true,
+                },
+            ],
+        }),
+        `Lydia  N/A N/A        120
+Mike   N/A male       N/A
+Jack   23  Non-Binary 120
+Jane   22  Female     100
+Sam    18  Male       140
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Niel   16  Female     135`,
+        'list of personal info -k {2}nas'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Jane   22  Female     100
+Sam    18  Male       140
+Max    17  Male       135
+Lydia  N/A N/A        120
+Jack   23  Non-Binary 120
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A`,
+        'list of personal info: -k {3}'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    sorter: 'case-insensitive',
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Jane   22  Female     100
+Sam    18  Male       140
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A
+Lydia  N/A N/A        120
+Jack   23  Non-Binary 120`,
+        'list of personal info: -k {3}i'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    reverse: true,
+                },
+            ],
+        }),
+        `max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A
+Jack   23  Non-Binary 120
+Lydia  N/A N/A        120
+Sam    18  Male       140
+Max    17  Male       135
+Niel   16  Female     135
+Jane   22  Female     100`,
+        'list of personal info: -k {3}s'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    sorter: 'case-insensitive',
+                    reverse: true,
+                },
+            ],
+        }),
+        `Jack   23  Non-Binary 120
+Lydia  N/A N/A        120
+Sam    18  Male       140
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A
+Niel   16  Female     135
+Jane   22  Female     100`,
+        'list of personal info: -k {3}is'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    unique: 'exact',
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Sam    18  Male       140
+Lydia  N/A N/A        120
+Jack   23  Non-Binary 120
+max    17  male       135`,
+        'list of personal info: -k {3}u'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    unique: 'case-insensitive',
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Sam    18  Male       140
+Lydia  N/A N/A        120
+Jack   23  Non-Binary 120`,
+        'list of personal info: -k {3}u=i'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    sorter: 'none',
+                    unique: 'exact',
+                },
+            ],
+        }),
+        `Sam    18  Male       140
+Jack   23  Non-Binary 120
+Niel   16  Female     135
+max    17  male       135
+Lydia  N/A N/A        120`,
+        'list of personal info: -k {3}xu'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    sorter: 'none',
+                    unique: 'case-insensitive',
+                },
+            ],
+        }),
+        `Sam    18  Male       140
+Jack   23  Non-Binary 120
+Niel   16  Female     135
+Lydia  N/A N/A        120`,
+        'list of personal info: -k {3}x_u=i'
+    );
+
+    testString(
+        t,
+
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 2,
+                    sorter: 'numerical',
+                },
+                {
+                    group: 4,
+                    sorter: 'numerical',
+                    attachNonMatchingToBottom: true,
+                },
+            ],
+        }),
+        `Lydia  N/A N/A        120
+Mike   N/A male       N/A
+Niel   16  Female     135
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Sam    18  Male       140
+Jane   22  Female     100
+Jack   23  Non-Binary 120`,
+        'list of personal info: -k {2}n{4}na'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 2,
+                    sorter: 'none',
+                    unique: 'exact',
+                },
+                {
+                    group: 1,
+                },
+            ],
+        }),
+        `Jack   23  Non-Binary 120
+Jane   22  Female     100
+Lydia  N/A N/A        120
+Max    17  Male       135
+Niel   16  Female     135
+Sam    18  Male       140`,
+        'list of personal info: -k {2}xu{1}'
+    );
 
     t.end();
 });
