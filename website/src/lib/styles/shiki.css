@@ -56,10 +56,6 @@ pre.shiki .language-id {
 	display: none;
 }
 
-pre .code-container {
-	overflow: auto;
-}
-
 pre code {
 	font-family: 'JetBrains Mono', Menlo, Monaco, Consolas, Courier New, monospace;
 	white-space: pre;

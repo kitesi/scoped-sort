@@ -113,8 +113,10 @@ You are our 5000th customer!
 
 This is an example of how this program's indentation awareness works. You might
 see that certain lines are highlighted, those lines are the actual lines that
-are being sorted. It will not work if you sort the whole text. (line highlights
-not currently working)
+are being sorted.
+
+Note: the content actually being sorted is highlighted, the
+unhighlighted lines are just there for visual aid.
 
 <div class="pre-container">
 
@@ -185,11 +187,12 @@ import react from 'react';
 
 ## Section Seperator HTML
 
-This in example which show's the possibilities of section-seperator. Note this
-has a selection in the content which excludes the first and last line (working
-on styling line highlights).
+This in example which show's the possibilities of section-seperator.
 
-- `section-seperator` = `/^ {4}<div/`
+Note: the content actually being sorted is highlighted, the unhighlighted lines
+are just there for visual aid.
+
+- `section-seperator` = `/^\t<div/`
 
 <div class="pre-container">
 

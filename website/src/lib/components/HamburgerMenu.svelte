@@ -30,7 +30,7 @@
 	span::after {
 		width: 32px;
 		height: 3px;
-		background-color: var(--clr-bg-primary-content);
+		background-color: var(--clr-bg-hamburger-menu);
 		transition: transform 350ms ease-in-out, opacity 200ms linear;
 	}
 
