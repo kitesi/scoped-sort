@@ -6,7 +6,7 @@
 
 	import type { Options } from 'string-content-sort';
 
-	function handleSubmit(ev: SubmitEvent) {
+	function handleSubmit() {
 		const options: Options = {
 			...universalModifiersBindings,
 			useMatchedRegex
@@ -46,6 +46,7 @@
 		try {
 			return new RegExp(regexContent);
 		} catch (e) {
+			console.error(e);
 			//todo
 			return;
 		}
@@ -220,6 +221,10 @@
 <style lang="scss">
 	@use '../lib/styles/sizes.scss' as *;
 
+	:root {
+		--clr-bg-hamburger-menu: white;
+	}
+
 	main,
 	.main-container {
 		height: 100%;
@@ -271,14 +276,28 @@
 		position: relative;
 	}
 
-	.modifiers :focus-within label,
-	.sorters :focus-within label,
-	.modifiers label:active,
-	.sorters label:active,
+	.modifiers input:focus-visible + label,
+	.sorters input:focus-visible + label,
 	input[type='text']:focus,
-	textarea:focus,
-	button[type='submit']:focus {
+	textarea:focus {
 		outline: 0.2em solid var(--clr-accent-content);
+	}
+
+	button[type='submit'] {
+		// credit to daisyui for animation
+		transition: 200ms transform cubic-bezier(0.4, 0, 0.2, 1);
+		animation: button-pop var(--animation-btn, 0.25s) ease-out;
+
+		&:focus-visible {
+			outline: 0.1em solid var(--clr-bg-secondary);
+			outline-offset: 0.15em;
+		}
+
+		&:active:hover,
+		&:active:focus {
+			animation: none;
+			transform: scale(0.95);
+		}
 	}
 
 	input[type='checkbox']:not(#use-matched-regex):focus,
@@ -462,6 +481,18 @@
 
 		.section-seperator-container {
 			margin-top: 20px;
+		}
+	}
+
+	@keyframes button-pop {
+		0% {
+			transform: scale(var(--btn-focus-scale, 0.95));
+		}
+		40% {
+			transform: scale(1.02);
+		}
+		to {
+			transform: scale(1);
 		}
 	}
 </style>
