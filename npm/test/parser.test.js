@@ -1,6 +1,181 @@
 // @ts-check
-const { tokenizeArgString, parseArgsIntoOptions } = require('../dist/parser');
+const {
+    tokenizeArgString,
+    parseArgsIntoOptions,
+    parseSortGroupKeys,
+    sortGroupMatchRegex,
+    sortGroupInnerValuesMatchRegex,
+    sortGroupArgsMatchRegex,
+    isValidSortGroupTest,
+} = require('../dist/parser');
 const test = require('tape');
+
+test('sortGroupMatchRegex & isValidSortGroupTest', (t) => {
+    /**
+     * @param {string} sortGroup
+     * @param {string[]|null} expectedMatches
+     * @param {string} msg
+     */
+    function shouldMatchAndPass(sortGroup, expectedMatches, msg) {
+        t.deepEquals(
+            sortGroup.match(sortGroupMatchRegex),
+            expectedMatches,
+            msg
+        );
+
+        t.true(isValidSortGroupTest.test(sortGroup), msg + ': test');
+    }
+
+    /**
+     * @param {string} sortGroup
+     * @param {string[]|null} expectedMatches
+     * @param {string} msg
+     */
+    function shouldMatchButNotPass(sortGroup, expectedMatches, msg) {
+        t.deepEquals(
+            sortGroup.match(sortGroupMatchRegex),
+            expectedMatches,
+            msg
+        );
+        t.false(isValidSortGroupTest.test(sortGroup), msg + ': test');
+    }
+
+    shouldMatchAndPass('{3}', ['{3}'], 'normal simple 1 number');
+
+    shouldMatchAndPass(
+        '{3,15}',
+        ['{3,15}'],
+        'normal simple 1 bracket with two numbers by comma'
+    );
+
+    shouldMatchAndPass(
+        '{3,15,13}',
+        ['{3,15,13}'],
+        'normal simple 1 bracket with three numbers by comma'
+    );
+
+    shouldMatchAndPass('{3}aajs', ['{3}aajs'], '1 bracket with arguments');
+    shouldMatchAndPass(
+        '{3}a=1',
+        ['{3}a=1'],
+        '1 bracket with explicit argument'
+    );
+
+    shouldMatchAndPass(
+        '{3}a_a=1',
+        ['{3}a_a=1'],
+        '1 bracket with arguments + explicit'
+    );
+
+    shouldMatchAndPass(
+        '{3}a=1_bcd',
+        ['{3}a=1_bcd'],
+        '1 bracket with arguments + explicit (explicit written first)'
+    );
+
+    shouldMatchAndPass(
+        '{42}sn_u=234_i{3..5}dsf{6}asgsdg,{90..132}',
+        ['{42}sn_u=234_i', '{3..5}dsf', '{6}asgsdg', '{90..132}'],
+        'more complex with tons of everything'
+    );
+    shouldMatchButNotPass(
+        '{3}ax=i',
+        ['{3}ax'],
+        '1 bracket with letter argument no _'
+    );
+
+    shouldMatchButNotPass('{3..}', null, 'simple closing range with no ending');
+    shouldMatchButNotPass(
+        '{3..}ab',
+        null,
+        'simple closing range with no ending and arguments'
+    );
+
+    shouldMatchButNotPass(
+        '{3..}ab_c=2',
+        null,
+        'simple closing range with no ending and arguments + explicit'
+    );
+
+    shouldMatchButNotPass('{3}=a23', ['{3}'], 'invalid explicit argument');
+    shouldMatchButNotPass(
+        '{3}99999',
+        ['{3}'],
+        'invalid characters after bracket'
+    );
+
+    shouldMatchButNotPass('{3-}', null, 'invalid range (3-)');
+    shouldMatchButNotPass('{3-12}', null, 'invalid range (3-12)');
+    shouldMatchButNotPass('{3,-35}', null, 'invalid range (-35)');
+    shouldMatchButNotPass('{1,3-23,..}', null, 'invalid closing range (,..)');
+    shouldMatchButNotPass(
+        '{3-a}',
+        null,
+        'invalid [a-zA-Z] character in bracket'
+    );
+
+    t.end();
+});
+
+test('sortGroupInnerValuesMatchRegex and sortGroupArgsMatchRege', (t) => {
+    /**
+     *
+     * @param {string} input
+     * @param {string[]|null} expected
+     * @param {string} msg
+     */
+    function testInnerValuesMatch(input, expected, msg) {
+        const results = input.match(sortGroupInnerValuesMatchRegex);
+        t.deepEquals(results && [results[1], results[2]], expected, msg);
+    }
+
+    /**
+     *
+     * @param {string} input
+     * @param {string[]|null} expected
+     * @param {string} msg
+     */
+    function testSortGroupArgsMatch(input, expected, msg) {
+        t.deepEquals(input.match(sortGroupArgsMatchRegex), expected, msg);
+    }
+
+    testInnerValuesMatch('{2}', ['2', ''], 'normal no range or args');
+    testInnerValuesMatch(
+        '{2,3}',
+        ['2,3', ''],
+        'normal with commas no range or args'
+    );
+    testInnerValuesMatch('{2..3}', ['2..3', ''], 'normal with range no args');
+    testInnerValuesMatch('{2}l', ['2', 'l'], 'normal no range no args');
+    testInnerValuesMatch('{2,3}l', ['2,3', 'l'], 'normal with comma no range ');
+    testInnerValuesMatch('{2..3}a', ['2..3', 'a'], 'normal with range & args');
+
+    testSortGroupArgsMatch(
+        'abcdef',
+        ['a', 'b', 'c', 'd', 'e', 'f'],
+        'all normal letters'
+    );
+    testSortGroupArgsMatch('u=i', ['u=i'], 'starting with a letter=arg');
+    testSortGroupArgsMatch(
+        'u=i_a',
+        ['u=i', 'a'],
+        'starting with a letter=arg and then an argument after _'
+    );
+    testSortGroupArgsMatch(
+        'a_u=2',
+        ['a', 'u=2'],
+        'starting with a letter and then a letter=argument after _'
+    );
+    testSortGroupArgsMatch(
+        'a_u=2_x=n',
+        ['a', 'u=2', 'x=n'],
+        'starting with a letter and two letter arguments'
+    );
+    testSortGroupArgsMatch('ax=i', ['a', 'x=i'], 'letter argument with no _');
+    testSortGroupArgsMatch('a=i', ['a=i'], 'letter argument at start');
+
+    t.end();
+});
 
 test('test regex parser', (t) => {
     /**
@@ -50,6 +225,264 @@ test('test regex parser', (t) => {
         '/\\d/m',
         "The only regex flag allowed is 'i'. Recieved: 'm'",
         'invalid flag'
+    );
+
+    t.end();
+});
+
+test('parsing sort group keys', (t) => {
+    /**
+     * @param {string} input
+     * @param {Partial<ReturnType<typeof parseSortGroupKeys>>} expected
+     * @param {string} msg
+     */
+    function expectResult(input, expected, msg) {
+        t.deepEquals(parseSortGroupKeys(input), expected, msg);
+    }
+
+    expectResult(
+        '{2}l',
+        {
+            errors: [],
+            sortGroups: [
+                { forNumbers: [2], sortGroupArgs: { sorter: 'length' } },
+            ],
+        },
+        '-k {2}l'
+    );
+
+    expectResult(
+        '{3}a',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [3],
+                    sortGroupArgs: { attachNonMatchingToBottom: true },
+                },
+            ],
+        },
+        '-k {3}a'
+    );
+
+    expectResult(
+        '{2..10}ns',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    sortGroupArgs: {
+                        sorter: 'numerical',
+                        reverse: true,
+                    },
+                },
+            ],
+        },
+        '-k {2..10}'
+    );
+
+    expectResult(
+        '{3..5}u',
+        {
+            errors: [],
+            sortGroups: [
+                { forNumbers: [3, 4, 5], sortGroupArgs: { unique: 'exact' } },
+            ],
+        },
+        '-k {3..5}'
+    );
+
+    expectResult(
+        '{5}s',
+        {
+            errors: [],
+            sortGroups: [{ forNumbers: [5], sortGroupArgs: { reverse: true } }],
+        },
+        '-k {5}s'
+    );
+
+    expectResult(
+        '{5}u=i',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [5],
+                    sortGroupArgs: { unique: 'case-insensitive' },
+                },
+            ],
+        },
+        '-k {5}u=i'
+    );
+
+    expectResult(
+        '{5}x_u=i',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [5],
+                    sortGroupArgs: {
+                        sorter: 'none',
+                        unique: 'case-insensitive',
+                    },
+                },
+            ],
+        },
+        '-k {5}x_u=i'
+    );
+
+    expectResult(
+        '{2}xu{1}',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [2],
+                    sortGroupArgs: { sorter: 'none', unique: 'exact' },
+                },
+                { forNumbers: [1], sortGroupArgs: {} },
+            ],
+        },
+        '-k {2}xu{1}'
+    );
+
+    expectResult(
+        '{3..1}',
+        {
+            errors: [
+                'End range must be higher than the starting range for sort group: {3..1}',
+            ],
+            sortGroups: [{ forNumbers: [], sortGroupArgs: {} }],
+        },
+        'ending range bigger than starting'
+    );
+
+    t.end();
+});
+
+test('parsing sort group keys', (t) => {
+    /**
+     * @param {string} input
+     * @param {ReturnType<import('../dist/parser').parseArgsIntoOptions>} expected
+     * @param {string} msg
+     */
+    function expectResult(input, expected, msg) {
+        t.deepEquals(
+            parseArgsIntoOptions(tokenizeArgString('-k ' + input)),
+            expected,
+            msg
+        );
+    }
+
+    expectResult(
+        '{2}l',
+        {
+            errors: [],
+            positionals: [],
+            options: { sortGroups: [{ group: 2, sorter: 'length' }] },
+        },
+        '-k {2}l'
+    );
+
+    expectResult(
+        '{3}a',
+        {
+            errors: [],
+            positionals: [],
+            options: {
+                sortGroups: [{ group: 3, attachNonMatchingToBottom: true }],
+            },
+        },
+        '-k {3}a'
+    );
+
+    expectResult(
+        '{2..10}ns',
+        {
+            errors: [],
+            positionals: [],
+            options: {
+                sortGroups: [
+                    { group: 2, sorter: 'numerical', reverse: true },
+                    { group: 3, sorter: 'numerical', reverse: true },
+                    { group: 4, sorter: 'numerical', reverse: true },
+                    { group: 5, sorter: 'numerical', reverse: true },
+                    { group: 6, sorter: 'numerical', reverse: true },
+                    { group: 7, sorter: 'numerical', reverse: true },
+                    { group: 8, sorter: 'numerical', reverse: true },
+                    { group: 9, sorter: 'numerical', reverse: true },
+                    { group: 10, sorter: 'numerical', reverse: true },
+                ],
+            },
+        },
+        '-k {2..10}'
+    );
+
+    expectResult(
+        '{3..5}u',
+        {
+            errors: [],
+            positionals: [],
+            options: {
+                sortGroups: [
+                    { group: 3, unique: 'exact' },
+                    { group: 4, unique: 'exact' },
+                    { group: 5, unique: 'exact' },
+                ],
+            },
+        },
+        '-k {3..5}'
+    );
+
+    expectResult(
+        '{5}s',
+        {
+            errors: [],
+            positionals: [],
+            options: { sortGroups: [{ group: 5, reverse: true }] },
+        },
+        '-k {5}s'
+    );
+
+    expectResult(
+        '{5}u=i',
+        {
+            errors: [],
+            positionals: [],
+            options: { sortGroups: [{ group: 5, unique: 'case-insensitive' }] },
+        },
+        '-k {5}u=i'
+    );
+
+    expectResult(
+        '{5}x_u=i',
+        {
+            errors: [],
+            positionals: [],
+            options: {
+                sortGroups: [
+                    { group: 5, sorter: 'none', unique: 'case-insensitive' },
+                ],
+            },
+        },
+        '-k {5}x_u=i'
+    );
+
+    expectResult(
+        '{2}xu{1}',
+        {
+            errors: [],
+            positionals: [],
+            options: {
+                sortGroups: [
+                    { group: 2, sorter: 'none', unique: 'exact' },
+                    { group: 1 },
+                ],
+            },
+        },
+        '-k {2}xu{1}'
     );
 
     t.end();
@@ -108,14 +541,28 @@ test('string argument tokenizer', (t) => {
 test('arg array into options (single options)', (t) => {
     /**
      * @param {string[]} args
-     * @param {import('../dist/main').Options} options
+     * @param {ReturnType<import('../dist/parser').parseArgsIntoOptions>} result
+     * @param {string} msg
      */
-    function expectOptions(args, options) {
-        t.deepEquals(parseArgsIntoOptions(args), {
-            options,
-            errors: [],
-            positionals: [],
-        });
+    function expectResult(args, result, msg) {
+        t.deepEquals(parseArgsIntoOptions(args), result, msg);
+    }
+
+    /**
+     * @param {string[]} args
+     * @param {import('../dist/main').Options} options
+     * @param {string} msg
+     */
+    function expectOptions(args, options, msg) {
+        expectResult(
+            args,
+            {
+                options,
+                errors: [],
+                positionals: [],
+            },
+            msg
+        );
     }
 
     /**
@@ -124,8 +571,8 @@ test('arg array into options (single options)', (t) => {
      * @param {import('../dist/main').Options} options
      */
     function expectOptionsWithSingleAndAlias(main, alias, options) {
-        expectOptions([main], options);
-        expectOptions([alias], options);
+        expectOptions([main], options, main);
+        expectOptions([alias], options, alias);
     }
 
     /**
@@ -142,8 +589,8 @@ test('arg array into options (single options)', (t) => {
             }
         }
 
-        expectOptions(['--no-' + main.slice(2)], options);
-        expectOptions(['--no-' + alias.slice(1)], options);
+        expectOptions(['--no-' + main.slice(2)], options, main + ' (--no-)');
+        expectOptions(['--no-' + alias.slice(1)], options, alias + ' (--no-)');
     }
 
     expectOptionsWithSingleAndAlias('--case-insensitive', '-i', {
@@ -190,9 +637,33 @@ test('arg array into options (single options)', (t) => {
         useMatchedRegex: true,
     });
 
-    expectBooleanOptionsWithSingleAndAlias('--non-matching-to-bottom', '-a', {
-        nonMatchingToBottom: true,
-    });
+    expectBooleanOptionsWithSingleAndAlias(
+        '--attach-non-matching-to-bottom',
+        '-a',
+        {
+            attachNonMatchingToBottom: true,
+        }
+    );
+
+    expectResult(
+        ['-F/'],
+        {
+            errors: [],
+            positionals: [],
+            options: { fieldSeperator: '/' },
+        },
+        '-F'
+    );
+
+    expectResult(
+        ['--field-seperator', '/'],
+        {
+            errors: [],
+            positionals: [],
+            options: { fieldSeperator: '/' },
+        },
+        '--field-seperator'
+    );
 
     t.end();
 });
