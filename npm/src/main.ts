@@ -17,11 +17,13 @@ export type Sorter =
     | 'none'
     | 'random';
 
+type UniqueOptions = 'exact' | 'case-insensitive';
+
 export interface SortGroup {
     /** the group to sort on */
     group: number;
     sorter?: Exclude<Sorter, 'random'>;
-    unique?: 'exact' | 'case-insensitive';
+    unique?: UniqueOptions;
     /**
      * By default items that do not match a sorter (numerical, float, ...) or
      * don't match the specified `.regexFilter` will stay in place but be at the
@@ -57,12 +59,32 @@ export interface Options {
     /** Reverses the sort after completely finishing. */
     reverse?: boolean;
     /** Removes duplicate items. */
-    unique?: boolean;
+    unique?: UniqueOptions;
     /** Treats the text as a markdown list. You won’t need this option for most markdown lists but in certain instances you will. */
     markdown?: boolean;
-    /** A regex to match text in each item/line, the sorter will sort based on the text after the match. text that do no match will be left in place, and will be at the top. The regex language is javascript */
+    /**
+     * A regex to match text in each item/line, the sorter will sort based on
+     * the text after the match. Text that do no match will be left in place,
+     * and will be at the top. The regex language is javascript.
+     */
     regexFilter?: RegExp;
-    /** Combined with .regex, this will instead sort using the matched text rather than the text afer. */
+    /**
+     * Combined with `.regex`, this will instead sort using the matched text rather than the text after.
+     *
+     * This is short hand for:
+     *
+     * ```
+     * {
+     *      sortGroups: [{
+     *          group: 1,
+     *          ...options
+     *      }]
+     * }
+     * ```
+     *
+     * Where options is the upmost options you provide that are valid in
+     * `sortGroups[number]` (attachNonMatchingToBottom, reverse, unique, sorter)
+     */
     useMatchedRegex?: boolean;
     /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
     sectionSeperator?: RegExp;
@@ -91,7 +113,12 @@ export interface Options {
      * top. If this is set to true, it will be at the bottom. Vise versa if `reverse` is set to true.
      */
     attachNonMatchingToBottom?: boolean;
-    /** if true, checks for option errors and throws if one or more is found */
+    /**
+     * If true, checks for option errors and throws if one or more is found.
+     *
+     * It's off by default, but recommended to turn on, otherwise you might get
+     * unexpected sort results.
+     */
     reportErrors?: boolean;
 }
 
@@ -111,7 +138,19 @@ function validateOptions(options: Options) {
     const errors: string[] = [];
 
     if (options.regexFilter && options.sorter === 'random') {
-        errors.push("You can't sort by random and use a regex pattern");
+        errors.push("Can't use sort-by-random and a regex pattern");
+    }
+
+    if (options.useMatchedRegex && options.sorter === 'random') {
+        errors.push("Can't use use-matched-regex and sort-by-random");
+    }
+
+    if (options.regexFilter && options.fieldSeperator) {
+        errors.push("Can't use regex and field-seperator");
+    }
+
+    if (options.useMatchedRegex && options.sortGroups) {
+        errors.push("Can't use use-matched-regex and sort-groups");
     }
 
     return errors;
@@ -127,6 +166,18 @@ function compareSections(
         [k: string]: any;
     }
 ) {
+    if (typeof compareA === 'undefined' && typeof compareB === 'undefined') {
+        return 0;
+    }
+
+    if (typeof compareA === 'undefined') {
+        return options.attachNonMatchingToBottom ? 1 : -1;
+    }
+
+    if (typeof compareB === 'undefined') {
+        return options.attachNonMatchingToBottom ? -1 : 1;
+    }
+
     let numberA: number | undefined;
     let numberB: number | undefined;
 
@@ -215,32 +266,16 @@ function getComparasionFromSortGroup(
 }
 
 function getModifiedSections(sections: string[], options: Options) {
-    if (options.sorter === 'numerical' || options.sorter === 'float') {
-        options.useMatchedRegex = true;
-    }
-
-    if (!options.regexFilter) {
-        if (options.sorter === 'numerical') {
-            options.regexFilter = /-?\d+/;
-        }
-
-        if (options.sorter === 'float') {
-            options.regexFilter = floatRegex;
-        }
-    }
-
-    if (options.sortGroups && !options.fieldSeperator) {
-        options.fieldSeperator = /\s+/;
-    }
-
-    if (options.fieldSeperator && options.sortGroups) {
+    if (options.sortGroups) {
         const columnCache: Map<string, string[]> = new Map();
 
         function getColumns(section: string) {
             if (!columnCache.has(section)) {
                 columnCache.set(
                     section,
-                    section.split(options.fieldSeperator!)
+                    options.regexFilter
+                        ? section.match(options.regexFilter) || []
+                        : section.split(options.fieldSeperator!)
                 );
             }
 
@@ -254,6 +289,7 @@ function getModifiedSections(sections: string[], options: Options) {
 
             if (sortGroup.sorter !== 'none') {
                 sections.sort((a, b) => {
+                    // just for typing
                     if (!options.sortGroups) return 0;
 
                     const columnsA = getColumns(a);
@@ -261,7 +297,7 @@ function getModifiedSections(sections: string[], options: Options) {
 
                     const lastSortGroup = options.sortGroups[i - 1];
 
-                    if (!usedSorterOnce && lastSortGroup) {
+                    if (usedSorterOnce && lastSortGroup) {
                         const lastResult = getComparasionFromSortGroup(
                             columnsA,
                             columnsB,
@@ -281,19 +317,17 @@ function getModifiedSections(sections: string[], options: Options) {
 
                     return sortGroup.reverse ? -result : result;
                 });
+
+                usedSorterOnce = true;
             }
 
-            if (!sortGroup.unique) {
-                continue;
+            if (sortGroup.unique) {
+                removeDuplicates(
+                    sections,
+                    sortGroup.unique === 'case-insensitive',
+                    (section) => getColumns(section)[sortGroup.group - 1]
+                );
             }
-
-            removeDuplicates(
-                sections,
-                sortGroup.unique === 'case-insensitive',
-                (section) => getColumns(section)[sortGroup.group - 1]
-            );
-
-            usedSorterOnce = true;
         }
 
         return sections;
@@ -337,13 +371,8 @@ function getModifiedSections(sections: string[], options: Options) {
                     return options.attachNonMatchingToBottom ? -1 : 1;
                 }
 
-                if (options.useMatchedRegex) {
-                    compareA = matchedA[0];
-                    compareB = matchedB[0];
-                } else {
-                    compareA = a.slice(matchedA.index + matchedA[0].length);
-                    compareB = b.slice(matchedB.index + matchedB[0].length);
-                }
+                compareA = a.slice(matchedA.index + matchedA[0].length);
+                compareB = b.slice(matchedB.index + matchedB[0].length);
             }
 
             // @ts-expect-error
@@ -353,7 +382,7 @@ function getModifiedSections(sections: string[], options: Options) {
     }
 
     if (options.unique) {
-        removeDuplicates(sections, options.sorter === 'case-insensitive');
+        removeDuplicates(sections, options.unique === 'case-insensitive');
     }
 
     return sections;
@@ -427,6 +456,41 @@ export function sort(text: string, options: Options = {}) {
         if (errors.length) {
             throw new Error(errors.join('\n'));
         }
+    }
+
+    if (options.sorter === 'numerical' || options.sorter === 'float') {
+        options.useMatchedRegex = true;
+    }
+
+    if (!options.regexFilter) {
+        if (options.sorter === 'numerical') {
+            options.regexFilter = /-?\d+/;
+        }
+
+        if (options.sorter === 'float') {
+            options.regexFilter = floatRegex;
+        }
+    }
+
+    if (options.useMatchedRegex) {
+        options.sortGroups = [
+            {
+                group: 1,
+                attachNonMatchingToBottom: options.attachNonMatchingToBottom,
+                reverse: options.reverse,
+                unique: options.unique,
+                // @ts-expect-error
+                sorter: options.sorter,
+            },
+        ];
+    }
+
+    if (options.sortGroups && !options.fieldSeperator && !options.regexFilter) {
+        options.fieldSeperator = /\s+/;
+    }
+
+    if (options.sortGroups && options.regexFilter) {
+        options.regexFilter = new RegExp(options.regexFilter.source, 'g');
     }
 
     const lines = text.trimEnd().split(/\r?\n/);

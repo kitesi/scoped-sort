@@ -216,7 +216,7 @@ There`,
 
 test('unique', (t) => {
     /** @type {Options} */
-    const options = { unique: true };
+    const options = { unique: 'exact' };
 
     testString(
         t,
@@ -661,7 +661,7 @@ test('unique, case insensitive, recursive', (t) => {
         t,
         sort(inputs.duplicates.simple, {
             sorter: 'case-insensitive',
-            unique: true,
+            unique: 'case-insensitive',
         }),
         `do
 lol
@@ -675,7 +675,7 @@ There`,
         t,
         sort(inputs.duplicates.nestedListWithDescriptions, {
             sorter: 'case-insensitive',
-            unique: true,
+            unique: 'case-insensitive',
         }),
         `do
   there
@@ -697,7 +697,7 @@ There`,
         t,
         sort(inputs.duplicates.nestedListWithDescriptions, {
             sorter: 'case-insensitive',
-            unique: true,
+            unique: 'case-insensitive',
             recursive: true,
         }),
         `do
@@ -718,7 +718,7 @@ There`,
         t,
         sort(inputs.duplicates.oneLevelDeepNestedList, {
             sorter: 'case-insensitive',
-            unique: true,
+            unique: 'case-insensitive',
             recursive: true,
         }),
         `do
@@ -776,7 +776,7 @@ There`,
     testString(
         t,
         sort(inputs.duplicates.oneLevelDeepNestedList, {
-            unique: true,
+            unique: 'exact',
             recursive: true,
         }),
         `THERE
@@ -906,26 +906,29 @@ the matched text isn't here`,
         'use number regex, use matched, matched to bottom'
     );
 
-    // not sure how to implement it, maybe something like --use-match-group {number}?
-    //     testString(
-    //         t,
-    //         sort(
-    //             `there are 2 numbers here 7
-    // that should -10 convince you enough 10
-    // but there lies 1 only tales of it 27
-    // right slayer123? or no? 2`,
-    //             {
-    //                 regexFilter: /\d+[^\d]+(\d+)/,
-    //                 useMatchedRegex: true,
-    //                 sortNumerically: true,
-    //             }
-    //         ),
-    //         `right slayer123? or no? 2
-    // there are -10 numbers here 7
-    // that should 6 convince you enough 10
-    // but there lies 1 only tales of it 27`,
-    //         'test double numbers, capture second'
-    //     );
+    testString(
+        t,
+        sort(
+            `there are 2 numbers here 7
+that should -10 convince you enough 10
+but there lies 1 only tales of it 27
+right slayer123? or no? 2`,
+            {
+                regexFilter: /-?\d+/,
+                sortGroups: [
+                    {
+                        group: 2,
+                        sorter: 'numerical',
+                    },
+                ],
+            }
+        ),
+        `right slayer123? or no? 2
+there are 2 numbers here 7
+that should -10 convince you enough 10
+but there lies 1 only tales of it 27`,
+        'test numbers, capture second'
+    );
 
     t.end();
 });
@@ -1287,6 +1290,29 @@ Max    17  Male       135
 Niel   16  Female     135
 Sam    18  Male       140`,
         'list of personal info: -k {2}xu{1}'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            regexFilter: /(?<= |^)\w{3}(?= |$)/,
+            sortGroups: [
+                {
+                    group: 1,
+                    reverse: true,
+                },
+            ],
+        }),
+        `max    17  male       135
+Sam    18  Male       140
+Max    17  Male       135
+Niel   16  Female     135
+Jones  17  male       135
+Jack   23  Non-Binary 120
+Lydia  N/A N/A        120
+Jane   22  Female     100
+Mike   N/A male       N/A`,
+        'list of personal info: -k {1}s --regex /(?<= |^)w{3}(?= |$)/'
     );
 
     t.end();

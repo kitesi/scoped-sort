@@ -134,6 +134,17 @@ export function parseSortGroupKeys(groupKeysString: string) {
         return true;
     }
 
+    function addGroup(forGroups: number[], group: number) {
+        if (currentGroups.includes(group)) {
+            errors.push('Conflicting sort group numbers');
+            return false;
+        }
+
+        forGroups.push(group);
+        currentGroups.push(group);
+        return true;
+    }
+
     const currentGroups: number[] = [];
 
     groupKeyForLoop: for (let i = 0; i < groupKeys.length; i++) {
@@ -172,18 +183,16 @@ export function parseSortGroupKeys(groupKeysString: string) {
                 }
 
                 for (let j = start; j <= end; j++) {
-                    if (currentGroups.includes(j)) {
-                        errors.push(`Conflicting group numbers`);
+                    if (!addGroup(forGroups, j)) {
                         continue groupKeyForLoop;
                     }
-
-                    forGroups.push(j);
-                    currentGroups.push(j);
                 }
             } else {
                 const group = parseInt(forGroupsStringFrag);
-                forGroups.push(group);
-                currentGroups.push(parseInt(forGroupsStringFrag));
+
+                if (!addGroup(forGroups, group)) {
+                    continue groupKeyForLoop;
+                }
             }
         }
 
@@ -370,8 +379,23 @@ export function parseArgsIntoOptions(
                 break;
             case '--unique':
             case '-u':
-                options.unique = assumedBoolValue;
-                consumedBool = true;
+                const nextArg = args[i + 1];
+
+                if (!nextArg || nextArg.startsWith('-')) {
+                    options.unique = 'exact';
+                } else {
+                    i++;
+
+                    if (nextArg !== 'i') {
+                        errors.push(
+                            'Invalid value for --unique, only "i" is allowed.'
+                        );
+                        continue;
+                    }
+
+                    options.unique = 'case-insensitive';
+                }
+
                 break;
             case '--markdown':
             case '-m':

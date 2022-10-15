@@ -254,7 +254,7 @@ test('case insensitive', (t) => {
 
 test('unique', (t) => {
     /** @type {Options} */
-    const options = { unique: true };
+    const options = { unique: 'exact' };
 
     assertNoChangeWithMarkdownOption(
         t,
@@ -629,7 +629,7 @@ test('unique, case insensitive, recursive', (t) => {
     assertNoChangeWithMarkdownOption(
         t,
         inputs.duplicates.simple,
-        { sorter: 'case-insensitive', unique: true },
+        { sorter: 'case-insensitive', unique: 'case-insensitive' },
         `- do
 - lol
 - make
@@ -643,7 +643,7 @@ test('unique, case insensitive, recursive', (t) => {
         inputs.duplicates.nestedListWithDescriptions,
         {
             sorter: 'case-insensitive',
-            unique: true,
+            unique: 'case-insensitive',
         },
         `- do
   - there
@@ -666,7 +666,7 @@ test('unique, case insensitive, recursive', (t) => {
         inputs.duplicates.nestedListWithDescriptions,
         {
             sorter: 'case-insensitive',
-            unique: true,
+            unique: 'case-insensitive',
             recursive: true,
         },
         `- do
@@ -688,7 +688,7 @@ test('unique, case insensitive, recursive', (t) => {
         inputs.duplicates.oneLevelDeepNestedList,
         {
             sorter: 'case-insensitive',
-            unique: true,
+            unique: 'case-insensitive',
             recursive: true,
         },
         `- do
@@ -749,7 +749,7 @@ test('others with recursive', (t) => {
         t,
         inputs.duplicates.oneLevelDeepNestedList,
         {
-            unique: true,
+            unique: 'exact',
             recursive: true,
         },
         `- THERE

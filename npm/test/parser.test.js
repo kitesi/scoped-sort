@@ -485,6 +485,46 @@ test('parsing sort group keys', (t) => {
         '-k {2}xu{1}'
     );
 
+    expectResult(
+        '{3..}k',
+        {
+            errors: ['Sort group key did not pass the regex test.'],
+            positionals: [],
+            options: {},
+        },
+        '-k "{3..}k"'
+    );
+
+    expectResult(
+        '{3}nl',
+        {
+            errors: ["Can't have more than one sorter in sort group"],
+            positionals: [],
+            options: {},
+        },
+        '-k {3}nl'
+    );
+
+    expectResult(
+        '{3}{5}n{3}',
+        {
+            errors: ['Conflicting sort group numbers'],
+            positionals: [],
+            options: {},
+        },
+        '-k {3}{5}n{3}'
+    );
+
+    expectResult(
+        '{1..5}{3}',
+        {
+            errors: ['Conflicting sort group numbers'],
+            positionals: [],
+            options: {},
+        },
+        '-k {1..5}{3}'
+    );
+
     t.end();
 });
 
@@ -571,8 +611,11 @@ test('arg array into options (single options)', (t) => {
      * @param {import('../dist/main').Options} options
      */
     function expectOptionsWithSingleAndAlias(main, alias, options) {
-        expectOptions([main], options, main);
-        expectOptions([alias], options, alias);
+        const flags = tokenizeArgString(main);
+        main = flags.shift() || '';
+
+        expectOptions([main, ...flags], options, main);
+        expectOptions([alias, ...flags], options, alias);
     }
 
     /**
@@ -617,16 +660,20 @@ test('arg array into options (single options)', (t) => {
         sorter: 'random',
     });
 
+    expectOptionsWithSingleAndAlias('--unique', '-u', {
+        unique: 'exact',
+    });
+
+    expectOptionsWithSingleAndAlias('--unique i', '-u', {
+        unique: 'case-insensitive',
+    });
+
     expectBooleanOptionsWithSingleAndAlias('--recursive', '-r', {
         recursive: true,
     });
 
     expectBooleanOptionsWithSingleAndAlias('--reverse', '-s', {
         reverse: true,
-    });
-
-    expectBooleanOptionsWithSingleAndAlias('--unique', '-u', {
-        unique: true,
     });
 
     expectBooleanOptionsWithSingleAndAlias('--markdown', '-m', {
@@ -665,6 +712,55 @@ test('arg array into options (single options)', (t) => {
         '--field-seperator'
     );
 
+    expectResult(
+        ['--unique', 'al'],
+        {
+            errors: ['Invalid value for --unique, only "i" is allowed.'],
+            positionals: [],
+            options: {},
+        },
+        '--unique al'
+    );
+
+    expectResult(
+        ['-k', '{3}n'],
+        {
+            errors: [],
+            positionals: [],
+            options: {
+                sortGroups: [
+                    {
+                        group: 3,
+                        sorter: 'numerical',
+                    },
+                ],
+            },
+        },
+        '-k {3}n'
+    );
+
+    // the next two tests have been done before but only with parseSortGroupsKey()
+    // just checking if they are properly called here
+    expectResult(
+        ['--use-sort-group', '{3..}k'],
+        {
+            errors: ['Sort group key did not pass the regex test.'],
+            positionals: [],
+            options: {},
+        },
+        '--use-sort-group "{3..}k"'
+    );
+
+    expectResult(
+        ['-k', '{3}nl'],
+        {
+            errors: ["Can't have more than one sorter in sort group"],
+            positionals: [],
+            options: {},
+        },
+        '-k {3}nl'
+    );
+
     t.end();
 });
 
@@ -699,12 +795,12 @@ test('arg array into options (combining options)', (t) => {
 
     expectOptions('-su', {
         reverse: true,
-        unique: true,
+        unique: 'exact',
     });
 
     expectOptions('-nu', {
         sorter: 'numerical',
-        unique: true,
+        unique: 'exact',
     });
 
     expectOptions('-s --regex /\\w/', {

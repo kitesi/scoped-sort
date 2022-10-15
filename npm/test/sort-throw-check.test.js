@@ -26,6 +26,24 @@ test('testing if throws', (t) => {
         'throws on random + pattern'
     );
 
+    helper(
+        { sorter: 'random', useMatchedRegex: true },
+        'throws on random + use-matched-regex'
+    );
+
+    helper(
+        { regexFilter: /\d/, fieldSeperator: ' ' },
+        'throws on regex + field-seperator'
+    );
+
+    helper(
+        {
+            useMatchedRegex: true,
+            sortGroups: [],
+        },
+        'throws on use-matched-regex + sort-groups'
+    );
+
     t.doesNotThrow(() => {
         sort('', {
             sorter: 'natural',
