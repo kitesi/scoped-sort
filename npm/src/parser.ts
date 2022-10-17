@@ -435,6 +435,30 @@ export function parseArgsIntoOptions(
                 i++;
 
                 break;
+            case '--section-starter':
+                if (!requireNextArg(i)) {
+                    continue;
+                }
+
+                try {
+                    options.sectionStarter = parseStringAsRegex(args[i + 1]);
+                } catch (err: any) {
+                    errors.push(err.message);
+                }
+
+                i++;
+
+                break;
+            case '--section-rejoiner':
+                if (!requireNextArg(i)) {
+                    continue;
+                }
+
+                // prob need to do more parsing on this
+                options.sectionRejoiner = args[i + 1].replace(/\\n/g, '\n');
+                i++;
+
+                break;
             case '--attach-non-matching-to-bottom':
             case '-a':
                 options.attachNonMatchingToBottom = assumedBoolValue;

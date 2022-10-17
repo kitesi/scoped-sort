@@ -1319,12 +1319,12 @@ Mike   N/A male       N/A`,
 });
 
 test('seperator', (t) => {
-    const sectionSeperator = /^    <div/;
+    const sectionStarter = /^    <div/;
 
     testString(
         t,
         sort(inputs.sectionSeperator.divChildren, {
-            sectionSeperator,
+            sectionStarter,
         }),
         `    <div class="child">
         <h3>Earl Henry</h3>
@@ -1360,7 +1360,7 @@ test('seperator', (t) => {
     testString(
         t,
         sort(inputs.sectionSeperator.divChildren, {
-            sectionSeperator,
+            sectionStarter,
             regexFilter: /<p>/,
         }),
         `    <div class="child">
@@ -1397,48 +1397,148 @@ test('seperator', (t) => {
     t.end();
 });
 
-/*
+test('seperation with blank lines', (t) => {
+    const text = `Website: Youtube
+Link: https://www.youtube.com
+Type: Social Media
+Age: 12
 
-    Can't find any combo that works with sectionSeperator, /^Title/ is close,
-    but there's no blank line after the atom theme, and there's an extra empty
-    line after Material Dark
-    
-    It makes sense why it does it, and I think trying to make it work with 
-    sectionSeperator will just be a hack, and unintuitive. Instead I'm thinking
-    another option might be required, like --seperate-on? 
+Website: Discord
+Link: https://discord.com
+Type: Social Media
+Age: 5
 
-*/
-test.skip('seperation with blank lines', (t) => {
+Website: Instagram
+Link: https://www.instagram.com
+Type: Social Media
+Age: 18
+
+Website: StackOverflow
+Link: https://stackoverflow.com
+Type: Forum
+Age: 10
+
+Website: Reddit
+Link: https://www.reddit.com
+Type: Forum
+Age: 20
+
+Website: Nonexistent Website
+Link: /dev/null
+Type: invalid
+Age: -23`;
+
+    const options = {
+        sectionSeperator: /\n\n/,
+        sectionRejoiner: '\n\n',
+    };
+
     testString(
         t,
-        sort(
-            `Theme: Material Dark
-Link: https://example.com
+        sort(text, options),
+        `Website: Discord
+Link: https://discord.com
+Type: Social Media
+Age: 5
 
-Theme: Horizon
-Link: https://example.com
+Website: Instagram
+Link: https://www.instagram.com
+Type: Social Media
+Age: 18
 
-Theme: Ayu Dark
-Link: https://example.com
+Website: Nonexistent Website
+Link: /dev/null
+Type: invalid
+Age: -23
 
-Theme: Atom One Dark
-Link: https://example.com`,
-            {
-                sectionSeperator: /^Title/,
-            }
-        ),
-        `Theme: Atom One Dark
-Link: https://example.com
+Website: Reddit
+Link: https://www.reddit.com
+Type: Forum
+Age: 20
 
-Theme: Ayu Dark
-Link: https://example.com
+Website: StackOverflow
+Link: https://stackoverflow.com
+Type: Forum
+Age: 10
 
-Theme: Horizon
-Link: https://example.com
-
-Theme: Material Dark
-Link: https://example.com`,
+Website: Youtube
+Link: https://www.youtube.com
+Type: Social Media
+Age: 12`,
         'seperation by blank lines'
+    );
+
+    testString(
+        t,
+        sort(text, {
+            ...options,
+            regexFilter: /Type: /,
+        }),
+        `Website: StackOverflow
+Link: https://stackoverflow.com
+Type: Forum
+Age: 10
+
+Website: Reddit
+Link: https://www.reddit.com
+Type: Forum
+Age: 20
+
+Website: Youtube
+Link: https://www.youtube.com
+Type: Social Media
+Age: 12
+
+Website: Instagram
+Link: https://www.instagram.com
+Type: Social Media
+Age: 18
+
+Website: Discord
+Link: https://discord.com
+Type: Social Media
+Age: 5
+
+Website: Nonexistent Website
+Link: /dev/null
+Type: invalid
+Age: -23`,
+        'sort by type of website'
+    );
+
+    testString(
+        t,
+        sort(text, { ...options, sorter: 'numerical' }),
+        `Website: Nonexistent Website
+Link: /dev/null
+Type: invalid
+Age: -23
+
+Website: Discord
+Link: https://discord.com
+Type: Social Media
+Age: 5
+
+Website: StackOverflow
+Link: https://stackoverflow.com
+Type: Forum
+Age: 10
+
+Website: Youtube
+Link: https://www.youtube.com
+Type: Social Media
+Age: 12
+
+Website: Instagram
+Link: https://www.instagram.com
+Type: Social Media
+Age: 18
+
+Website: Reddit
+Link: https://www.reddit.com
+Type: Forum
+Age: 20`,
+        'sort by age'
     );
 
     t.end();

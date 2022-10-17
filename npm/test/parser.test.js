@@ -820,12 +820,20 @@ test('arg array into options (combining options)', (t) => {
         useMatchedRegex: true,
     });
 
-    expectOptions('--sectionSeperator /^Title/', {
-        sectionSeperator: /^Title/,
+    expectOptions('--section-starter /^Title/', {
+        sectionStarter: /^Title/,
     });
 
-    expectOptions('--section-seperator "/^  <div/"', {
-        sectionSeperator: /^  <div/,
+    expectOptions('--section-starter "/^  <div/"', {
+        sectionStarter: /^  <div/,
+    });
+
+    expectOptions('--sectionSeperator "/Title: /"', {
+        sectionSeperator: /Title: /,
+    });
+
+    expectOptions('--section-rejoiner "\\n\\n"', {
+        sectionRejoiner: '\n\n',
     });
 
     expectError('--hi', 'Unknown option: --hi');

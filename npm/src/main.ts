@@ -86,8 +86,12 @@ export interface Options {
      * `sortGroups[number]` (attachNonMatchingToBottom, reverse, unique, sorter)
      */
     useMatchedRegex?: boolean;
-    /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
+    /** This tells the program how to seperate sections as opposed to lines & identation. */
     sectionSeperator?: RegExp;
+    /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
+    sectionStarter?: RegExp;
+    /** Tells the program how to rejoin sections, defaults to "\n" */
+    sectionRejoiner?: string;
     /** The seperator to determine columns, defaults to `/\s+/` */
     fieldSeperator?: string | RegExp;
     /**
@@ -458,6 +462,8 @@ export function sort(text: string, options: Options = {}) {
         }
     }
 
+    // start of defaulting options
+
     if (options.sorter === 'numerical' || options.sorter === 'float') {
         options.useMatchedRegex = true;
     }
@@ -493,8 +499,22 @@ export function sort(text: string, options: Options = {}) {
         options.regexFilter = new RegExp(options.regexFilter.source, 'g');
     }
 
+    if (!options.sectionRejoiner) {
+        options.sectionRejoiner = '\n';
+    }
+
+    // end of defaulting options
+
+    if (options.sectionSeperator) {
+        return getModifiedSections(
+            text.split(options.sectionSeperator),
+            options
+        ).join(options.sectionRejoiner);
+    }
+
     const lines = text.trimEnd().split(/\r?\n/);
-    let sections = [];
+    const sections: string[] = [];
+
     let currentSection: string[] = [];
     let currentIndentation: string | undefined;
 
@@ -510,8 +530,8 @@ export function sort(text: string, options: Options = {}) {
 
         if (currentSection.length && (!options.markdown || listChar)) {
             if (
-                options.sectionSeperator
-                    ? options.sectionSeperator.test(line)
+                options.sectionStarter
+                    ? options.sectionStarter.test(line)
                     : !isBlankLineRegexTest.test(line) &&
                       indentation === currentIndentation
             ) {

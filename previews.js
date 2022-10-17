@@ -151,12 +151,12 @@ You are our 5000th customer!`,
 - Salad
 - Hot Dog
 - Burger`,
-        options: { unique: true, reverse: true },
+        options: { unique: 'exact', reverse: true },
     },
     sectionSeperatorHtml: {
         input: inputs.sectionSeperator.divChildren,
         output: expectedSectionSeperatorDivChildrenResult,
-        options: { sectionSeperator: /^    <div/ },
+        options: { sectionStarter: /^    <div/ },
         language: 'html',
         display: {
             input: `<div>\n${inputs.sectionSeperator.divChildren}\n</div>`,
