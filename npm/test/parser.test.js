@@ -205,8 +205,9 @@ test('test regex parser', (t) => {
     }
 
     expectRegex('/\\d/', /\d/, 'regular regex');
-    expectRegex('/\\d/i', /\d/i, 'regular regex with i flag');
     expectRegex('/\\{/', /\{/, 'regex with escaped {');
+    expectRegex('/\\d/i', /\d/i, 'regular regex with i flag');
+    expectRegex('/\\{/g', /\{/g, 'regex with g flag');
     /* eslint-disable-next-line no-useless-escape */
     expectRegex('/\\"/', /\"/, 'regex with blackslash for quote');
 
@@ -226,6 +227,16 @@ test('test regex parser', (t) => {
         '/\\d/m',
         "The only regex flag allowed is 'i'. Recieved: 'm'",
         'invalid flag'
+    );
+
+    t.deepEquals(
+        parseArgsIntoOptions(tokenizeArgString('--section-seperator /\\n/g')),
+        {
+            errors: ['The g flag is not allowed here'],
+            positionals: [],
+            options: {},
+        },
+        'invalid g flag on regex'
     );
 
     t.end();

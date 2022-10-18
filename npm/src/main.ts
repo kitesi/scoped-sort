@@ -39,11 +39,13 @@ export interface Options {
      *
      * natural: sorts based on the [natural sort](https://en.wikipedia.org/wiki/Natural_sort_order)
      *
-     * numerical: sorts based on the number in each line
+     * numerical: sorts based on the number of the captured result. if no regex is specified,
+     * it will sort by the first number in the line
      *
-     * float: sorts based on the float in each line
+     * float: sorts based on the float of the captured result. if no regex is specified
+     * it will sort by the first float in the line
      *
-     * length: sorts based on the length of each item, short to long
+     * length: sorts based on the length of captured result, short to long
      *
      * none: don't sort, mainly used the unique option
      *
@@ -58,14 +60,16 @@ export interface Options {
     recursive?: boolean;
     /** Reverses the sort after completely finishing. */
     reverse?: boolean;
-    /** Removes duplicate items. */
+    /** Removes duplicate items. A value of 'exact' will only remove exact matches, 'case-insensitive' will remove without regard to casing. */
     unique?: UniqueOptions;
     /** Treats the text as a markdown list. You won’t need this option for most markdown lists but in certain instances you will. */
     markdown?: boolean;
     /**
-     * A regex to match text in each item/line, the sorter will sort based on
+     * A regex to match text in each item/line. By default the sorter will sort based on
      * the text after the match. Text that do no match will be left in place,
      * and will be at the top. The regex language is javascript.
+     *
+     * A global flag can be used, which will alter the way `.sortGroups` works.
      */
     regexFilter?: RegExp;
     /**
@@ -77,13 +81,9 @@ export interface Options {
      * {
      *      sortGroups: [{
      *          group: 1,
-     *          ...options
      *      }]
      * }
      * ```
-     *
-     * Where options is the upmost options you provide that are valid in
-     * `sortGroups[number]` (attachNonMatchingToBottom, reverse, unique, sorter)
      */
     useMatchedRegex?: boolean;
     /** This tells the program how to seperate sections as opposed to lines & identation. */
@@ -92,10 +92,14 @@ export interface Options {
     sectionStarter?: RegExp;
     /** Tells the program how to rejoin sections, defaults to "\n" */
     sectionRejoiner?: string;
-    /** The seperator to determine columns, defaults to `/\s+/` */
+    /**
+     * The seperator to determine columns, defaults to `/\s+/`.
+     * Used in combination with `.sortGroups`
+     */
     fieldSeperator?: string | RegExp;
     /**
-     * Determines what group to use when sorting, used with `--regex` or `--field-seperator`
+     * Determines what group to use when sorting,
+     * used with `.regexFilter` or `.fieldSeperator`.
      *
      * An input of the following:
      *
@@ -114,11 +118,12 @@ export interface Options {
     /**
      * By default items that do not match a sorter (numerical, float, ...) or
      * don't match the specified `.regexFilter` will stay in place but be at the
-     * top. If this is set to true, it will be at the bottom. Vise versa if `reverse` is set to true.
+     * top. If this is set to true, it will be at the bottom. Vise versa if
+     * `reverse` is set to true.
      */
     attachNonMatchingToBottom?: boolean;
     /**
-     * If true, checks for option errors and throws if one or more is found.
+     * Checks for option errors and throws if one or more is found.
      *
      * It's off by default, but recommended to turn on, otherwise you might get
      * unexpected sort results.
@@ -464,16 +469,12 @@ export function sort(text: string, options: Options = {}) {
 
     // start of defaulting options
 
-    if (options.sorter === 'numerical' || options.sorter === 'float') {
-        options.useMatchedRegex = true;
-    }
-
     if (!options.regexFilter) {
         if (options.sorter === 'numerical') {
-            options.regexFilter = /-?\d+/;
-        }
-
-        if (options.sorter === 'float') {
+            options.useMatchedRegex = true;
+            options.regexFilter = /-?\d+/g;
+        } else if (options.sorter === 'float') {
+            options.useMatchedRegex = true;
             options.regexFilter = floatRegex;
         }
     }
@@ -482,11 +483,6 @@ export function sort(text: string, options: Options = {}) {
         options.sortGroups = [
             {
                 group: 1,
-                attachNonMatchingToBottom: options.attachNonMatchingToBottom,
-                reverse: options.reverse,
-                unique: options.unique,
-                sorter:
-                    options.sorter === 'random' ? undefined : options.sorter,
             },
         ];
     }
@@ -495,12 +491,33 @@ export function sort(text: string, options: Options = {}) {
         options.fieldSeperator = /\s+/;
     }
 
-    if (options.sortGroups && options.regexFilter) {
-        options.regexFilter = new RegExp(options.regexFilter.source, 'g');
-    }
-
     if (!options.sectionRejoiner) {
         options.sectionRejoiner = '\n';
+    }
+
+    // set fisrt sort group to default to uppermost options values
+    if (options.sortGroups && options.sortGroups[0]) {
+        const firstSortGroup = options.sortGroups[0];
+
+        if (
+            typeof firstSortGroup.sorter === 'undefined' &&
+            options.sorter !== 'random'
+        ) {
+            firstSortGroup.sorter = options.sorter;
+        }
+
+        if (typeof firstSortGroup.reverse === 'undefined') {
+            firstSortGroup.reverse = options.reverse;
+        }
+
+        if (typeof firstSortGroup.unique === 'undefined') {
+            firstSortGroup.unique = options.unique;
+        }
+
+        if (typeof firstSortGroup.attachNonMatchingToBottom === 'undefined') {
+            firstSortGroup.attachNonMatchingToBottom =
+                options.attachNonMatchingToBottom;
+        }
     }
 
     // end of defaulting options

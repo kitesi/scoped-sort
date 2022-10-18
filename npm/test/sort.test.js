@@ -914,7 +914,31 @@ that should -10 convince you enough 10
 but there lies 1 only tales of it 27
 right slayer123? or no? 2`,
             {
-                regexFilter: /-?\d+/,
+                regexFilter: /(-?\d+)[^\d]+(-?\d+)/,
+                sortGroups: [
+                    {
+                        group: 3,
+                        sorter: 'numerical',
+                    },
+                ],
+            }
+        ),
+        `right slayer123? or no? 2
+there are 2 numbers here 7
+that should -10 convince you enough 10
+but there lies 1 only tales of it 27`,
+        'test numbers, capture second, no g flag'
+    );
+
+    testString(
+        t,
+        sort(
+            `there are 2 numbers here 7
+that should -10 convince you enough 10
+but there lies 1 only tales of it 27
+right slayer123? or no? 2`,
+            {
+                regexFilter: /-?\d+/g,
                 sortGroups: [
                     {
                         group: 2,
@@ -1122,6 +1146,28 @@ Mike   N/A male       N/A
 Lydia  N/A N/A        120
 Jack   23  Non-Binary 120`,
         'list of personal info: -k {3}i'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sorter: 'case-insensitive',
+            sortGroups: [
+                {
+                    group: 3,
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Jane   22  Female     100
+Sam    18  Male       140
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A
+Lydia  N/A N/A        120
+Jack   23  Non-Binary 120`,
+        'list of personal info: -k {3} --case-insensitive; check if uppermost passes down'
     );
 
     testString(

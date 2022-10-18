@@ -1,6 +1,6 @@
 import type { Options, Sorter, SortGroup } from './main';
 
-const isRegexTest = /\/.+\/[a-zA-Z]*/;
+const isRegexTest = /^\/.+\/\w*$/;
 
 // tests entire string/line
 export const isValidSortGroupTest =
@@ -19,22 +19,38 @@ export const sortGroupInnerValuesMatchRegex = /\{(.+)\}(.*)/;
 // example: abc, matches ["a", "b", "c"]
 export const sortGroupArgsMatchRegex = /[a-zA-Z](=[^_$]+)?/g;
 
-function parseStringAsRegex(arg: string) {
-    if (!isRegexTest.test(arg)) {
+/**
+ * Parses a string into regex.
+ */
+function parseStringAsRegex(arg: string, allowsGlobal: boolean) {
+    const matches = arg.match(/^\/(.+)\/(\w*)$/);
+
+    if (!matches || !matches[1]) {
         throw new Error(`Expected regex, got: '${arg}'`);
     }
 
-    const indexOfEndingSlash = arg.lastIndexOf('/');
-    const flags = arg.slice(indexOfEndingSlash + 1);
+    const { 1: source, 2: flags } = matches;
 
-    if (flags !== 'i' && flags !== '') {
-        throw new Error(
-            `The only regex flag allowed is 'i'. Recieved: '${flags}'`
-        );
+    if (flags) {
+        for (let i = 0; i < flags.length; i++) {
+            if (flags[i] === 'g') {
+                if (!allowsGlobal) {
+                    throw new Error('The g flag is not allowed here');
+                }
+
+                continue;
+            }
+
+            if (flags[i] !== 'i') {
+                throw new Error(
+                    `The only regex flag allowed is 'i'. Recieved: '${flags}'`
+                );
+            }
+        }
     }
 
     try {
-        return new RegExp(arg.slice(1, indexOfEndingSlash), flags);
+        return new RegExp(source, flags);
     } catch (e) {
         throw new Error(
             `Tried to parse "${arg}" as a regex, failed with: ` +
@@ -413,7 +429,7 @@ export function parseArgsIntoOptions(
                 }
 
                 try {
-                    options.regexFilter = parseStringAsRegex(args[i + 1]);
+                    options.regexFilter = parseStringAsRegex(args[i + 1], true);
                 } catch (err: any) {
                     errors.push(err.message);
                 }
@@ -432,7 +448,10 @@ export function parseArgsIntoOptions(
                 }
 
                 try {
-                    options.sectionSeperator = parseStringAsRegex(args[i + 1]);
+                    options.sectionSeperator = parseStringAsRegex(
+                        args[i + 1],
+                        false
+                    );
                 } catch (err: any) {
                     errors.push(err.message);
                 }
@@ -446,7 +465,10 @@ export function parseArgsIntoOptions(
                 }
 
                 try {
-                    options.sectionStarter = parseStringAsRegex(args[i + 1]);
+                    options.sectionStarter = parseStringAsRegex(
+                        args[i + 1],
+                        false
+                    );
                 } catch (err: any) {
                     errors.push(err.message);
                 }
@@ -509,7 +531,7 @@ export function parseArgsIntoOptions(
 
                 try {
                     options.fieldSeperator = isRegexTest.test(args[i + 1])
-                        ? parseStringAsRegex(args[i + 1])
+                        ? parseStringAsRegex(args[i + 1], false)
                         : args[i + 1];
                 } catch (err: any) {
                     errors.push(err.message);
