@@ -281,7 +281,7 @@ King henry had 6 wives
 the matched text isn't here
 Cats have 9 lives`,
     },
-    sectionSeperator: {
+    sectionStarter: {
         divChildren: `    <div class="child">
         <h3>Zachary Garrett</h3>
         <p>Computer Science</p>

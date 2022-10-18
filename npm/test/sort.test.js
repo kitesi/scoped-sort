@@ -1323,7 +1323,7 @@ test('seperator', (t) => {
 
     testString(
         t,
-        sort(inputs.sectionSeperator.divChildren, {
+        sort(inputs.sectionStarter.divChildren, {
             sectionStarter,
         }),
         `    <div class="child">
@@ -1359,7 +1359,7 @@ test('seperator', (t) => {
 
     testString(
         t,
-        sort(inputs.sectionSeperator.divChildren, {
+        sort(inputs.sectionStarter.divChildren, {
             sectionStarter,
             regexFilter: /<p>/,
         }),

@@ -211,7 +211,7 @@ banana
     );
 
     const unknownOption = `// { sort-start --start }
-${inputs.sectionSeperator.divChildren}
+${inputs.sectionStarter.divChildren}
 // { sort-end }`;
 
     checkAll(
@@ -225,7 +225,7 @@ ${inputs.sectionSeperator.divChildren}
     );
 
     const invalidNoPrefixUsage = `// { sort-start --no-case-insensitive }
-${inputs.sectionSeperator.divChildren}
+${inputs.sectionStarter.divChildren}
 // { sort-end }`;
 
     checkAll(
