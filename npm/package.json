@@ -12,7 +12,9 @@
         "url": "https://github.com/sixskys/scoped-sort/issues"
     },
     "scripts": {
-        "test": "tape ./test/*.test.js"
+        "test": "tape ./test/*.test.js",
+        "pretty": "prettier --write .",
+        "lint": "eslint src/* test/*"
     },
     "keywords": [
         "string",
@@ -26,7 +28,12 @@
     "author": "karizma",
     "license": "MIT",
     "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.40.1",
+        "@typescript-eslint/parser": "^5.40.1",
+        "eslint": "^8.25.0",
+        "eslint-config-prettier": "^8.5.0",
         "jest-diff": "^27.4.2",
+        "prettier": "^2.7.1",
         "tape": "^5.4.0"
     }
 }

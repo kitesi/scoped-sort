@@ -254,7 +254,11 @@ export function parseSortGroupKeys(groupKeysString: string) {
  */
 export function parseArgsIntoOptions(
     args: string[],
-    unknownArgCallback?: (args: string[], index: number, options: Options) => {}
+    unknownArgCallback?: (
+        args: string[],
+        index: number,
+        options: Options
+    ) => void
 ) {
     const options: Options = {};
     const positionals: string[] = [];
@@ -378,7 +382,7 @@ export function parseArgsIntoOptions(
                 consumedBool = true;
                 break;
             case '--unique':
-            case '-u':
+            case '-u': {
                 const nextArg = args[i + 1];
 
                 if (!nextArg || nextArg.startsWith('-')) {
@@ -397,6 +401,7 @@ export function parseArgsIntoOptions(
                 }
 
                 break;
+            }
             case '--markdown':
             case '-m':
                 options.markdown = assumedBoolValue;
@@ -465,7 +470,7 @@ export function parseArgsIntoOptions(
                 consumedBool = true;
                 break;
             case '--use-sort-group':
-            case '-k':
+            case '-k': {
                 if (!requireNextArg(i)) {
                     continue;
                 }
@@ -495,6 +500,7 @@ export function parseArgsIntoOptions(
                 i++;
 
                 break;
+            }
             case '--field-seperator':
             case '-F':
                 if (!requireNextArg(i)) {

@@ -270,22 +270,22 @@ function getComparasionFromSortGroup(
 }
 
 function getModifiedSections(sections: string[], options: Options) {
-    if (options.sortGroups) {
-        const columnCache: Map<string, string[]> = new Map();
+    const columnCache: Map<string, string[]> = new Map();
 
-        function getColumns(section: string) {
-            if (!columnCache.has(section)) {
-                columnCache.set(
-                    section,
-                    options.regexFilter
-                        ? section.match(options.regexFilter) || []
-                        : section.split(options.fieldSeperator!)
-                );
-            }
-
-            return columnCache.get(section)!;
+    function getColumns(section: string) {
+        if (!columnCache.has(section)) {
+            columnCache.set(
+                section,
+                options.regexFilter
+                    ? section.match(options.regexFilter) || []
+                    : section.split(options.fieldSeperator!)
+            );
         }
 
+        return columnCache.get(section)!;
+    }
+
+    if (options.sortGroups) {
         let usedSorterOnce = false;
 
         for (let i = 0; i < options.sortGroups.length; i++) {
@@ -357,8 +357,8 @@ function getModifiedSections(sections: string[], options: Options) {
             let compareB = b;
 
             if (options.regexFilter) {
-                let matchedA = a.match(options.regexFilter);
-                let matchedB = b.match(options.regexFilter);
+                const matchedA = a.match(options.regexFilter);
+                const matchedB = b.match(options.regexFilter);
 
                 if (
                     (!matchedA || typeof matchedA.index === 'undefined') &&
@@ -379,7 +379,7 @@ function getModifiedSections(sections: string[], options: Options) {
                 compareB = b.slice(matchedB.index + matchedB[0].length);
             }
 
-            // @ts-expect-error
+            // @ts-ignore
             const result = compareSections(compareA, compareB, options);
             return options.reverse ? -result : result;
         });
@@ -485,8 +485,8 @@ export function sort(text: string, options: Options = {}) {
                 attachNonMatchingToBottom: options.attachNonMatchingToBottom,
                 reverse: options.reverse,
                 unique: options.unique,
-                // @ts-expect-error
-                sorter: options.sorter,
+                sorter:
+                    options.sorter === 'random' ? undefined : options.sorter,
             },
         ];
     }
@@ -586,7 +586,7 @@ export function sortComments(content: string): {
     const lines = content.split('\n');
     const commentSections: CommentSection[] = [];
     const errors: string[] = [];
-    let result = content;
+    const result = content;
 
     let currentStartLine: number | undefined = undefined;
 

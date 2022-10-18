@@ -207,7 +207,8 @@ test('test regex parser', (t) => {
     expectRegex('/\\d/', /\d/, 'regular regex');
     expectRegex('/\\d/i', /\d/i, 'regular regex with i flag');
     expectRegex('/\\{/', /\{/, 'regex with escaped {');
-    expectRegex(`/\\"/`, /\"/, 'regex with blackslash for quote');
+    /* eslint-disable-next-line no-useless-escape */
+    expectRegex('/\\"/', /\"/, 'regex with blackslash for quote');
 
     // might seem weird how the program lists 'd' or 'd/' as the input,
     // this is because the tokenizer ignores \\ if not inside of a regex
@@ -549,6 +550,7 @@ test('string argument tokenizer', (t) => {
 
     t.deepEquals(
         tokenizeArgString(
+            /* eslint-disable-next-line no-useless-escape, quotes */
             `--hi "there \\\"my\\\"" name is jake 'you \\\'feel\\\' me?'`
         ),
         ['--hi', 'there "my"', 'name', 'is', 'jake', "you 'feel' me?"],
