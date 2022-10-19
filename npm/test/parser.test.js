@@ -3,12 +3,15 @@ const {
     tokenizeArgString,
     parseArgsIntoOptions,
     parseSortGroupKeys,
+    parseSortOrder,
     sortGroupMatchRegex,
     sortGroupInnerValuesMatchRegex,
     sortGroupArgsMatchRegex,
     isValidSortGroupTest,
 } = require('../dist/parser');
 const test = require('tape');
+
+/** @typedef {import("../dist/main.js").Options} Options */
 
 test('sortGroupMatchRegex & isValidSortGroupTest', (t) => {
     /**
@@ -374,7 +377,121 @@ test('parsing sort group keys', (t) => {
     t.end();
 });
 
-test('parsing sort group keys', (t) => {
+test('parsing sort order', (t) => {
+    /**
+     * @param {string} input
+     * @param {Partial<ReturnType<typeof parseSortOrder>>} expected
+     * @param {string} msg
+     */
+    function expectResult(input, expected, msg) {
+        t.deepEquals(parseSortOrder(input), expected, msg);
+    }
+
+    expectResult(
+        '3i:z;y;x;a;b;c',
+        {
+            errors: [],
+            sortOrder: {
+                values: ['z', 'y', 'x', 'a', 'b', 'c'],
+                caseInsensitive: true,
+                looseness: 3,
+            },
+        },
+        'values, case insensitive & looseness'
+    );
+
+    expectResult(
+        'i3:z;y;x;a;b;c',
+        {
+            errors: [],
+            sortOrder: {
+                values: ['z', 'y', 'x', 'a', 'b', 'c'],
+                caseInsensitive: true,
+                looseness: 3,
+            },
+        },
+        'values, case insensitive & looseness (diff format)'
+    );
+
+    expectResult(
+        'z;y;x;a;b;c',
+        { errors: [], sortOrder: { values: ['z', 'y', 'x', 'a', 'b', 'c'] } },
+        'just values'
+    );
+
+    expectResult(
+        '3:z;y;x;a;b;c',
+        {
+            errors: [],
+            sortOrder: { values: ['z', 'y', 'x', 'a', 'b', 'c'], looseness: 3 },
+        },
+        'values & looseness'
+    );
+
+    expectResult(
+        'i:z;y;x;a;b;c',
+        {
+            errors: [],
+            sortOrder: {
+                values: ['z', 'y', 'x', 'a', 'b', 'c'],
+                caseInsensitive: true,
+            },
+        },
+        'values & case insensitive'
+    );
+
+    expectResult(
+        '30:jk;ajkajd;jkl',
+        {
+            errors: [],
+            sortOrder: { values: ['jk', 'ajkajd', 'jkl'], looseness: 30 },
+        },
+        'looseness higher than one digit'
+    );
+
+    expectResult(
+        '3i',
+        { errors: [], sortOrder: { values: ['3i'] } },
+        'no colon'
+    );
+
+    expectResult(
+        '3i:',
+        {
+            errors: ['No values were provided'],
+        },
+        'no values'
+    );
+
+    expectResult(
+        '3ii:va;gkk',
+        {
+            errors: ['Already set the case-sensitivity in the sort order'],
+            sortOrder: {
+                values: ['va', 'gkk'],
+                looseness: 3,
+                caseInsensitive: true,
+            },
+        },
+        'multiple i options'
+    );
+    expectResult(
+        '3i6:va;gkk',
+        {
+            errors: ['Already set the looseness in the sort order'],
+            sortOrder: {
+                values: ['va', 'gkk'],
+                looseness: 3,
+                caseInsensitive: true,
+            },
+        },
+        'multiple looseness options'
+    );
+
+    t.end();
+});
+
+test('parsing sort group keys integration with tokenizer&parseArgsIntoOptions', (t) => {
     /**
      * @param {string} input
      * @param {ReturnType<import('../dist/parser').parseArgsIntoOptions>} expected
@@ -384,7 +501,15 @@ test('parsing sort group keys', (t) => {
         t.deepEquals(
             parseArgsIntoOptions(tokenizeArgString('-k ' + input)),
             expected,
-            msg
+            msg + ' (alias)'
+        );
+
+        t.deepEquals(
+            parseArgsIntoOptions(
+                tokenizeArgString('--use-sort-group ' + input)
+            ),
+            expected,
+            msg + ' (main)'
         );
     }
 
@@ -498,6 +623,18 @@ test('parsing sort group keys', (t) => {
     );
 
     expectResult(
+        '{3..5}u=xx',
+        {
+            errors: [
+                "Invalid value for option 'u' in sort group, only 'i' is allowed.",
+            ],
+            positionals: [],
+            options: {},
+        },
+        '-k "{3..}k"'
+    );
+
+    expectResult(
         '{3..}k',
         {
             errors: ['Sort group key did not pass the regex test.'],
@@ -535,6 +672,84 @@ test('parsing sort group keys', (t) => {
             options: {},
         },
         '-k {1..5}{3}'
+    );
+
+    t.end();
+});
+
+test('parsing sort order integration with tokenizer&parseArgsIntoOptions', (t) => {
+    /**
+     * @param {string} input
+     * @param {Options} expected
+     * @param {string} msg
+     */
+    function expectResult(input, expected, msg) {
+        t.deepEquals(
+            parseArgsIntoOptions(tokenizeArgString('-o ' + input)),
+            { errors: [], positionals: [], options: expected },
+            msg + ' (top most alias)'
+        );
+
+        t.deepEquals(
+            parseArgsIntoOptions(tokenizeArgString('--sort-order ' + input)),
+            { errors: [], positionals: [], options: expected },
+            msg + ' (top most main)'
+        );
+
+        t.deepEquals(
+            parseArgsIntoOptions(tokenizeArgString('-k {3}o=' + input)),
+            {
+                errors: [],
+                positionals: [],
+                options: {
+                    sortGroups: [{ group: 3, ...expected }],
+                },
+            },
+            msg + ' (inside sort group)'
+        );
+    }
+
+    expectResult(
+        '3i:z;y;x;a;b;c',
+        {
+            sortOrder: {
+                values: ['z', 'y', 'x', 'a', 'b', 'c'],
+                caseInsensitive: true,
+                looseness: 3,
+            },
+        },
+        'values, case insensitive & looseness'
+    );
+
+    expectResult(
+        'i3:z;y;x;a;b;c',
+        {
+            sortOrder: {
+                values: ['z', 'y', 'x', 'a', 'b', 'c'],
+                caseInsensitive: true,
+                looseness: 3,
+            },
+        },
+        'values, case insensitive & looseness (diff format)'
+    );
+
+    expectResult(
+        'z;y;x;a;b;c',
+        {
+            sortOrder: { values: ['z', 'y', 'x', 'a', 'b', 'c'] },
+        },
+        'just values'
+    );
+
+    expectResult(
+        '3:z;y;x;a;b;c',
+        {
+            sortOrder: {
+                values: ['z', 'y', 'x', 'a', 'b', 'c'],
+                looseness: 3,
+            },
+        },
+        'values & looseness'
     );
 
     t.end();
@@ -603,7 +818,7 @@ test('arg array into options (single options)', (t) => {
 
     /**
      * @param {string[]} args
-     * @param {import('../dist/main').Options} options
+     * @param {Options} options
      * @param {string} msg
      */
     function expectOptions(args, options, msg) {
@@ -621,7 +836,7 @@ test('arg array into options (single options)', (t) => {
     /**
      * @param {string} main
      * @param {string} alias
-     * @param {import('../dist/main').Options} options
+     * @param {Options} options
      */
     function expectOptionsWithSingleAndAlias(main, alias, options) {
         const flags = tokenizeArgString(main);
@@ -634,7 +849,7 @@ test('arg array into options (single options)', (t) => {
     /**
      * @param {string} main
      * @param {string} alias
-     * @param {import('../dist/main').Options} options
+     * @param {Options} options
      */
     function expectBooleanOptionsWithSingleAndAlias(main, alias, options) {
         expectOptionsWithSingleAndAlias(main, alias, options);
@@ -780,7 +995,7 @@ test('arg array into options (single options)', (t) => {
 test('arg array into options (combining options)', (t) => {
     /**
      * @param {string[]|string} args
-     * @param {import('../dist/main').Options} options
+     * @param {Options} options
      */
     function expectOptions(args, options) {
         if (typeof args === 'string') {

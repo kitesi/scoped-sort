@@ -1,10 +1,10 @@
-import type { Options, Sorter, SortGroup } from './main';
+import type { Options, Sorter, SortGroup, SortOrder } from './main';
 
 const isRegexTest = /^\/.+\/\w*$/;
 
 // tests entire string/line
 export const isValidSortGroupTest =
-    /^(\{\d+(,\d+|\.\.\d+)*\}(_?(?<![a-zA-Z])[a-zA-Z]=[a-zA-Z0-9]+(_|$|{)|[a-zA-Z])*,?)*$/;
+    /^(\{\d+(,\d+|\.\.\d+)*\}(_?(?<![a-zA-Z])[a-zA-Z]=[a-zA-Z0-9:;]+(_|$|{)|[a-zA-Z])*,?)*$/;
 
 // Since there is a big check upfront, the following regex(s) can be simplified
 // and just be things like {.+} instead of \{\d+(,\d+|\.\.\d+)*\}. Can also use the i flag
@@ -12,7 +12,7 @@ export const isValidSortGroupTest =
 
 // example: {34}abc,{1..2}cx_u=i, matches ["{3}abc", "{1..2}xc_u=i"]
 export const sortGroupMatchRegex =
-    /\{\d+(,\d+|\.\.\d+)*\}(_?(?<![a-zA-Z])[a-zA-Z]=[a-zA-Z0-9]+(_|$|{)|[a-zA-Z])*/g;
+    /\{\d+(,\d+|\.\.\d+)*\}(_?(?<![a-zA-Z])[a-zA-Z]=[a-zA-Z0-9:;]+(_|$|{)|[a-zA-Z])*/g;
 
 // example: {34}abc, matches ["{34}abc", "34", "abc"]
 export const sortGroupInnerValuesMatchRegex = /\{(.+)\}(.*)/;
@@ -113,6 +113,50 @@ export function tokenizeArgString(argString: string): string[] {
     }
 
     return args;
+}
+
+export function parseSortOrder(sortOrderString: string) {
+    const errors: string[] = [];
+    // doesn't check for multiple :
+    const innerValues = sortOrderString.split(':');
+
+    const values = innerValues.length === 1 ? innerValues[0] : innerValues[1];
+    const args = innerValues.length === 2 ? innerValues[0] : '';
+
+    if (!values) {
+        errors.push('No values were provided');
+        return { errors };
+    }
+
+    const sortOrder: SortOrder = {
+        values: values.split(';'),
+    };
+
+    if (args) {
+        for (const arg of args.match(/\d+|[^\d]/g) || []) {
+            if (!Number.isNaN(parseInt(arg))) {
+                if (typeof sortOrder.looseness !== 'undefined') {
+                    errors.push('Already set the looseness in the sort order');
+                    continue;
+                }
+
+                sortOrder.looseness = parseInt(arg);
+            } else if (arg === 'i') {
+                if (typeof sortOrder.caseInsensitive !== 'undefined') {
+                    errors.push(
+                        'Already set the case-sensitivity in the sort order'
+                    );
+                    continue;
+                }
+
+                sortOrder.caseInsensitive = true;
+            } else {
+                errors.push('Unknown argument in sort order: ' + arg);
+            }
+        }
+    }
+
+    return { errors, sortOrder };
 }
 
 export function parseSortGroupKeys(groupKeysString: string) {
@@ -248,10 +292,37 @@ export function parseSortGroupKeys(groupKeysString: string) {
                     sortGroupArgs.attachNonMatchingToBottom = true;
                     break;
                 case 'u':
+                    if (value && value !== 'i') {
+                        errors.push(
+                            "Invalid value for option 'u' in sort group, only 'i' is allowed."
+                        );
+                        continue;
+                    }
+
                     sortGroupArgs.unique =
                         value === 'i' ? 'case-insensitive' : 'exact';
                     usedValue = true;
                     break;
+                case 'o': {
+                    if (!value) {
+                        errors.push('Sort order requires a value');
+                        continue;
+                    }
+
+                    const resultFromSortOrderParse = parseSortOrder(value);
+
+                    if (resultFromSortOrderParse.errors.length > 0) {
+                        errors.push(...resultFromSortOrderParse.errors);
+                        continue;
+                    }
+
+                    sortGroupArgs.sortOrder =
+                        resultFromSortOrderParse.sortOrder;
+                    usedValue = true;
+                    break;
+                }
+                default:
+                    errors.push('Unknown argument for sort group: ' + key);
             }
 
             if (!usedValue && value) {
@@ -358,6 +429,8 @@ export function parseArgsIntoOptions(
             }
         }
 
+        const nextArg = args[i + 1];
+
         switch (arg) {
             case '--case-insensitive':
             case '-i':
@@ -399,8 +472,6 @@ export function parseArgsIntoOptions(
                 break;
             case '--unique':
             case '-u': {
-                const nextArg = args[i + 1];
-
                 if (!nextArg || nextArg.startsWith('-')) {
                     options.unique = 'exact';
                 } else {
@@ -429,7 +500,7 @@ export function parseArgsIntoOptions(
                 }
 
                 try {
-                    options.regexFilter = parseStringAsRegex(args[i + 1], true);
+                    options.regexFilter = parseStringAsRegex(nextArg, true);
                 } catch (err: any) {
                     errors.push(err.message);
                 }
@@ -449,7 +520,7 @@ export function parseArgsIntoOptions(
 
                 try {
                     options.sectionSeperator = parseStringAsRegex(
-                        args[i + 1],
+                        nextArg,
                         false
                     );
                 } catch (err: any) {
@@ -465,10 +536,7 @@ export function parseArgsIntoOptions(
                 }
 
                 try {
-                    options.sectionStarter = parseStringAsRegex(
-                        args[i + 1],
-                        false
-                    );
+                    options.sectionStarter = parseStringAsRegex(nextArg, false);
                 } catch (err: any) {
                     errors.push(err.message);
                 }
@@ -482,7 +550,7 @@ export function parseArgsIntoOptions(
                 }
 
                 // prob need to do more parsing on this
-                options.sectionRejoiner = args[i + 1].replace(/\\n/g, '\n');
+                options.sectionRejoiner = nextArg.replace(/\\n/g, '\n');
                 i++;
 
                 break;
@@ -497,9 +565,7 @@ export function parseArgsIntoOptions(
                     continue;
                 }
 
-                const resultFromSortGroupParse = parseSortGroupKeys(
-                    args[i + 1]
-                );
+                const resultFromSortGroupParse = parseSortGroupKeys(nextArg);
 
                 if (resultFromSortGroupParse.errors.length) {
                     errors.push(...resultFromSortGroupParse.errors);
@@ -523,6 +589,24 @@ export function parseArgsIntoOptions(
 
                 break;
             }
+            case '--sort-order':
+            case '-o': {
+                if (!requireNextArg(i)) {
+                    continue;
+                }
+
+                const resultFromSortOrderParse = parseSortOrder(nextArg);
+
+                if (resultFromSortOrderParse.errors.length > 0) {
+                    errors.push(...resultFromSortOrderParse.errors);
+                    continue;
+                }
+
+                options.sortOrder = resultFromSortOrderParse.sortOrder;
+                i++;
+
+                break;
+            }
             case '--field-seperator':
             case '-F':
                 if (!requireNextArg(i)) {
@@ -530,9 +614,9 @@ export function parseArgsIntoOptions(
                 }
 
                 try {
-                    options.fieldSeperator = isRegexTest.test(args[i + 1])
-                        ? parseStringAsRegex(args[i + 1], false)
-                        : args[i + 1];
+                    options.fieldSeperator = isRegexTest.test(nextArg)
+                        ? parseStringAsRegex(nextArg, false)
+                        : nextArg;
                 } catch (err: any) {
                     errors.push(err.message);
                 }

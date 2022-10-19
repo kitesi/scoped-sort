@@ -22,15 +22,44 @@ type UniqueOptions = 'exact' | 'case-insensitive';
 export interface SortGroup {
     /** the group to sort on */
     group: number;
+    /** View `Options['sorter']` */
     sorter?: Exclude<Sorter, 'random'>;
+    /** View `Options['unique']` */
     unique?: UniqueOptions;
-    /**
-     * By default items that do not match a sorter (numerical, float, ...) or
-     * don't match the specified `.regexFilter` will stay in place but be at the
-     * top. If this is set to true, it will be at the bottom. Vise versa if `reverse` is set to true.
-     */
+    /** View `Options['attachNonMatchingToBottom']` */
     attachNonMatchingToBottom?: boolean;
+    /** View `Options['reverse']` */
     reverse?: boolean;
+    /** View `Options['sortOrder']` */
+    sortOrder?: SortOrder;
+}
+
+export interface SortOrder {
+    /** An array of strings to determine what comes before and after. */
+    values: string[];
+    /**
+     * Compare the results case-insensitively, if this is true but certain elements in `.values[]`
+     * have uppercase characters, then the will not match no matter what.
+     */
+    caseInsensitive?: boolean;
+    /**
+     * Take part of the start of the captured result before comparing. For example
+     * a looseness of 3 will take "january" and convert it to "jan" before comparing.
+     *
+     * ```js
+     * {
+     *      sortOrder: {
+     *          values: ["jan", "feb", "mar", ...],
+     *          caseInsenitive: true,
+     *          looseness: 3
+     *      },
+     *      regexFilter: /january|february|march|april|may|june|july.../i
+     * }
+     * ```
+     *
+     * This will only match full matching month names, but will compare the first 3 letters to `.values[]`.
+     */
+    looseness?: number;
 }
 
 export interface Options {
@@ -123,6 +152,32 @@ export interface Options {
      */
     attachNonMatchingToBottom?: boolean;
     /**
+     * This is a property to help determine custom sorts. You
+     * list the values you want to validate in the `.values` property,
+     * and the program sorts based on the position of the captured result
+     * in that list.
+     *
+     * The list is strict (except for case-insensitivity & looseness if specified),
+     * and the captured result will need to match exactly.
+     *
+     * This does not command the program to search for anything, so
+     * usually you will need to have a `regexFilter` or a sort-group.
+     *
+     * For example, the month-sort this program has is just syntactic sugar for:
+     *
+     * ```js
+     * {
+     *      sortOrder: {
+     *          values: ["jan", "feb", "mar", ...],
+     *          caseInsenitive: true
+     *      },
+     *      regexFilter: /jan|feb|mar|apr|may|jun|jul.../i
+     * }
+     * ```
+     *
+     */
+    sortOrder?: SortOrder;
+    /**
      * Checks for option errors and throws if one or more is found.
      *
      * It's off by default, but recommended to turn on, otherwise you might get
@@ -172,6 +227,7 @@ function compareSections(
         sorter?: Exclude<Sorter, 'random'>;
         reverse?: boolean;
         attachNonMatchingToBottom?: boolean;
+        sortOrder?: SortOrder;
         [k: string]: any;
     }
 ) {
@@ -185,6 +241,38 @@ function compareSections(
 
     if (typeof compareB === 'undefined') {
         return options.attachNonMatchingToBottom ? -1 : 1;
+    }
+
+    if (options.sortOrder) {
+        if (options.sortOrder.looseness) {
+            compareA = compareA.slice(0, options.sortOrder.looseness);
+            compareB = compareB.slice(0, options.sortOrder.looseness);
+        }
+
+        if (options.sortOrder.caseInsensitive) {
+            compareA = compareA.toLowerCase();
+            compareB = compareB.toLowerCase();
+        }
+
+        const indexOfA = options.sortOrder.values.indexOf(compareA);
+        const indexOfB = options.sortOrder.values.indexOf(compareB);
+
+        if (indexOfA === -1 && indexOfB === -1) {
+            return 0;
+        }
+
+        if (indexOfA === -1) {
+            return options.attachNonMatchingToBottom ? 1 : -1;
+        }
+
+        if (indexOfB === -1) {
+            return options.attachNonMatchingToBottom ? -1 : 1;
+        }
+
+        return (
+            options.sortOrder.values.indexOf(compareA) -
+            options.sortOrder.values.indexOf(compareB)
+        );
     }
 
     let numberA: number | undefined;
@@ -270,6 +358,7 @@ function getComparasionFromSortGroup(
         {
             sorter: sortGroup.sorter,
             attachNonMatchingToBottom: sortGroup.attachNonMatchingToBottom,
+            sortOrder: sortGroup.sortOrder,
         }
     );
 }
@@ -517,6 +606,10 @@ export function sort(text: string, options: Options = {}) {
         if (typeof firstSortGroup.attachNonMatchingToBottom === 'undefined') {
             firstSortGroup.attachNonMatchingToBottom =
                 options.attachNonMatchingToBottom;
+        }
+
+        if (typeof firstSortGroup.sortOrder === 'undefined') {
+            firstSortGroup.sortOrder = options.sortOrder;
         }
     }
 

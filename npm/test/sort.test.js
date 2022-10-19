@@ -1002,8 +1002,7 @@ Max,Arctic Monkeys,72`,
     t.end();
 });
 
-test('sort groups', (t) => {
-    const listOfPersonalInfoTables = `Sam    18  Male       140
+const listOfPersonalInfoTables = `Sam    18  Male       140
 Jack   23  Non-Binary 120
 Niel   16  Female     135
 Max    17  Male       135
@@ -1013,6 +1012,7 @@ Jones  17  male       135
 Lydia  N/A N/A        120
 Mike   N/A male       N/A`;
 
+test('sort groups', (t) => {
     testString(
         t,
         sort(listOfPersonalInfoTables, {
@@ -1359,6 +1359,144 @@ Lydia  N/A N/A        120
 Jane   22  Female     100
 Mike   N/A male       N/A`,
         'list of personal info: -k {1}s --regex /(?<= |^)w{3}(?= |$)/'
+    );
+
+    t.end();
+});
+
+test('sort order', (t) => {
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortOrder: {
+                values: ['female', 'non-binary', 'male', 'n/a'],
+                caseInsensitive: true,
+            },
+            sortGroups: [
+                {
+                    group: 3,
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Jane   22  Female     100
+Jack   23  Non-Binary 120
+Sam    18  Male       140
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A
+Lydia  N/A N/A        120`,
+        'sort-order on gender column 3, sort-order on uppermost'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    sortOrder: {
+                        values: ['female', 'non-binary', 'male', 'n/a'],
+                        caseInsensitive: true,
+                    },
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Jane   22  Female     100
+Jack   23  Non-Binary 120
+Sam    18  Male       140
+Max    17  Male       135
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A
+Lydia  N/A N/A        120`,
+        'sort-order on gender column 3, sort-order on sort-group'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    sortOrder: {
+                        values: ['Female', 'Male', 'Non-Binary', 'male'],
+                    },
+                },
+            ],
+        }),
+        `Lydia  N/A N/A        120
+Niel   16  Female     135
+Jane   22  Female     100
+Sam    18  Male       140
+Max    17  Male       135
+Jack   23  Non-Binary 120
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A`,
+        'non matching to top, and test case insentivity'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 3,
+                    sortOrder: {
+                        values: ['Female', 'Male', 'Non-Binary', 'male'],
+                    },
+                    attachNonMatchingToBottom: true,
+                },
+            ],
+        }),
+        `Niel   16  Female     135
+Jane   22  Female     100
+Sam    18  Male       140
+Max    17  Male       135
+Jack   23  Non-Binary 120
+max    17  male       135
+Jones  17  male       135
+Mike   N/A male       N/A
+Lydia  N/A N/A        120`,
+        'non matching to bottom, add test case insentivity'
+    );
+
+    testString(
+        t,
+        sort(listOfPersonalInfoTables, {
+            sortGroups: [
+                {
+                    group: 1,
+                    sortOrder: {
+                        values: [
+                            'jac',
+                            'max',
+                            'sam',
+                            'jan',
+                            'nie',
+                            'jon',
+                            'mik',
+                            'lyd',
+                        ],
+                        looseness: 3,
+                        caseInsensitive: true,
+                    },
+                },
+            ],
+        }),
+        `Jack   23  Non-Binary 120
+Max    17  Male       135
+max    17  male       135
+Sam    18  Male       140
+Jane   22  Female     100
+Niel   16  Female     135
+Jones  17  male       135
+Mike   N/A male       N/A
+Lydia  N/A N/A        120`,
+        'by names looseness 3 and case-insensitive'
     );
 
     t.end();
