@@ -14,6 +14,8 @@ export type Sorter =
     | 'numerical'
     | 'float'
     | 'length'
+    | 'month'
+    | 'day'
     | 'none'
     | 'random';
 
@@ -163,13 +165,14 @@ export interface Options {
      * This does not command the program to search for anything, so
      * usually you will need to have a `regexFilter` or a sort-group.
      *
-     * For example, the month-sort this program has is just syntactic sugar for:
+     * For example, `sorter: "month"` is just syntactic sugar for:
      *
      * ```js
      * {
      *      sortOrder: {
      *          values: ["jan", "feb", "mar", ...],
-     *          caseInsenitive: true
+     *          caseInsenitive: true,
+     *          looseness: 3
      *      },
      *      regexFilter: /jan|feb|mar|apr|may|jun|jul.../i
      * }
@@ -202,11 +205,11 @@ function validateOptions(options: Options) {
     const errors: string[] = [];
 
     if (options.regexFilter && options.sorter === 'random') {
-        errors.push("Can't use sort-by-random and a regex pattern");
+        errors.push("Can't use random-sort and regex");
     }
 
     if (options.useMatchedRegex && options.sorter === 'random') {
-        errors.push("Can't use use-matched-regex and sort-by-random");
+        errors.push("Can't use use-matched-regex and random-sort");
     }
 
     if (options.regexFilter && options.fieldSeperator) {
@@ -215,6 +218,13 @@ function validateOptions(options: Options) {
 
     if (options.useMatchedRegex && options.sortGroups) {
         errors.push("Can't use use-matched-regex and sort-groups");
+    }
+
+    if (
+        (options.sorter === 'month' || options.sorter === 'day') &&
+        options.sortOrder
+    ) {
+        errors.push("Can't use month-sort or day-sort with sort-order");
     }
 
     return errors;
@@ -568,6 +578,52 @@ export function sort(text: string, options: Options = {}) {
         }
     }
 
+    if (options.sorter === 'month') {
+        options.sortOrder = {
+            values: [
+                'jan',
+                'feb',
+                'mar',
+                'apr',
+                'may',
+                'jun',
+                'jul',
+                'aug',
+                'sep',
+                'oct',
+                'nov',
+                'dec',
+            ],
+            caseInsensitive: true,
+            looseness: 3,
+        };
+
+        if (!options.regexFilter && !options.fieldSeperator) {
+            options.regexFilter =
+                /jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i;
+        }
+
+        if (!options.sortGroups || options.sortGroups.length === 0) {
+            options.useMatchedRegex = true;
+        }
+    }
+
+    if (options.sorter === 'day') {
+        options.sortOrder = {
+            values: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+            caseInsensitive: true,
+            looseness: 3,
+        };
+
+        if (!options.regexFilter && !options.fieldSeperator) {
+            options.regexFilter = /mon|tue|wed|thu|fri|sat|sun/i;
+        }
+
+        if (!options.sortGroups || options.sortGroups.length === 0) {
+            options.useMatchedRegex = true;
+        }
+    }
+
     if (options.useMatchedRegex) {
         options.sortGroups = [
             {
@@ -584,7 +640,7 @@ export function sort(text: string, options: Options = {}) {
         options.sectionRejoiner = '\n';
     }
 
-    // set fisrt sort group to default to uppermost options values
+    // set first sort group to default to uppermost options values
     if (options.sortGroups && options.sortGroups[0]) {
         const firstSortGroup = options.sortGroups[0];
 

@@ -1727,3 +1727,118 @@ Age: 20`,
 
     t.end();
 });
+
+test('month sort', (t) => {
+    const csvTableOfData = `Kali,10-Nov-2021
+Westbrooke,30-Dec-2021
+Janet,29-Sep-2022
+Pete,10-Oct-2022
+Ferdy,06-Mar-2022
+Kasey,05-Dec-2021
+Tamiko,21-Feb-2022
+Benny,06-Aug-2022
+Cassy,11-Jan-2022
+Ricki,22-Apr-2022
+Sabine,26-Oct-2021
+Cly,25-Mar-2022
+Amalea,24-Jul-2022
+Owen,02-May-2022
+Debby,28-Jun-2022`;
+
+    testString(
+        t,
+        sort(csvTableOfData, { sorter: 'month' }),
+        // janet is at top because of jan-et
+        `Janet,29-Sep-2022
+Cassy,11-Jan-2022
+Tamiko,21-Feb-2022
+Ferdy,06-Mar-2022
+Cly,25-Mar-2022
+Ricki,22-Apr-2022
+Owen,02-May-2022
+Debby,28-Jun-2022
+Amalea,24-Jul-2022
+Benny,06-Aug-2022
+Pete,10-Oct-2022
+Sabine,26-Oct-2021
+Kali,10-Nov-2021
+Westbrooke,30-Dec-2021
+Kasey,05-Dec-2021`,
+        'normal month sort'
+    );
+
+    // somewhat weird way to get actual desired sort, but works for this set
+    testString(
+        t,
+        sort(csvTableOfData, {
+            sorter: 'month',
+            fieldSeperator: '-',
+            sortGroups: [
+                {
+                    group: 2,
+                },
+            ],
+        }),
+        `Cassy,11-Jan-2022
+Tamiko,21-Feb-2022
+Ferdy,06-Mar-2022
+Cly,25-Mar-2022
+Ricki,22-Apr-2022
+Owen,02-May-2022
+Debby,28-Jun-2022
+Amalea,24-Jul-2022
+Benny,06-Aug-2022
+Janet,29-Sep-2022
+Pete,10-Oct-2022
+Sabine,26-Oct-2021
+Kali,10-Nov-2021
+Westbrooke,30-Dec-2021
+Kasey,05-Dec-2021`,
+        'month sort with field seperator & sort group'
+    );
+
+    t.end();
+});
+
+test('day sort', (t) => {
+    const csvTableOfData = `Kali,Wednesday
+Westbrooke,Monday
+Janet,Tuesday
+Pete,Thursday
+Ferdy,Friday
+Kasey,Saturday
+Tamiko,Monday
+Benny,Sunday`;
+
+    testString(
+        t,
+        sort(csvTableOfData, { sorter: 'day' }),
+        `Westbrooke,Monday
+Tamiko,Monday
+Janet,Tuesday
+Kali,Wednesday
+Pete,Thursday
+Ferdy,Friday
+Kasey,Saturday
+Benny,Sunday`,
+        'normal day sort'
+    );
+
+    testString(
+        t,
+        sort(csvTableOfData, {
+            sorter: 'day',
+            unique: 'exact',
+        }),
+        `Westbrooke,Monday
+Janet,Tuesday
+Kali,Wednesday
+Pete,Thursday
+Ferdy,Friday
+Kasey,Saturday
+Benny,Sunday`,
+        'normal day sort with unique=exact'
+    );
+
+    t.end();
+});

@@ -364,6 +364,86 @@ test('parsing sort group keys', (t) => {
     );
 
     expectResult(
+        '{1}i',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [1],
+                    sortGroupArgs: {
+                        sorter: 'case-insensitive',
+                    },
+                },
+            ],
+        },
+        '-k {1}i'
+    );
+
+    expectResult(
+        '{1}e',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [1],
+                    sortGroupArgs: {
+                        sorter: 'natural',
+                    },
+                },
+            ],
+        },
+        '-k {1}e'
+    );
+
+    expectResult(
+        '{1}f',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [1],
+                    sortGroupArgs: {
+                        sorter: 'float',
+                    },
+                },
+            ],
+        },
+        '-k {1}f'
+    );
+
+    expectResult(
+        '{1}M',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [1],
+                    sortGroupArgs: {
+                        sorter: 'month',
+                    },
+                },
+            ],
+        },
+        '-k {1}M'
+    );
+
+    expectResult(
+        '{1}D',
+        {
+            errors: [],
+            sortGroups: [
+                {
+                    forNumbers: [1],
+                    sortGroupArgs: {
+                        sorter: 'day',
+                    },
+                },
+            ],
+        },
+        '-k {1}D'
+    );
+
+    expectResult(
         '{3..1}',
         {
             errors: [
@@ -882,6 +962,18 @@ test('arg array into options (single options)', (t) => {
 
     expectOptionsWithSingleAndAlias('--length-sort', '-l', {
         sorter: 'length',
+    });
+
+    expectOptionsWithSingleAndAlias('--month-sort', '-M', {
+        sorter: 'month',
+    });
+
+    expectOptionsWithSingleAndAlias('--day-sort', '-D', {
+        sorter: 'day',
+    });
+
+    expectOptionsWithSingleAndAlias('--none-sort', '-x', {
+        sorter: 'none',
     });
 
     expectOptionsWithSingleAndAlias('--random-sort', '-z', {

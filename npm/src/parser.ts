@@ -5,7 +5,6 @@ const isRegexTest = /^\/.+\/\w*$/;
 // tests entire string/line
 export const isValidSortGroupTest =
     /^(\{\d+(,\d+|\.\.\d+)*\}(_?(?<![a-zA-Z])[a-zA-Z]=[a-zA-Z0-9:;]+(_|$|{)|[a-zA-Z])*,?)*$/;
-
 // Since there is a big check upfront, the following regex(s) can be simplified
 // and just be things like {.+} instead of \{\d+(,\d+|\.\.\d+)*\}. Can also use the i flag
 // might be a future task
@@ -282,6 +281,12 @@ export function parseSortGroupKeys(groupKeysString: string) {
                 case 'l':
                     setSorter(sortGroupArgs, 'length');
                     break;
+                case 'M':
+                    setSorter(sortGroupArgs, 'month');
+                    break;
+                case 'D':
+                    setSorter(sortGroupArgs, 'day');
+                    break;
                 case 'x':
                     setSorter(sortGroupArgs, 'none');
                     break;
@@ -451,6 +456,14 @@ export function parseArgsIntoOptions(
             case '--length-sort':
             case '-l':
                 setSorter('length');
+                break;
+            case '--month-sort':
+            case '-M':
+                setSorter('month');
+                break;
+            case '--day-sort':
+            case '-D':
+                setSorter('day');
                 break;
             case '--none-sort':
             case '-x':
