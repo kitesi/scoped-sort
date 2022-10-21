@@ -1839,6 +1839,81 @@ Kasey,Saturday
 Benny,Sunday`,
         'normal day sort with unique=exact'
     );
+    t.end();
+});
+
+test('recursive with numeric value', (t) => {
+    testString(
+        t,
+        sort(inputs.multiNestedList, {
+            recursive: 0,
+        }),
+        `gear
+  dear
+    make do
+    sake so
+    aer do
+    here me
+      gamma
+      mama
+      aera
+hear
+  beta
+  zamma
+  alpha
+  gamma
+there
+zer`,
+        'recursive depth 0'
+    );
+
+    testString(
+        t,
+        sort(inputs.multiNestedList, {
+            recursive: 1,
+        }),
+        `gear
+  dear
+    aer do
+    here me
+      gamma
+      mama
+      aera
+    make do
+    sake so
+hear
+  alpha
+  beta
+  gamma
+  zamma
+there
+zer`,
+        'recursive depth 1'
+    );
+
+    testString(
+        t,
+        sort(inputs.multiNestedList, {
+            recursive: 3,
+        }),
+        `gear
+  dear
+    aer do
+    here me
+      aera
+      gamma
+      mama
+    make do
+    sake so
+hear
+  alpha
+  beta
+  gamma
+  zamma
+there
+zer`,
+        'recursive depth 2'
+    );
 
     t.end();
 });

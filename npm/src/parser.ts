@@ -475,6 +475,20 @@ export function parseArgsIntoOptions(
                 break;
             case '--recursive':
             case '-r':
+                if (nextArg && !nextArg.startsWith('-')) {
+                    i++;
+
+                    if (!Number.parseInt(nextArg)) {
+                        errors.push(
+                            '--recursive either takes no value for infinite depth or a positive numeric value'
+                        );
+                        continue;
+                    }
+
+                    options.recursive = Number.parseInt(nextArg);
+                    continue;
+                }
+
                 options.recursive = assumedBoolValue;
                 consumedBool = true;
                 break;

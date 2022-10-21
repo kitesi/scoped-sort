@@ -22,7 +22,7 @@ export type Sorter =
 type UniqueOptions = 'exact' | 'case-insensitive';
 
 export interface SortGroup {
-    /** the group to sort on */
+    /** the group to sort on 1-index based */
     group: number;
     /** View `Options['sorter']` */
     sorter?: Exclude<Sorter, 'random'>;
@@ -84,11 +84,15 @@ export interface Options {
      */
     sorter?: Sorter;
     /**
-     * This project takes scope/indentation into account. Most sorters just read line by line, so when you have nested lists you end up with undesired sorts.
-
-     * This program by default keeps nested content in place and does not sort the inner items, but setting this option to true will sort the inner items.
+     * This project takes scope/indentation into account. Most sorters just read
+     * line by line, so when you have nested lists you end up with undesired
+     * sorts.
+     *
+     * By default nested content will be left in place and not sorted.
+     * By setting this option to true, it will sort all the inner items. By
+     * setting it to a number, it will sort all those items, up to that depth.
      */
-    recursive?: boolean;
+    recursive?: boolean | number;
     /** Reverses the sort after completely finishing. */
     reverse?: boolean;
     /** Removes duplicate items. A value of 'exact' will only remove exact matches, 'case-insensitive' will remove without regard to casing. */
@@ -496,8 +500,13 @@ function getModifiedSections(sections: string[], options: Options) {
     return sections;
 }
 
-function sortInnerSection(lines: string[], index: number, options: Options) {
-    const sections: string[] = [];
+function sortInnerSection(
+    lines: string[],
+    index: number,
+    level: number,
+    options: Options
+) {
+    let sections: string[] = [];
     let currentIndentation = '';
     let amountAdded = 0;
 
@@ -528,7 +537,7 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
             amountAdded++;
             sections.push(line);
         } else if (indentationLength > currentIndentationLength) {
-            const child = sortInnerSection(lines, i, options);
+            const child = sortInnerSection(lines, i, level + 1, options);
             sections[sections.length - 1] += '\n' + child.content;
             i += child.amountAdded - 1;
             amountAdded += child.amountAdded;
@@ -537,8 +546,13 @@ function sortInnerSection(lines: string[], index: number, options: Options) {
         }
     }
 
+    // either number>0 or true, since this function is only called then
+    if (typeof options.recursive !== 'number' || level <= options.recursive) {
+        sections = getModifiedSections(sections, options);
+    }
+
     return {
-        content: getModifiedSections(sections, options).join('\n'),
+        content: sections.join(options.sectionRejoiner),
         amountAdded,
     };
 }
@@ -704,7 +718,7 @@ export function sort(text: string, options: Options = {}) {
                 sections.push(currentSection.join('\n'));
                 currentSection = [line];
             } else if (options.recursive) {
-                const child = sortInnerSection(lines, i, options);
+                const child = sortInnerSection(lines, i, 0, options);
                 currentSection.push(child.content);
                 i += child.amountAdded - 1;
             } else {

@@ -1041,6 +1041,27 @@ test('arg array into options (single options)', (t) => {
         },
         '--unique al'
     );
+    expectResult(
+        ['--recursive', 'al'],
+        {
+            errors: [
+                '--recursive either takes no value for infinite depth or a positive numeric value',
+            ],
+            positionals: [],
+            options: {},
+        },
+        '--recursive al'
+    );
+
+    expectResult(
+        ['--recursive', '3'],
+        {
+            errors: [],
+            positionals: [],
+            options: { recursive: 3 },
+        },
+        '--recursive al'
+    );
 
     expectResult(
         ['-k', '{3}n'],
