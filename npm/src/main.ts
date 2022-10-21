@@ -22,7 +22,7 @@ export type Sorter =
 type UniqueOptions = 'exact' | 'case-insensitive';
 
 export interface SortGroup {
-    /** the group to sort on 1-index based */
+    /** the group to sort on. (1-index based) */
     group: number;
     /** View `Options['sorter']` */
     sorter?: Exclude<Sorter, 'random'>;
@@ -40,8 +40,8 @@ export interface SortOrder {
     /** An array of strings to determine what comes before and after. */
     values: string[];
     /**
-     * Compare the results case-insensitively, if this is true but certain elements in `.values[]`
-     * have uppercase characters, then the will not match no matter what.
+     * Compare the results case-insensitively. This does not modify `.values[]` in anyway.
+     * So if this is set to true, make sure all your elements in `.values[]` are all lowercase.
      */
     caseInsensitive?: boolean;
     /**
@@ -60,12 +60,17 @@ export interface SortOrder {
      * ```
      *
      * This will only match full matching month names, but will compare the first 3 letters to `.values[]`.
+     * This does not modify `.values[]` in any way, so make sure all your elements in `.values[]` have
+     * the same length as `looseness`.
      */
     looseness?: number;
 }
 
 export interface Options {
     /**
+     * Sets the sorter used. Some of these sorters have side-effects and sets values to other options.
+     * If no sorter is specified, it will sort using the default `.sort()`.
+     *
      * case-insensitive: sorts case insensitively
      *
      * natural: sorts based on the [natural sort](https://en.wikipedia.org/wiki/Natural_sort_order)
@@ -76,7 +81,13 @@ export interface Options {
      * float: sorts based on the float of the captured result. if no regex is specified
      * it will sort by the first float in the line
      *
-     * length: sorts based on the length of captured result, short to long
+     * length: sorts based on the length of the captured result, short to long
+     *
+     * month: sorts by the month of the captured result (jan,feb,mar,..). if no regex or field-seperator
+     * is specified, it will sort by the first text that matches `/jan|feb|mar|../`
+     *
+     * day: sorts by the day of the captured result (mon,tue,wed,..). if no regex or field-seperator
+     * is specified, it will sort by the first text that matches `/mon|tue|wed|../`
      *
      * none: don't sort, mainly used the unique option
      *
@@ -84,16 +95,14 @@ export interface Options {
      */
     sorter?: Sorter;
     /**
-     * This project takes scope/indentation into account. Most sorters just read
-     * line by line, so when you have nested lists you end up with undesired
-     * sorts.
+     * This project takes scope/indentation into account and does not just sort line by line.
      *
-     * By default nested content will be left in place and not sorted.
+     * By default nested content (indented) will be left in place and not sorted.
      * By setting this option to true, it will sort all the inner items. By
      * setting it to a number, it will sort all those items, up to that depth.
      */
     recursive?: boolean | number;
-    /** Reverses the sort after completely finishing. */
+    /** Reverses the sort comparasion. */
     reverse?: boolean;
     /** Removes duplicate items. A value of 'exact' will only remove exact matches, 'case-insensitive' will remove without regard to casing. */
     unique?: UniqueOptions;
@@ -108,7 +117,7 @@ export interface Options {
      */
     regexFilter?: RegExp;
     /**
-     * Combined with `.regex`, this will instead sort using the matched text rather than the text after.
+     * Combined with `.regexFilter`, this will instead sort using the matched text rather than the text after.
      *
      * This is short hand for:
      *
@@ -125,16 +134,19 @@ export interface Options {
     sectionSeperator?: RegExp;
     /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
     sectionStarter?: RegExp;
-    /** Tells the program how to rejoin sections, defaults to "\n" */
+    /** Tells the program how to rejoin sections, defaults to "\n". */
     sectionRejoiner?: string;
     /**
      * The seperator to determine columns, defaults to `/\s+/`.
-     * Used in combination with `.sortGroups`
+     * Used in combination with `.sortGroups`.
      */
     fieldSeperator?: string | RegExp;
     /**
-     * Determines what group to use when sorting,
-     * used with `.regexFilter` or `.fieldSeperator`.
+     * Determines what group to use when sorting.
+     * Used with `.regexFilter` or `.fieldSeperator`.
+     *
+     * If no regex or field-seperator is provided, field-seperator will default to `/\s+/`,
+     * and groups will be split by whitespace.
      *
      * An input of the following:
      *
@@ -147,19 +159,21 @@ export interface Options {
      * }
      * ```
      *
-     * Would mean to sort lines by the second group's length.
+     * Would tell the program to sort lines by the second group's length.
+     * By default the first sort-group will inherit the uppermost option values
+     * (reverse, unique, sorter, attachNonMatchingToBottom, sortOrder).
      */
     sortGroups?: SortGroup[];
     /**
-     * By default items that do not match a sorter (numerical, float, ...) or
-     * don't match the specified `.regexFilter` will stay in place but be at the
-     * top. If this is set to true, it will be at the bottom. Vise versa if
+     * By default items that do not match a sorter (numerical, float, ...), or
+     * don't match a regex will stay in place and be at the top. If this is set
+     * to true, it will be at the bottom. Vise versa if
      * `reverse` is set to true.
      */
     attachNonMatchingToBottom?: boolean;
     /**
      * This is a property to help determine custom sorts. You
-     * list the values you want to validate in the `.values` property,
+     * list the values you want to validate in the `.values[]` property,
      * and the program sorts based on the position of the captured result
      * in that list.
      *
@@ -186,9 +200,7 @@ export interface Options {
     sortOrder?: SortOrder;
     /**
      * Checks for option errors and throws if one or more is found.
-     *
-     * It's off by default, but recommended to turn on, otherwise you might get
-     * unexpected sort results.
+     * On by default, not recommended to turn off.
      */
     reportErrors?: boolean;
 }
@@ -445,8 +457,10 @@ function getModifiedSections(sections: string[], options: Options) {
         return sections;
     }
 
-    //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
-    if (options.sorter === 'random') {
+    if (!options.sorter) {
+        sections.sort();
+    } else if (options.sorter === 'random') {
+        //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
         let currentIndex = sections.length;
         let randomIndex: number;
 
@@ -572,7 +586,7 @@ function sortInnerSection(
  * ```
  */
 export function sort(text: string, options: Options = {}) {
-    if (options.reportErrors) {
+    if (typeof options.reportErrors === 'undefined' || options.reportErrors) {
         const errors = validateOptions(options);
 
         if (errors.length) {
@@ -746,7 +760,7 @@ interface CommentSection {
  * Sorts [sort-comments](https://scopedsort.netlify.app/docs#sort-comments) inside of the provided content.
  *
  * ```js
- * const result = sortComments(`// { sort-start --numerical-sort }
+ * const { result } = sortComments(`// { sort-start --numerical-sort }
  * there are 200 people here
  * very much indeed, compared to our 20 back home
  * // { sort-end }`);

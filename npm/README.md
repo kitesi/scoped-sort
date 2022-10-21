@@ -1,9 +1,21 @@
-<p align="center"><b>A feature rich text sorter based on the unix sort.</b></p>
+# String Content Sort
 
-![Example](/assets/previews/general-example.png)
-For more examples you can look at [the examples page](https://scopedsort.netlify.app/examples), or look at the test cases.
+## A feature rich text sorter that takes indentation into account
+
+This npm package is a part of a bigger project called
+[scopedsort](https://scopedsort.netlify.app/).
+[Documentation](https://scopedsort.netlify.app/docs) and
+[Examples](https://scopedsort.netlify.app/examples) are mainly held there.
+
+Functions and properties will still have descriptions and typing, so you don't
+need to always refer back to the documentation.
 
 ## Usage
+
+This package exports two main functions `sort(<string>, [options])` and `sortComments(<string>)`. There
+are other functions that are exported, but they are more low-level and meant for
+other scopedsort providers like the [vscode extension](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
+or the [command line tool](https://www.npmjs.com/package/string-content-sort-cli)
 
 ```js
 const { sort } = require('string-content-sort');
@@ -16,42 +28,83 @@ Naruto`;
 
 list = sort(list, { reverse: true });
 
-/* list's value is now:
-Pokemon
+assert(
+    list,
+    `Pokemon
 Naruto
-Dragon Ball Z 
-*/
+Dragon Ball Z`
+);
 ```
 
 The first argument is the string to sort, and the second argument is an optional
 object of options.
 
-You can read the documentation on [the docs page](https://scopedsort.netlify.app/docs).
+This function will throw if you have faulty options. You can turn this off by setting `options.reportErrors`.
+If turned off, it will always return a string similar to the input, possibly not what you want or expect.
 
-## Future
+```js
+sort('', {
+    sorter: 'random'
+    // regex with random sort makes no sense
+    regexFilter: /\w+/,
+    reportErrors: false
+});
+```
 
-Here are some possible future features. Some of these features need a more defined api, or I need to know
-if people actually want them.
+---
 
-<!-- prettier-ignore -->
-- Seperate sections with blank lines
+The other function, `sortComments(<string>)` is to sort text that have
+[sort-comments](https://scopedsort.netlify.app/docs#sort-comments). It does not
+return back just a string, but an object with the schema:
 
-  For example you might have some text like this:
+```ts
+interface {
+    commentSections: {
+        startLine: number;
+        endLine: number | null;
+        hasChanged: boolean;
+    }[];
+    errors: string[];
+    result: string;
+}
+```
 
-  ```text
-  Theme: Material Dark
-  Link: https://example.com
+Example:
 
-  Theme: Horizon
-  Link: https://example.com
+```js
+import { sortComments } from 'string-content-sort';
 
-  Theme: Ayu Dark
-  Link: https://example.com
+const list = `Here is my list of my favorite food:
 
-  Theme: Atom One Dark
-  Link: https://example.com
-  ```
+// { sort-start -s }
+- ice cream
+- pizza
+- orange
+// { sort-end }
+
+Welp that concludes my list.`;
+
+assertDeepEquals(sortComments(list), {
+    errors: [],
+    commentSections: {
+        startLine: 2,
+        endLine: 6,
+        hasChanged: true,
+    },
+    result: `Here is my list of favorite food:
+
+// { sort-start -s }
+- pizza
+- orange
+- ice cream
+// { sort-end }
+
+Welp that concludes my list`,
+});
+```
 
 # Questions & Contribution
 
-If you need help, found bugs or want to contribute create a github issue.
+This program might have some learning curve, so if you need any help, submit a
+github issue and I'll be glad to help. If you find any bugs or want to
+contribute also create a github issue.

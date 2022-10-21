@@ -22,8 +22,7 @@
         "list"
     ],
     "files": [
-        "dist",
-        "general-example.png"
+        "dist"
     ],
     "author": "karizma",
     "license": "MIT",
