@@ -22,7 +22,7 @@
     "license": "MIT",
     "dependencies": {
         "string-content-sort": "^1.0.1",
-        "yargs": "^17.3.1"
+        "yargs": "^17.6.0"
     },
     "devDependencies": {
         "@types/node": "^17.0.6",
