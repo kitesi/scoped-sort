@@ -106,7 +106,7 @@ export interface Options {
     reverse?: boolean;
     /** Removes duplicate items. A value of 'exact' will only remove exact matches, 'case-insensitive' will remove without regard to casing. */
     unique?: UniqueOptions;
-    /** Treats the text as a markdown list. You won’t need this option for most markdown lists but in certain instances you will. */
+    /** Treats the text as a markdown list. You won’t need this option most of the time, but in certain instances you will. */
     markdown?: boolean;
     /**
      * A regex to match text in each item/line. By default the sorter will sort based on
@@ -117,7 +117,7 @@ export interface Options {
      */
     regexFilter?: RegExp;
     /**
-     * Combined with `.regexFilter`, this will instead sort using the matched text rather than the text after.
+     * Combined with `.regexFilter`, this will sort using the first matched text rather than the text after.
      *
      * This is short hand for:
      *
@@ -137,7 +137,7 @@ export interface Options {
     /** Tells the program how to rejoin sections, defaults to "\n". */
     sectionRejoiner?: string;
     /**
-     * The seperator to determine columns, defaults to `/\s+/`.
+     * The seperator used to determine columns, defaults to `/\s+/`.
      * Used in combination with `.sortGroups`.
      */
     fieldSeperator?: string | RegExp;
@@ -167,8 +167,7 @@ export interface Options {
     /**
      * By default items that do not match a sorter (numerical, float, ...), or
      * don't match a regex will stay in place and be at the top. If this is set
-     * to true, it will be at the bottom. Vise versa if
-     * `reverse` is set to true.
+     * to true, it will be at the bottom. Vise versa if `reverse` is set to true.
      */
     attachNonMatchingToBottom?: boolean;
     /**

@@ -1,3 +1,10 @@
+## 2.0.1 (10/22/22)
+
+Forgot to compile small code change that made reportErrors
+on by default.
+
+And some change in wording of descriptions in JSDOC.
+
 ## 2.0.0 (10/21/22)
 
 ### Sorter propety rename
