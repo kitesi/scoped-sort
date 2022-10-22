@@ -39,6 +39,11 @@ Dragon Ball Z`
 The first argument is the string to sort, and the second argument is an optional
 object of options.
 
+NOTE: The options object will be mutated, as a lot of the properties are shorthand for other values.
+
+The end result of options can still be re-used and will
+still produce the same output.
+
 This function will throw if you have faulty options. You can turn this off by setting `options.reportErrors`.
 If turned off, it will always return a string similar to the input, possibly not what you want or expect.
 

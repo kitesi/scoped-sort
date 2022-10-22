@@ -1,3 +1,35 @@
+## 2.1.0 (10/22/22)
+
+bug fixes.
+
+Added what I thought was a code improvement:
+
+```js
+if (!options.sorter) {
+    sections.sort();
+}
+```
+
+Forgot that regexs, sort-orders, sort-groups existed, and everything else existed. Also forgot to test.
+
+This also introduced me to another bug where because
+in `sort(content, options)`, options is mutated.
+
+On a second use of options, it might have values that
+will not validate with `validateErrors()`
+
+Fixed this by removing short hands when mutating, and rechecking after wards.
+
+for example:
+
+```js
+if (options.sorter === "day") {
+    options.sortOrder = {...};
+    // ...
+    options.sorter = undefined;
+}
+```
+
 ## 2.0.1 (10/22/22)
 
 Forgot to compile small code change that made reportErrors

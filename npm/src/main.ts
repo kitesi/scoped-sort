@@ -217,6 +217,11 @@ function calculateSpaceLength(str: string) {
 }
 
 function validateOptions(options: Options) {
+    // if it's undefined, that's fine, since it should default to true
+    if (options.reportErrors === false) {
+        return;
+    }
+
     const errors: string[] = [];
 
     if (options.regexFilter && options.sorter === 'random') {
@@ -242,7 +247,9 @@ function validateOptions(options: Options) {
         errors.push("Can't use month-sort or day-sort with sort-order");
     }
 
-    return errors;
+    if (errors.length > 0) {
+        throw new Error(errors.join('\n'));
+    }
 }
 
 function compareSections(
@@ -456,9 +463,7 @@ function getModifiedSections(sections: string[], options: Options) {
         return sections;
     }
 
-    if (!options.sorter) {
-        sections.sort();
-    } else if (options.sorter === 'random') {
+    if (options.sorter === 'random') {
         //  Fisher Yates Shuffle from https://stackoverflow.com/a/2450976/
         let currentIndex = sections.length;
         let randomIndex: number;
@@ -572,6 +577,8 @@ function sortInnerSection(
 
 /**
  * Main functionality of package, sorts text and takes in options.
+ * This will mutate the options object, as a lot of the properties
+ * are shorthand for other properties.
  *
  * ```js
  * const result = sort(`Naruto
@@ -585,13 +592,7 @@ function sortInnerSection(
  * ```
  */
 export function sort(text: string, options: Options = {}) {
-    if (typeof options.reportErrors === 'undefined' || options.reportErrors) {
-        const errors = validateOptions(options);
-
-        if (errors.length) {
-            throw new Error(errors.join('\n'));
-        }
-    }
+    validateOptions(options);
 
     // start of defaulting options
 
@@ -633,6 +634,8 @@ export function sort(text: string, options: Options = {}) {
         if (!options.sortGroups || options.sortGroups.length === 0) {
             options.useMatchedRegex = true;
         }
+
+        options.sorter = undefined;
     }
 
     if (options.sorter === 'day') {
@@ -649,6 +652,8 @@ export function sort(text: string, options: Options = {}) {
         if (!options.sortGroups || options.sortGroups.length === 0) {
             options.useMatchedRegex = true;
         }
+
+        options.sorter = undefined;
     }
 
     if (options.useMatchedRegex) {
@@ -657,6 +662,8 @@ export function sort(text: string, options: Options = {}) {
                 group: 1,
             },
         ];
+
+        options.useMatchedRegex = false;
     }
 
     if (options.sortGroups && !options.fieldSeperator && !options.regexFilter) {
@@ -697,6 +704,8 @@ export function sort(text: string, options: Options = {}) {
     }
 
     // end of defaulting options
+
+    validateOptions(options);
 
     if (options.sectionSeperator) {
         return getModifiedSections(
