@@ -1,56 +1,101 @@
 # String Content Sort Cli
 
-## A feature rich sorter for the content inside of a string.
+## A feature rich text sorter that takes indentation into account
 
 This is a CLI for the npm package [string-content-sort](https://www.npmjs.com/package/string-content-sort).
 
+This cli tool is a part of a bigger project called
+[scopedsort](https://scopedsort.netlify.app/).
+[Documentation](https://scopedsort.netlify.app/docs) and
+[examples](https://scopedsort.netlify.app/examples) are mainly held there.
+
 ## Usage
 
-Command usage: `ssort [files..]`
+Command usage: `ssort [files..] [options]`
 
-The command takes positional arguments of files or directories. Directories will be read through
-recursively.
+Concatenates provided file(s) -> sorts -> writes to standard output.
+Provided files that are directories will be recursively read.
 
-You can also specify text from standard input.
+If no file is provided, reads from standard input.
 
-As for options I recommend reading the [documentation](https://scopedsort.netlify.app/docs).
-There are some options that are not listed on their though. By default the command does
-not modify the files. If you specify `--modify` it will.
+For optiosn use either `-h` for short help or `-H|--help` for long
+help with descriptions.
 
-There are times where you don't want to sort the entire file. This is where [sort comments](https://scopedsort.netlify.app/docs#sort-comments) come in.
-
-You define the start of a section by having a line with `{ sort-start [options] }`. And you define the end of a section by having a line with `{ sort-end }`.
-
-Make sure the spacing is exactly like that, other wise it will not work.
-
-An example might be something like:
+quick copy paste from `-h`:
 
 ```
-List of episodes:
+OPTIONS: SORTERS
+    You can only have one sorter at a time.
 
-<!-- { sort-start -mn } -->
-Digimon: 12
-Pokemon: 500
-Shaman King: 56
-<!-- { sort-end } -->
+    -i, --case-insensitive
+    -e, --natural-sort
+    -n, --numerical-sort
+    -f, --float-sort
+    -l, --length-sort
+    -M, --month-sort
+    -D, --day-sort
+    -x, --none-sort
+    -z, --random-sort
+
+OPTIONS: UNIVERSAL MODIFIERS
+    These options will work on everything.
+
+    -r, --recursive [number]
+    -s, --reverse
+    -u, --unique ['i']
+    -m, --markdown
+
+OPTIONS: ITEM SEARCH
+        --regex <regex_value>
+    -F, --field-seperator <regex | string>
+    -k, --use-sort-group
+    -p, --use-matched-regex
+    -o, --sort-order <sort_order>
+    -a, --attach-non-matching-to-bottom
+
+OPTIONS: SECTIONS
+    --section-seperator <regex | string>
+    --section-starter <regex>
+    --section-rejoiner <regex | string>
+
+OPTIONS: OTHER
+    -c, --use-sort-comments
+        --modify
+    -y, --yes
 ```
 
-You can tell the program to sort using sort comments rather than reading line by line with the `--use-sort-comments | -c`
+## Sort Comments
 
-If you want to ignore a file, include a line with `{ sort-ignore-file }` somewhere in it.
+This is documentated on the [website](https://scopedsort.netlify.app/docs#sort-comments), but
+it's one of the most important features so I'll repeat an introduction here.
 
-# Completions
+Sort comments are a way for this program to automatically recognize a section to
+sort and it’s options. This can help if you have a list that is constantly being
+updated, and you don’t want to have to keep manually sorting.
 
-If you want bash completions, you can use the following code.
-It's not reactive to valid options though. So you will still
-get auto completions for invalid options.
+Example:
 
-If the completion word doesn't start with `-` then it will just use
-the default file completion otherwise it will show the actual options.
+```
+// { sort-start --regex /['"]/ }
+import react from 'react';
+import express from 'express';
+import isIsOdd from 'is-is-odd';
+// { sort-end }
+```
+
+Read the [actual documentation](https://scopedsort.netlify.app/docs#sort-comments) for more.
+
+## Completions
+
+You can use the following code if you want bash completions. It's not reactive to valid options, so you will still get auto completions for invalid options.
+
+If the completion word doesn't start with `-` then it will just use the default
+file completion.
 
 ```bash
 _ssort_completions() {
-    local generic_options="--reverse --recursive --unique --case-insensitive  --sort-naturally --sort-numerically --sort-by-float --sort-by-length --sort-randomly --regex --use-matched-regex --section-seperator --modify  --use-sort-comments"
+    local generic_options="--case-insensitive --natural-sort --numerical-sort --float-sort --length-sort --month-sort --day-sort --none-sort --random-sort --recursive --reverse --unique --markdown --regex --field-seperator --use-sort-group --use-matched-regex --sort-order --attach-non-matching-to-bottom --section-seperator --section-starter --section-rejoiner --use-sort-comments --modify --yes"
+
     local cur_word="${COMP_WORDS[COMP_CWORD]}"
     local prev_word="${COMP_WORDS[COMP_CWORD - 1]}"
 
@@ -62,8 +107,11 @@ _ssort_completions() {
 }
 
 complete -F _ssort_completions -o default ssort
+
 ```
 
-# Questions & Contribution
+## Questions & Contribution
 
-If you need help, found bugs or want to contribute create a github issue.
+This program might have some learning curve, so if you need any help, submit a
+github issue and I'll be glad to help. If you find any bugs or want to
+contribute also create a github issue.

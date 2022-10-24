@@ -1,105 +1,63 @@
 #!/usr/bin/env node
 
-import yargs from 'yargs';
-import { Options, sort } from 'string-content-sort';
+import {
+    sort,
+    sortComments,
+    parseArgsIntoOptions,
+    type Options,
+} from 'string-content-sort';
+import ansiColors from 'ansi-colors';
 
 import { statSync, existsSync } from 'fs';
 import { readdir, readFile, writeFile } from 'fs/promises';
+import { EOL } from 'os';
 import * as path from 'path';
 
-import {
-    genericSortYargsBuilder,
-    getCleanOptions,
-    parseStringArguments,
-    YargsCliArgumentsReturn,
-} from './parse-string-arguments.js';
-import { EOL } from 'os';
+import { longHelpText, shortHelpText } from './help.js';
 
-export const commentRegexs = {
-    sortStart: /\{ sort-start (?<args>[^\}]*)(?<= )\}/,
-    sortEnd: /\{ sort-end \}/,
-};
+interface ExtraOptions {
+    modify: boolean;
+    useSortComments: boolean;
+    skipPrompts: boolean;
+}
 
-async function defaultCommandHandler(args: YargsCliArgumentsReturn) {
-    const { files } = args;
+const { red, yellow, green } = ansiColors;
+const useHelpMessage = 'Use -h (short) or --help (extensive) for help.\n';
 
-    const options = getCleanOptions(args);
-    options.reportErrors = true;
+function printError(errorText: string) {
+    process.stderr.write(errorText + '\n');
+}
 
-    // need another try/catch?
-    try {
-        // quick test to see if options are valid
-        sort('', options);
-    } catch (err: any) {
-        console.log('Error: ' + err?.message);
-        return;
-    }
+function printErrorAndExit(errorText: string) {
+    process.stderr.write(errorText + '\n' + useHelpMessage);
+    process.exit(1);
+}
 
-    options.reportErrors = false;
+function padString(text: string) {
+    return '    ' + text;
+}
 
-    if (files && files.length !== 0) {
-        const content: Promise<string>[] = [];
+async function pushContentFromDirectory(
+    dir: string,
+    fileContents: Promise<string>[],
+    fileNames: string[]
+) {
+    const files = await readdir(dir);
 
-        for (const file of files) {
-            if (!existsSync(file)) {
-                console.log(`Error: File ${file} does not exist`);
-                continue;
-            }
+    for (const file of files) {
+        const next = path.join(dir, file);
 
-            if (statSync(file).isDirectory()) {
-                pushContentFromDirectory(file, content);
-            } else {
-                content.push(readFile(file, 'utf-8'));
-            }
-        }
-
-        const resolvedContent = await Promise.all(content);
-
-        if (args.modify) {
-            for (let i = 0; i < resolvedContent.length; i++) {
-                const content = resolvedContent[i];
-                const file = files[i];
-
-                if (args.useSortComments) {
-                    const changedContent = sortComments(content, file, true);
-
-                    if (changedContent?.hasOperatedOnFile) {
-                        writeFile(
-                            file,
-                            changedContent.lines.join(EOL),
-                            'utf-8'
-                        );
-                    }
-                } else {
-                    const changedContent = sort(content, options);
-
-                    if (content !== changedContent) {
-                        writeFile(file, changedContent, 'utf-8');
-                    }
-                }
-            }
-
-            return;
-        }
-
-        // arguable whether to sort each content individually and then join
-        // them or just sort them once they have been concatenate
-        // the unix sort command concatenates them first so yea
-        const allContent = resolvedContent.join(EOL);
-
-        if (args.useSortComments) {
-            const changedContent = sortComments(allContent, 'N/A', false);
-
-            if (changedContent?.lines) {
-                console.log(changedContent.lines.join('\n'));
-            }
+        if (statSync(next).isDirectory()) {
+            // might be a bit slow
+            await pushContentFromDirectory(next, fileContents, fileNames);
         } else {
-            console.log(sort(allContent, options));
+            fileContents.push(readFile(next, 'utf-8'));
+            fileNames.push(next);
         }
-
-        return;
     }
+}
 
+function takeinStdin(options: Options) {
     let stdinData = '';
 
     process.stdin.on('data', (data) => {
@@ -111,143 +69,238 @@ async function defaultCommandHandler(args: YargsCliArgumentsReturn) {
     });
 }
 
-async function pushContentFromDirectory(
-    dir: string,
-    content: Promise<string>[]
+async function takeinFiles(
+    positionals: string[],
+    options: Options,
+    question: (query: string) => Promise<string>,
+    { modify, useSortComments, skipPrompts }: ExtraOptions
 ) {
-    const files = await readdir(dir);
+    const fileContents: Promise<string>[] = [];
+    const fileNames: string[] = [];
 
-    for (const file of files) {
-        const next = path.join(dir, file);
+    for (const file of positionals) {
+        if (!existsSync(file)) {
+            printError(`${red('Error:')} File ${file} does not exist`);
+            continue;
+        }
 
-        if (statSync(next).isDirectory()) {
-            pushContentFromDirectory(next, content);
+        if (statSync(file).isDirectory()) {
+            await pushContentFromDirectory(file, fileContents, fileNames);
         } else {
-            content.push(readFile(next, 'utf-8'));
+            fileContents.push(readFile(file, 'utf-8'));
+            fileNames.push(file);
         }
     }
-}
 
-function sortComments(content: string, file: string, logInfo: boolean) {
-    let lines = content.split('\n');
+    if (fileContents.length === 0) {
+        process.exit(1);
+    }
 
-    let hasOperatedOnFile = false;
-    let currentStartLine: number | undefined = undefined;
+    const resolvedContent = await Promise.all(fileContents);
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        // only want indentation if the file has already been stated
-        const indentation = hasOperatedOnFile ? '    ' : '';
-        // don't want to reiterate the file name if it already has been stated
-        const fileInfo = hasOperatedOnFile ? '' : `[${file}]`;
+    if (modify) {
+        for (let i = 0; i < resolvedContent.length; i++) {
+            const content = resolvedContent[i];
+            const file = fileNames[i];
 
-        if (line.includes('{ sort-ignore-file }')) {
-            return;
-        }
+            if (useSortComments) {
+                const {
+                    commentSections,
+                    errors: commentSectionsErrors,
+                    result,
+                } = sortComments(content);
 
-        if (commentRegexs.sortStart.test(line)) {
-            if (typeof currentStartLine !== 'undefined') {
-                return console.log(
-                    `${indentation}[Error] Recieved sort-start comment at line: ${i} but didn't finish the one at ${currentStartLine}\nSkipping file: ${fileInfo}`
-                );
-            }
+                console.log('File: ' + file);
 
-            currentStartLine = i;
-        } else if (commentRegexs.sortEnd.test(line)) {
-            if (typeof currentStartLine === 'undefined') {
-                console.log(currentStartLine);
-                return console.log(
-                    `${indentation}[Error] Recieved sort-end comment at line: ${i} but didn't receive any sort-start${fileInfo}`
-                );
-            }
+                if (commentSectionsErrors.length > 0) {
+                    printError(commentSectionsErrors.map(padString).join('\n'));
 
-            const section = lines.slice(currentStartLine + 1, i).join('\n');
-            const sortArgs =
-                lines[currentStartLine].match(commentRegexs.sortStart)?.groups
-                    ?.args || '';
-            let options: Options = {};
-
-            if (sortArgs !== '') {
-                try {
-                    options = parseStringArguments(sortArgs);
-                } catch (err) {
-                    console.error('[Error]: ' + (err as Error)?.message);
-                    return;
+                    continue;
                 }
-            }
 
-            // not gonna throw errors for this one, maybe later
-            const sortedSection = sort(section, options);
+                if (commentSections.length === 0) {
+                    console.log(padString('[none]'));
+                    continue;
+                }
 
-            if (sortedSection !== section) {
-                if (!hasOperatedOnFile) {
-                    if (logInfo) {
-                        console.log(`Modifiying ${file}:`);
+                const sectionsThatHaveChanged: string[] = [];
+                const sectionsThatHaveNotChanged: string[] = [];
+
+                for (const {
+                    hasChanged,
+                    endLine,
+                    startLine,
+                } of commentSections) {
+                    const range = `${startLine + 1}-${
+                        endLine === null ? 'none' : endLine + 1
+                    }`;
+
+                    if (hasChanged) {
+                        sectionsThatHaveChanged.push(range);
+                    } else {
+                        sectionsThatHaveNotChanged.push(range);
                     }
-
-                    hasOperatedOnFile = true;
                 }
 
-                if (logInfo) {
+                if (sectionsThatHaveChanged.length > 0) {
                     console.log(
-                        // +2 because of 0-index & the comment
-                        `    sort changed from lines ${
-                            currentStartLine + 2
-                        }-${i}`
+                        padString(
+                            `${green('[changed]')}: ` +
+                                sectionsThatHaveChanged.join(', ')
+                        )
                     );
                 }
 
-                const deleteCount = i - currentStartLine - 1;
-                const itemsToAdd = sortedSection.split(EOL);
+                if (sectionsThatHaveNotChanged.length > 0) {
+                    console.log(
+                        padString(
+                            `${yellow('[unchanged]')}: ` +
+                                sectionsThatHaveNotChanged.join(', ')
+                        )
+                    );
+                }
 
-                lines.splice(currentStartLine + 1, deleteCount, ...itemsToAdd);
-                i -= deleteCount - itemsToAdd.length;
+                if (sectionsThatHaveChanged.length > 0) {
+                    writeFile(file, result, 'utf-8');
+                }
+            } else {
+                const changedContent = sort(content, options);
+
+                if (content === changedContent) {
+                    console.log('No change.');
+                    return;
+                }
+
+                if (!skipPrompts) {
+                    let answer = await question(
+                        'You are using --modify without --use-sort-comments, are you sure? (y/n): '
+                    );
+
+                    answer = answer.toLowerCase();
+
+                    switch (answer) {
+                        case 'y':
+                        case 'yes':
+                        case 'ya':
+                        case 'ye':
+                            break;
+                        default:
+                            process.exit(0);
+                    }
+                }
+
+                console.log('Writing to file: ' + file);
+                writeFile(file, changedContent, 'utf-8');
             }
+        }
 
-            currentStartLine = undefined;
+        return;
+    }
+
+    // arguable whether to sort each content individually and then join
+    // them or just sort them once they have been concatenate
+    // the unix sort command concatenates them first so yea
+    const allContent = resolvedContent.join(EOL);
+
+    if (useSortComments) {
+        const sortCommentsResults = sortComments(allContent);
+
+        if (sortCommentsResults.errors.length > 0) {
+            printErrorAndExit(
+                sortCommentsResults.errors.map(padString).join('\n')
+            );
+        }
+
+        console.log(sortCommentsResults.result);
+    } else {
+        console.log(sort(allContent, options));
+    }
+
+    return;
+}
+
+export async function main() {
+    const unknown: string[] = [];
+
+    let useSortComments = false;
+    let modify = false;
+    let skipPrompts = false;
+
+    const {
+        errors: parsingErrors,
+        options,
+        positionals,
+    } = parseArgsIntoOptions(process.argv.slice(2), (args, index) => {
+        const arg = args[index];
+
+        switch (arg) {
+            case '-h':
+                console.log(shortHelpText);
+                process.exit(0);
+            /* eslint-disable-next-line no-fallthrough */
+            case '-H':
+            case '--help':
+                console.log(longHelpText);
+                process.exit(0);
+            /* eslint-disable-next-line no-fallthrough */
+            case '-c':
+            case '--use-sort-comments':
+                useSortComments = true;
+                break;
+            case '--modify':
+                modify = true;
+                break;
+            case '-y':
+            case '--yes':
+                skipPrompts = true;
+                break;
+            default:
+                console.log(arg);
+                unknown.push(arg);
+        }
+    });
+
+    if (unknown.length) {
+        printErrorAndExit('Unknown option(s): ' + unknown.join(', ') + '\n');
+    }
+
+    if (parsingErrors.length > 0) {
+        printErrorAndExit(
+            'Error(s) with parsing options: \n' +
+                parsingErrors.map(padString).join('\n') +
+                '\n'
+        );
+    }
+
+    try {
+        sort('', options);
+    } catch (optionsError: any) {
+        printErrorAndExit(
+            'Error(s) with options: \n' +
+                (optionsError?.message || '').split('\n').map(padString) +
+                '\n'
+        );
+    }
+
+    for (let i = positionals.length - 1; i >= 0; i--) {
+        if (!positionals[i]) {
+            positionals.splice(i, 1);
         }
     }
 
-    return { hasOperatedOnFile, lines };
-}
+    if (positionals.length > 0) {
+        const { rl, question } = await import('./prompt');
 
-try {
-    yargs(process.argv.slice(2))
-        .command({
-            command: '$0 [files..]',
-            describe:
-                'feature rich text sorter, takes in from stdin or from files/directories.\nDirectories will be looped through.\n\nUse https://scopedsort.netlify.app/ for full documentation.',
-            builder: (y: any) =>
-                genericSortYargsBuilder(y)
-                    .option('useSortComments', {
-                        type: 'boolean',
-                        describe:
-                            'sorts using sort comments rather than line by line',
-                        alias: 'c',
-                    })
-                    .option('modify', {
-                        type: 'boolean',
-                        describe: 'modify the files in place',
-                    })
-                    .strict(),
-            // @ts-ignore
-            handler: defaultCommandHandler,
-        })
-        .alias('h', 'help')
-        .strict()
-        .fail(false)
-        .wrap(90)
-        .parse();
-} catch (err) {
-    if (err) {
-        // @ts-ignore
-        if (err.message) {
-            // @ts-ignore
-            console.error('Error: ' + err.message);
-        } else {
-            console.error(err);
-        }
+        await takeinFiles(positionals, options, question, {
+            modify,
+            skipPrompts,
+            useSortComments,
+        });
 
-        process.exit(1);
+        rl.close();
+    } else {
+        takeinStdin(options);
     }
 }
+
+main();

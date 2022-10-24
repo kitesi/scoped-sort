@@ -1,3 +1,11 @@
+# 2.0.0 (10/23/22)
+
+<!-- prettier-ignore -->
+- update to `string-content-sort@2.1.0`, which added a
+lot of stuff. too much stuff to list out here, just read the new `--help | -H | -h`
+- help text is a lot better now, doesn't force you to
+read website documentation
+
 # 1.2.1 (8/13/22)
 
 <!-- prettier-ignore -->

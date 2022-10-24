@@ -1,0 +1,22 @@
+Commands
+  Migrations
+    rake db: - migrate push all migrations to the database
+    'STEP=3' - revert the last 3 migrations
+  Rails
+    c - start rails console, run code from your app!
+  Rake
+    Rake Task
+    ```ruby
+    desc 'process csv'
+    task process_csv: :environment do
+        Node.process_csv
+    end
+    ```
+Package Upgrade Status:
+  1. Install Package
+  2. Attach Plugin
+  3. Review Installation
+  ~~~
+  |Install|Status|
+  |Yes|Pending|
+  ~~~

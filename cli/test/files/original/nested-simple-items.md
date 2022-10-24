@@ -1,0 +1,16 @@
+-   there
+-   hear
+    -   beta
+    -   zamma
+    -   alpha
+    -   gamma
+-   gear
+    -   dear
+        -   make do
+        -   sake so
+        -   aer do
+        -   here me
+            -   gamma
+            -   mama
+            -   aera
+-   zer

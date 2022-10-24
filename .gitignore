@@ -11,3 +11,6 @@ vscode/dist
 npm/main.js
 *.vsix
 
+cli/test/files/tmp/
+
+
