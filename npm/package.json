@@ -1,6 +1,6 @@
 {
     "name": "string-content-sort",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "description": "sort the content inside of a string",
     "main": "dist/main.js",
     "homepage": "https://scopedsort.netlify.app",

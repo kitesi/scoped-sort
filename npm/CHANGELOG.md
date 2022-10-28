@@ -1,3 +1,9 @@
+## 2.2.0 (10/28/22)
+
+Change function parameters type and return type of `unknownArgCallback()`
+for `parseArgsIntoOptions`. Mainly for other providers like the cli and vscode
+package, most won't use.
+
 ## 2.1.0 (10/22/22)
 
 bug fixes.

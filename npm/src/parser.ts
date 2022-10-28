@@ -346,11 +346,7 @@ export function parseSortGroupKeys(groupKeysString: string) {
  */
 export function parseArgsIntoOptions(
     args: string[],
-    unknownArgCallback?: (
-        args: string[],
-        index: number,
-        options: Options
-    ) => void
+    unknownArgCallback?: (arg: string, options: Options) => 0 | 1
 ) {
     const options: Options = {};
     const positionals: string[] = [];
@@ -655,7 +651,11 @@ export function parseArgsIntoOptions(
                 matchedCase = false;
 
                 if (unknownArgCallback) {
-                    unknownArgCallback(args, i, options);
+                    const result = unknownArgCallback(args[i], options);
+
+                    if (result === 1) {
+                        errors.push('Unknown option: ' + arg);
+                    }
                 } else {
                     errors.push('Unknown option: ' + arg);
                 }
