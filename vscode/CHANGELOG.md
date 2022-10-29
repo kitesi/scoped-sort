@@ -1,3 +1,10 @@
+# 3.0.0 (10/28/22)
+
+<!-- prettier-ignore -->
+- implement [string-content-sort@~v2](https://www.npmjs.com/package/string-content-sort) which includes a lot more sorting options
+- add `scoped-sort.sortComments` to help sort comments
+- set `scoped-sort.formatSectionsOnSave` to default to false
+
 # 2.3.0 (8/1/22)
 
 <!-- prettier-ignore -->

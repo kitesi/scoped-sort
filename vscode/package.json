@@ -2,7 +2,7 @@
     "name": "scoped-sort",
     "displayName": "Scoped Sort",
     "description": "A feature rich sorter for vscode.",
-    "version": "2.3.0",
+    "version": "3.0.0",
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
     "main": "./dist/extension.js",
@@ -32,6 +32,7 @@
     "activationEvents": [
         "onStartupFinished",
         "onCommand:scoped-sort.sort",
+        "onCommand:scoped-sort.sortComments",
         "onCommand:scoped-sort.addSurroundingSortComments"
     ],
     "contributes": {
@@ -41,12 +42,12 @@
                 "scoped-sort.prompt": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Decides if the program should always prompt/ask for options when executing the main command"
+                    "description": "decides if the program should always prompt/ask for options when executing the main command"
                 },
                 "scoped-sort.formatSectionsOnSave": {
                     "type": "boolean",
-                    "default": true,
-                    "description": "Decides if the program should try to format sections that are marked"
+                    "default": false,
+                    "description": "decides if the program should try to format sort comment sections on save"
                 },
                 "scoped-sort.defaultArgs": {
                     "type": "object",
@@ -64,7 +65,7 @@
                         "addSurroundingSortComments": {
                             "type": "string",
                             "default": "",
-                            "description": "when calling addSurroundingSortComments command it will add these args in the sort-start comment"
+                            "description": "when calling the addSurroundingSortComments command it will add these args in the sort-start line"
                         }
                     },
                     "default": {}
@@ -74,33 +75,36 @@
         "commands": [
             {
                 "command": "scoped-sort.sort",
-                "title": "Scoped Sort"
+                "title": "Scoped Sort: Main"
+            },
+            {
+                "command": "scoped-sort.sortComments",
+                "title": "Scoped Sort: Comments"
             },
             {
                 "command": "scoped-sort.addSurroundingSortComments",
-                "title": "Add Surrounding Sort Comments On Selection"
+                "title": "Scoped Sort: Add Surrounding Sort Comments On Selection"
             }
         ]
     },
     "scripts": {
-        "test": "tape ./test/parse-string-arguments.test.js",
-        "pretty": "npx prettier --write ."
+        "test": "node ./test/runner.js",
+        "pretty": "prettier --write src/* test/*",
+        "lint": "eslint test/* src/*"
     },
     "devDependencies": {
-        "@types/glob": "^7.1.3",
         "@types/node": "14.x",
-        "@types/tape": "^4.13.0",
         "@types/vscode": "^1.57.0",
-        "@types/yargs": "^17.0.10",
-        "@vscode/test-electron": "^2.1.5",
-        "glob": "^7.1.7",
-        "jest-diff": "^27.0.6",
+        "@typescript-eslint/eslint-plugin": "^5.41.0",
+        "@typescript-eslint/parser": "^5.41.0",
+        "@vscode/test-electron": "^2.2.0",
+        "eslint": "^8.26.0",
+        "eslint-config-prettier": "^8.5.0",
+        "mocha": "^10.1.0",
         "prettier": "^2.3.2",
-        "tape": "^5.2.2",
-        "vscode-test": "^1.5.2"
+        "tape": "^5.2.2"
     },
     "dependencies": {
-        "string-content-sort": "^1.0.1",
-        "yargs": "^17.2.1"
+        "string-content-sort": "^2.2.0"
     }
 }
