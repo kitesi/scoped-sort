@@ -1,3 +1,9 @@
+# 2.0.1 (10/28/22)
+
+<!-- prettier-ignore -->
+- remove accidental console.log 
+- use new `string-content-sort`'s callback for unknown arg
+
 # 2.0.0 (10/23/22)
 
 <!-- prettier-ignore -->

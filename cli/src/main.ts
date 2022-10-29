@@ -220,8 +220,6 @@ async function takeinFiles(
 }
 
 export async function main() {
-    const unknown: string[] = [];
-
     let useSortComments = false;
     let modify = false;
     let skipPrompts = false;
@@ -230,9 +228,7 @@ export async function main() {
         errors: parsingErrors,
         options,
         positionals,
-    } = parseArgsIntoOptions(process.argv.slice(2), (args, index) => {
-        const arg = args[index];
-
+    } = parseArgsIntoOptions(process.argv.slice(2), (arg) => {
         switch (arg) {
             case '-h':
                 console.log(shortHelpText);
@@ -246,23 +242,18 @@ export async function main() {
             case '-c':
             case '--use-sort-comments':
                 useSortComments = true;
-                break;
+                return 0;
             case '--modify':
                 modify = true;
-                break;
+                return 0;
             case '-y':
             case '--yes':
                 skipPrompts = true;
-                break;
+                return 0;
             default:
-                console.log(arg);
-                unknown.push(arg);
+                return 1;
         }
     });
-
-    if (unknown.length) {
-        printErrorAndExit('Unknown option(s): ' + unknown.join(', ') + '\n');
-    }
 
     if (parsingErrors.length > 0) {
         printErrorAndExit(
