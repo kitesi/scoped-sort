@@ -1,11 +1,16 @@
 <script lang="ts">
+	import { isSidebarOpen } from '$lib/js/stores.js';
 	import type { OutlineItem } from './outline-item.js';
 
 	export let item: OutlineItem;
+
+	function closeSidebar() {
+		isSidebarOpen.set(false);
+	}
 </script>
 
 <li>
-	<a href="#{item.id}">
+	<a href="#{item.id}" on:click={closeSidebar}>
 		<!-- <Icon name="hash" /> -->
 		<span>{item.name}</span>
 	</a>

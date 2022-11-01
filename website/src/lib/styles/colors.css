@@ -23,6 +23,8 @@
 
 	--clr-link: #be112e;
 	--clr-bg-hamburger-menu: var(--clr-bg-primary-content);
+	--clr-selection-bg: #e5a227;
+	--clr-selection-content: black;
 }
 
 @media (prefers-color-scheme: dark) {

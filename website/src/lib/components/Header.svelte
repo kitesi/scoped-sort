@@ -87,6 +87,7 @@ back to /, :global() and :root styles from /docs or /examples remain
 
 	.links {
 		display: grid;
+		align-items: center;
 		grid-auto-flow: column;
 		gap: 20px;
 	}
@@ -123,7 +124,7 @@ back to /, :global() and :root styles from /docs or /examples remain
 
 	li {
 		list-style-type: none;
-		font-weight: 700;
+		font-weight: 500;
 	}
 
 	.same-website-pages li {
@@ -154,7 +155,7 @@ back to /, :global() and :root styles from /docs or /examples remain
 
 	h1,
 	li {
-		font-size: 24px;
+		font-size: 1rem;
 	}
 
 	.same-website-pages,
@@ -186,7 +187,7 @@ back to /, :global() and :root styles from /docs or /examples remain
 
 	@media (prefers-color-scheme: dark) {
 		header {
-			background-color: var(--clr-bg-tertiary);
+			background-color: var(--clr-bg-primary);
 			border-bottom-color: var(--clr-bg-secondary);
 			color: var(--clr-bg-tertiary-content);
 		}

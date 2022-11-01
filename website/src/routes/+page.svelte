@@ -1,218 +1,267 @@
 <script lang="ts">
 	import Header from '$lib/components/Header.svelte';
-	import { sort } from 'string-content-sort';
+	import { type Options, sort, parseArgsIntoOptions, tokenizeArgString } from 'string-content-sort';
+	import type { InputGroup } from './inputs.js';
 
 	import { isSidebarOpen } from '$lib/js/stores';
+	import Select from '$lib/components/Select.svelte';
 
-	import type { Options } from 'string-content-sort';
+	let form: HTMLFormElement;
+	let content = '';
+
+	function getCheckboxValue(val: any) {
+		return val === 'on';
+	}
 
 	function handleSubmit() {
-		const options: Options = {
-			...universalModifiersBindings,
-			useMatchedRegex
-		};
-
-		if (sorterBinding) {
-			// @ts-ignore
-			options[sorterBinding] = true;
-		}
-
-		if (regex) {
-			const attempt = parseStringAsRegex(regex);
-
-			if (attempt) {
-				options.regexFilter = attempt;
-			}
-		}
-
-		if (sectionSeperator) {
-			const attempt = parseStringAsRegex(sectionSeperator);
-
-			if (attempt) {
-				options.sectionSeperator = attempt;
-			}
-		}
-
-		sortingText = sort(sortingText, options);
-	}
-
-	function parseStringAsRegex(arg: string) {
-		let regexContent = arg;
-
-		if (arg.startsWith('/') && arg.endsWith('/')) {
-			regexContent = arg.slice(1, arg.length - 1);
-		}
-
-		try {
-			return new RegExp(regexContent);
-		} catch (e) {
-			console.error(e);
-			//todo
+		if (!form) {
 			return;
 		}
+
+		const formData = new FormData(form);
+		const recursive = formData.get('recursive');
+		const regex = formData.get('regex');
+		const sectionStarter = formData.get('section-starter');
+		const sectionSeperator = formData.get('section-seperator');
+		let sectionRejoiner = formData.get('section-rejoiner');
+
+		const args: string[] = [];
+		const argString = formData.get('other-args');
+
+		// FormDataEntry can be file, don't have any file inputs though
+		if (typeof recursive === 'string' && recursive) {
+			args.push('--recursive', recursive);
+		}
+
+		if (typeof regex === 'string' && regex) {
+			args.push('--regex', regex);
+		}
+
+		if (typeof sectionSeperator === 'string' && sectionSeperator) {
+			args.push('--section-seperator', sectionSeperator);
+		}
+
+		if (typeof sectionStarter === 'string' && sectionStarter) {
+			args.push('--section-starter', sectionStarter);
+		}
+
+		if (typeof argString === 'string' && argString) {
+			args.push(...tokenizeArgString(argString));
+		}
+
+		if (typeof sectionRejoiner === 'string') {
+			sectionRejoiner = sectionRejoiner.replaceAll('\\n', '\n');
+		}
+
+		const {
+			errors: parsingErrors,
+			positionals,
+			options: additionalOptions
+		} = parseArgsIntoOptions(args);
+
+		if (parsingErrors.length > 0) {
+			console.error('Recieved error(s): \n' + parsingErrors.join('\n'));
+		}
+
+		if (positionals.length > 0) {
+			console.error('Recieved positional(s): ' + positionals.join(', '));
+		}
+
+		const options: Options = {
+			markdown: getCheckboxValue(formData.get('markdown')),
+			reverse: getCheckboxValue(formData.get('reverse')),
+			// @ts-ignore
+			unique: formData.get('unique') || undefined,
+			// @ts-ignore
+			sorter: formData.get('sorter') || undefined,
+			useMatchedRegex: getCheckboxValue(formData.get('use-matched-regex')),
+			attachNonMatchingToBottom: getCheckboxValue(formData.get('attach-nmtb')),
+			// @ts-ignore
+			sectionRejoiner,
+			...additionalOptions
+		};
+
+		try {
+			content = sort(content, options);
+		} catch (sortErrors: any) {
+			console.error('Recieved error(s): \n' + sortErrors.message);
+		}
 	}
 
-	const universalModifiers = [
+	const universalModifiers: InputGroup = [
 		{
 			name: 'markdown',
 			label: 'Markdown'
 		},
 		{
-			name: 'unique',
-			label: 'Unique'
-		},
-		{
-			name: 'recursive',
-			label: 'Recursive'
-		},
-		{
 			name: 'reverse',
 			label: 'Reverse'
-		},
-		{
-			name: 'caseInsensitive',
-			label: 'Case Insensitive'
 		}
 	];
 
-	const sorters = [
+	const sorters: InputGroup = [
 		{
 			name: 'normal',
-			label: 'Normal'
+			label: 'Normal',
+			value: ''
 		},
 		{
-			name: 'sortNaturally',
+			name: 'case-insensitive',
+			label: 'Case Ins'
+		},
+		{
+			name: 'natural',
 			label: 'Natural'
 		},
 		{
-			name: 'sortNumerically',
+			name: 'numerical',
 			label: 'Numerical'
 		},
 		{
-			name: 'sortRandomly',
+			name: 'random',
 			label: 'Random'
 		},
 		{
-			name: 'sortByFloat',
+			name: 'float',
 			label: 'Float'
 		},
 		{
-			name: 'sortByLength',
+			name: 'length',
 			label: 'Length'
+		},
+		{
+			name: 'month',
+			label: 'Month'
+		},
+		{
+			name: 'day',
+			label: 'Day'
+		},
+		{
+			name: 'none',
+			label: 'None'
 		}
 	];
 
-	const universalModifiersBindings: { [k: string]: boolean } = {
-		markdown: false,
-		unique: false,
-		recursive: false,
-		reverse: false,
-		caseInsensitive: false
-	};
-
-	let sortingText = '';
-	let sorterBinding = '';
-	let regex = '';
-	let sectionSeperator = '';
-	let useMatchedRegex = false;
+	const uniqueOptions: InputGroup = [
+		{
+			name: 'none',
+			label: 'None',
+			value: ''
+		},
+		{
+			name: 'exact',
+			label: 'Exact'
+		},
+		{
+			name: 'case-insensitive',
+			label: 'Case Ins'
+		}
+	];
 </script>
 
 <div class="main-container">
 	<Header />
 	<!-- temporary solution for disabling tabing on form elements since modal covers everything -->
 	<main style="display: {$isSidebarOpen ? 'none' : 'grid'};">
-		<form on:submit|preventDefault={handleSubmit}>
+		<form bind:this={form} on:submit|preventDefault={handleSubmit}>
 			<div>
-				<h2>About</h2>
-				<p>
-					Scoped Sort is a tool to help sort text. It differs from other text sorters by seperating
-					items with respect to indentation. It has many options and is implemented on npm, the
-					command line, vscode and here.
-				</p>
+				<h3>Universal Modifiers</h3>
 
-				<h2>Universal Modifiers</h2>
-				<h3>Don't understand this? Read the <a href="/docs#universal-modifiers">docs.</a></h3>
-
-				<div class="modifiers">
+				<div class="modifiers options-group">
 					{#each universalModifiers as modifier (modifier.name)}
+						{@const id = 'modifiers-' + modifier.name}
 						<div>
-							<input
-								bind:checked={universalModifiersBindings[modifier.name]}
-								type="checkbox"
-								id={modifier.name}
-							/>
-							<label for={modifier.name}>{modifier.label}</label>
+							<input type="checkbox" name={modifier.name} {id} />
+							<label for={id}>{modifier.label}</label>
 						</div>
 					{/each}
 				</div>
 
-				<h2>Sorters</h2>
-				<h3>Don't understand this? Read the <a href="/docs#sorters">docs.</a></h3>
+				<h3>Unique</h3>
 
-				<div class="sorters">
-					{#each sorters as sorter}
+				<div class="unique-options options-group">
+					{#each uniqueOptions as option (option.name)}
+						{@const id = 'unique-' + option.name}
 						<div>
-							<input
-								type="radio"
-								name="sorter"
-								id={sorter.name}
-								value={sorter.name}
-								bind:group={sorterBinding}
-							/>
-							<label for={sorter.name}>{sorter.label}</label>
+							<input type="radio" name="unique" value={option.value ?? option.name} {id} />
+							<label for={id}>{option.label}</label>
 						</div>
 					{/each}
 				</div>
 
-				<h2>Other Settings</h2>
-				<h3>Don't understand this? Read the <a href="/docs#other">docs.</a></h3>
+				<div class="recursive-container">
+					<label for="recursive">Recursive:</label>
+					<input
+						type="text"
+						name="recursive"
+						id="recursive"
+						placeholder="4"
+						inputmode="numeric"
+						pattern="\d*"
+					/>
+				</div>
 
-				<div class="other">
-					<div>
-						<label for="regex">Regex Filter:</label>
-						<div class="use-matched-regex-container">
-							<label for="use-matched-regex">Use Matched: </label>
-							<input
-								type="checkbox"
-								bind:checked={useMatchedRegex}
-								name="use-matched-regex"
-								id="use-matched-regex"
-							/>
+				<h3>Sorter</h3>
+
+				<Select options={sorters} id="sorter" name="sorter" />
+
+				<div class="item-search options-group">
+					<h3>Item Search Modifiers</h3>
+					<div class="checkboxes">
+						<div>
+							<input type="checkbox" name="use-matched-regex" id="use-matched-regex" />
+							<label for="use-matched-regex">Use Matched</label>
 						</div>
-						<input type="text" bind:value={regex} name="regex" id="regex" />
+						<div>
+							<input type="checkbox" name="attach-nmtb" id="attach-nmtb" />
+							<label for="attach-nmtb">Attach NMTB</label>
+						</div>
 					</div>
-					<div class="section-seperator-container">
-						<label for="section-seperator">Section Seperator: </label>
-						<input
-							type="text"
-							bind:value={sectionSeperator}
-							name="section-seperator"
-							id="section-seperator"
-						/>
+
+					<div class="text-inputs">
+						<div>
+							<label for="regex">Regex Filter:</label>
+							<input type="text" name="regex" id="regex" placeholder="/\d+ /i" />
+						</div>
+						<div>
+							<label for="section-starter">Section Starter: </label>
+							<input
+								type="text"
+								name="section-starter"
+								id="section-starter"
+								placeholder="/<div /"
+							/>
+						</div>
+						<div>
+							<label for="section-seperator">Section Seperator: </label>
+							<input
+								type="text"
+								name="section-seperator"
+								id="section-seperator"
+								placeholder="/\n\n/"
+							/>
+						</div>
+						<div>
+							<label for="section-rejoiner">Section Rejoiner: </label>
+							<input type="text" name="section-rejoiner" id="section-rejoiner" placeholder="\n\n" />
+						</div>
+						<div>
+							<label for="other-args">Other Args: </label>
+							<input
+								type="text"
+								name="other-args"
+								id="other-args"
+								placeholder="-c --sort-order a;z;b"
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div>
-				<textarea spellcheck="false" bind:value={sortingText} class="input" />
+				<textarea spellcheck="false" id="content" name="content" bind:value={content} />
 				<button type="submit">Modify</button>
-				<div class="error">
-					<p
-						class:show={regex &&
-							(sorterBinding === 'sortNaturally' || sorterBinding === 'sortRandomly')}
-					>
-						Can't use regex with sort-naturally or sort-randomly
-					</p>
-					<p
-						class:show={universalModifiersBindings.caseInsensitive &&
-							sorterBinding !== 'normal' &&
-							sorterBinding !== '' &&
-							!universalModifiersBindings.unique}
-					>
-						Can't use case-insensitive when sorter is not the default sorter and does not use the
-						unique modifier
-					</p>
-				</div>
 			</div>
 		</form>
 	</main>
@@ -233,30 +282,17 @@
 	.main-container {
 		display: flex;
 		flex-direction: column;
-		overflow: auto;
-	}
-
-	a {
-		color: var(--clr-link);
-	}
-
-	a:hover {
-		text-decoration: underline;
 	}
 
 	h2 {
 		font-weight: 800;
-		font-size: 2rem;
+		font-size: 1.7rem;
 	}
 
-	h2:not(:first-child) {
-		margin-top: 1rem;
-	}
-
-	h3 {
-		font-weight: 500;
-		font-size: 0.95rem;
-		margin-bottom: 1rem;
+	h3,
+	textarea,
+	.text-inputs > div {
+		margin-bottom: 0.5em;
 	}
 
 	form {
@@ -264,26 +300,137 @@
 	}
 
 	form > div > p {
-		margin-block: 1em;
 		max-width: 60ch;
 	}
 
 	form > div > div {
-		width: 100%;
+		max-width: 100%;
 	}
 
 	form > div > div > div {
 		position: relative;
+		margin-bottom: 0.5em;
 	}
 
-	.modifiers input:focus-visible + label,
-	.sorters input:focus-visible + label,
-	input[type='text']:focus,
-	textarea:focus {
+	.options-group input:focus-visible + label,
+	input[type='text']:focus-visible,
+	textarea:focus-visible {
 		outline: 0.2em solid var(--clr-accent-content);
 	}
 
-	button[type='submit'] {
+	input[type='checkbox']:focus,
+	input[type='radio']:focus {
+		outline: none;
+	}
+
+	input[type='checkbox'],
+	input[type='radio'] {
+		position: absolute;
+		appearance: none;
+	}
+
+	.options-group:not(.item-search) {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.6em;
+		max-width: 24.8rem;
+	}
+
+	.options-group input + label {
+		display: block;
+		padding-block: 0.5em;
+		border: 0.1em solid var(--clr-bg-secondary);
+		font-size: 1rem;
+		border-radius: 3px;
+		width: 100%;
+		max-width: 12.5rem;
+		text-align: center;
+		cursor: pointer;
+		transition: background-color 200ms ease-in;
+		-webkit-user-select: none; /* Safari */
+		-moz-user-select: none; /* Firefox */
+		-ms-user-select: none; /* IE10+/Edge */
+		user-select: none; /* Standard */
+	}
+
+	.checkboxes {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 10px;
+		max-width: 24.8rem;
+	}
+
+	.item-search label {
+		display: block;
+	}
+
+	label {
+		font-weight: 600;
+	}
+
+	.text-inputs label {
+		margin-bottom: 0.3em;
+	}
+
+	.item-search .text-inputs {
+		display: flex;
+		flex-wrap: wrap;
+		max-width: 35rem;
+		column-gap: 20px;
+	}
+
+	.recursive-container {
+		display: flex;
+		gap: 1rem;
+		max-width: 24.8rem;
+
+		input {
+			width: 4rem;
+		}
+
+		label {
+			font-size: 1.2rem;
+		}
+	}
+
+	input[type='text'],
+	input[type='number'] {
+		background-color: var(--clr-bg-tertiary);
+		color: var(--clr-bg-tertiary-content);
+		border: 2px solid var(--clr-bg-secondary);
+		padding: 0.2em 0.5em;
+		font-size: 1rem;
+		max-width: 100%;
+	}
+
+	input:checked + label {
+		background-color: var(--clr-bg-secondary);
+		color: var(--clr-bg-secondary-content);
+	}
+
+	textarea {
+		resize: vertical;
+		width: 100%;
+		height: 400px;
+		border: 2px solid var(--clr-bg-secondary);
+		border-radius: 3px;
+		background-color: var(--clr-bg-tertiary);
+		color: var(--clr-bg-tertiary-content);
+		padding: 1em;
+		font-size: 1rem;
+	}
+
+	button {
+		display: block;
+		background-color: var(--clr-bg-secondary);
+		color: var(--clr-bg-secondary-content);
+		border: none;
+		padding: 0.8em 2em;
+		font-weight: 800;
+		font-size: 1rem;
+		border-radius: 3px;
+		text-transform: uppercase;
+		cursor: pointer;
 		// credit to daisyui for animation
 		transition: 200ms transform cubic-bezier(0.4, 0, 0.2, 1);
 		animation: button-pop var(--animation-btn, 0.25s) ease-out;
@@ -300,157 +447,12 @@
 		}
 	}
 
-	input[type='checkbox']:not(#use-matched-regex):focus,
-	input[type='radio']:focus {
-		outline: none;
-	}
-
-	input[type='checkbox']:not(#use-matched-regex),
-	input[type='radio'] {
-		position: absolute;
-		appearance: none;
-	}
-
-	.modifiers,
-	.sorters {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0.6em;
-		max-width: 24.8rem;
-	}
-
-	.modifiers div:last-child {
-		grid-column: 2/4;
-	}
-
-	.modifiers label,
-	.sorters label {
-		display: block;
-		padding-block: 0.5em;
-		border: 0.1em solid var(--clr-bg-secondary);
-		font-weight: 600;
-		font-size: 1.1rem;
-		border-radius: 3px;
-		width: 100%;
-		max-width: 12.5rem;
-		text-align: center;
-		cursor: pointer;
-		transition: background-color 200ms ease-in;
-		-webkit-user-select: none; /* Safari */
-		-moz-user-select: none; /* Firefox */
-		-ms-user-select: none; /* IE10+/Edge */
-		user-select: none; /* Standard */
-	}
-
-	.other label {
-		display: block;
-		font-weight: 800;
-	}
-
-	.section-seperator-container {
-		margin-top: 10px;
-	}
-
-	.section-seperator-container label {
-		margin-bottom: 5px;
-	}
-
-	.other label[for='use-matched-regex'] {
-		font-weight: unset;
-	}
-
-	.error {
-		color: var(--clr-bg-error-content);
-		margin: 20px 0;
-	}
-
-	.error p {
-		background-color: var(--clr-bg-error);
-		padding: 0.8em;
-		text-align: center;
-		font-weight: 800;
-		border-radius: 0.2em;
-		display: none;
-		max-width: 60ch;
-	}
-
-	.error p.show {
-		display: inline-block;
-	}
-
-	.error p.show + p:nth-child(2) {
-		margin-top: 10px;
-	}
-
-	.use-matched-regex-container {
-		display: flex;
-		gap: 10px;
-		margin-bottom: 9px;
-	}
-
-	input[type='text'] {
-		background-color: var(--clr-bg-tertiary);
-		color: var(--clr-bg-tertiary-content);
-		border: 2px solid var(--clr-bg-secondary);
-		padding: 0.2em 0.5em;
-		font-size: 1rem;
-		max-width: 100%;
-	}
-
-	input:checked + label {
-		background-color: var(--clr-bg-secondary);
-		color: var(--clr-bg-secondary-content);
-	}
-
-	textarea {
-		resize: none;
-		width: 100%;
-		max-width: 600px;
-		height: 400px;
-		border: 2px solid var(--clr-bg-secondary);
-		border-radius: 3px;
-		background-color: var(--clr-bg-tertiary);
-		color: var(--clr-bg-tertiary-content);
-		padding: 1em;
-		font-size: 1rem;
-		margin-top: 1rem;
-	}
-
-	button {
-		display: block;
-		background-color: var(--clr-bg-secondary);
-		color: var(--clr-bg-secondary-content);
-		border: none;
-		padding: 0.8em 2em;
-		font-weight: 800;
-		font-size: 1rem;
-		margin-top: 20px;
-		border-radius: 3px;
-		text-transform: uppercase;
-	}
-
 	:root {
-		// might cause bugs in future, but I've +/- font size still works
+		// might cause bugs in future
 		font-size: clamp(16px, 2vw, 22px);
 	}
 
-	@media screen and (min-width: $small-screen) {
-		// :root {
-		// font-size: 20px;
-		// }
-
-		.other {
-			display: flex;
-			align-items: flex-end;
-			gap: 10px;
-		}
-	}
-
 	@media screen and (min-width: $medium-screen) {
-		// :root {
-		// font-size: 22px;
-		// }
-
 		main {
 			display: grid;
 			align-items: center;
@@ -464,10 +466,6 @@
 			flex: 1;
 		}
 
-		.other {
-			display: block;
-		}
-
 		form {
 			display: flex;
 			flex-direction: row;
@@ -477,10 +475,6 @@
 			width: 90%;
 			max-width: unset;
 			height: 80%;
-		}
-
-		.section-seperator-container {
-			margin-top: 20px;
 		}
 	}
 

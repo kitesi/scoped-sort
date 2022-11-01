@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DocStyleSidebar from '$lib/components/DocStyleSidebar.svelte';
+	import DocStyleSidebar from './DocStyleSidebar.svelte';
 
 	import { fade } from 'svelte/transition';
 	import { afterUpdate } from 'svelte';
@@ -39,5 +39,18 @@
 <style>
 	.layout {
 		height: 100%;
+	}
+
+	.layout :global(.pre-container) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1em;
+		margin-block: 1em;
+	}
+
+	.layout :global(pre) {
+		flex: 1;
+		min-width: 20em;
+		margin: 0 !important;
 	}
 </style>

@@ -32,7 +32,8 @@ h2 {
 	font-size: 1.75rem;
 }
 
-h2 + h3 {
+h2 + h3,
+h3 + h4 {
 	margin-top: 0.5em;
 }
 

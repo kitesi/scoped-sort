@@ -6,7 +6,6 @@
 		"build": "vite build",
 		"package": "svelte-kit package",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. .",
@@ -34,6 +33,6 @@
 		"rehype-autolink-headings": "^6.1.1",
 		"rehype-slug": "^5.0.1",
 		"shiki-twoslash": "^3.1.0",
-		"string-content-sort": "^1.0.6"
+		"string-content-sort": "^2.2.0"
 	}
 }

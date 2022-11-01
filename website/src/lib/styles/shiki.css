@@ -58,6 +58,7 @@ pre.shiki .language-id {
 
 pre code {
 	font-family: 'JetBrains Mono', Menlo, Monaco, Consolas, Courier New, monospace;
+	font-variant-ligatures: none;
 	white-space: pre;
 	-webkit-overflow-scrolling: touch;
 	counter-reset: step;

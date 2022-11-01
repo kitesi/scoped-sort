@@ -1,5 +1,5 @@
 <script lang="ts">
-	import HamburgerMenu from './HamburgerMenu.svelte';
+	import HamburgerMenu from '$lib/components/HamburgerMenu.svelte';
 	import SidebarOutlineItem from './SidebarOutlineItem.svelte';
 
 	import { isSidebarOpen } from '$lib/js/stores';
@@ -75,9 +75,9 @@
 </div>
 
 <nav class:show={$isSidebarOpen}>
-	<ul class="first-level">
+	<ul data-sveltekit-reload>
 		<li>
-			<a on:click={closeSidebar} href="/" data-sveltekit-reload>Home</a>
+			<a on:click={closeSidebar} href="/">Home</a>
 		</li>
 		<li>
 			<a on:click={closeSidebar} href="/docs">Documentation</a>
@@ -95,7 +95,7 @@
 </nav>
 
 <style lang="scss">
-	@use '../styles/sizes.scss' as *;
+	@use '../../lib/styles/sizes.scss' as *;
 
 	div {
 		position: fixed;
@@ -141,10 +141,6 @@
 
 	ul:not(:first-child) {
 		margin-left: 16px;
-	}
-
-	.first-level {
-		// font-weight: 700;
 	}
 
 	li {
