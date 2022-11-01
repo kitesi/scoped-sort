@@ -233,7 +233,7 @@ test('test regex parser', (t) => {
     );
 
     t.deepEquals(
-        parseArgsIntoOptions(tokenizeArgString('--section-seperator /\\n/g')),
+        parseArgsIntoOptions(tokenizeArgString('--section-separator /\\n/g')),
         {
             errors: ['The g flag is not allowed here'],
             positionals: [],
@@ -864,8 +864,8 @@ test('string argument tokenizer', (t) => {
     );
 
     t.deepEquals(
-        tokenizeArgString('--section-seperator /\\w+/'),
-        ['--section-seperator', '/\\w+/'],
+        tokenizeArgString('--section-separator /\\w+/'),
+        ['--section-separator', '/\\w+/'],
         'backslash inside regex'
     );
 
@@ -1017,19 +1017,19 @@ test('arg array into options (single options)', (t) => {
         {
             errors: [],
             positionals: [],
-            options: { fieldSeperator: '/' },
+            options: { fieldSeparator: '/' },
         },
         '-F'
     );
 
     expectResult(
-        ['--field-seperator', '/'],
+        ['--field-separator', '/'],
         {
             errors: [],
             positionals: [],
-            options: { fieldSeperator: '/' },
+            options: { fieldSeparator: '/' },
         },
-        '--field-seperator'
+        '--field-separator'
     );
 
     expectResult(
@@ -1169,8 +1169,8 @@ test('arg array into options (combining options)', (t) => {
         sectionStarter: /^  <div/,
     });
 
-    expectOptions('--sectionSeperator "/Title: /"', {
-        sectionSeperator: /Title: /,
+    expectOptions('--sectionSeparator "/Title: /"', {
+        sectionSeparator: /Title: /,
     });
 
     expectOptions('--section-rejoiner "\\n\\n"', {

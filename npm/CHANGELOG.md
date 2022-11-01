@@ -1,8 +1,14 @@
+# Changelog
+
+## 2.3.0 (11/1/22)
+
+Some documentation changes & rename all typos of "seperate" to "separate".
+
 ## 2.2.0 (10/28/22)
 
 Change function parameters type and return type of `unknownArgCallback()`
-for `parseArgsIntoOptions`. Mainly for other providers like the cli and vscode
-package, most won't use.
+for `parseArgsIntoOptions`. Mainly for other providers like the CLI and vscode
+extension, most won't use.
 
 ## 2.1.0 (10/22/22)
 
@@ -16,7 +22,8 @@ if (!options.sorter) {
 }
 ```
 
-Forgot that regexs, sort-orders, sort-groups existed, and everything else existed. Also forgot to test.
+Forgot that regexs, sort-orders, sort-groups existed, and everything else
+existed. Also forgot to test.
 
 This also introduced me to another bug where because
 in `sort(content, options)`, options is mutated.
@@ -47,8 +54,8 @@ And some change in wording of descriptions in JSDOC.
 
 ### Sorter propety rename
 
-Instead of having `sortNaturally`, `sortNumerically`... as a boolean property on options,
-there is now just a "sorter" property on options.
+Instead of having `sortNaturally`, `sortNumerically`... as a boolean property on
+options, there is now just a "sorter" property on options.
 
 this makes it a lot easier:
 
@@ -62,23 +69,25 @@ case-insensitive could not be used with another sorter unless `unique` was speci
 practically being a sorter itself. Makes it less confusing and removes error
 check/documentation.
 
-The only loss is that before you could use a sorter, and have case-insensitive with `unique`.
-this would sort based on the sorter.
+The only loss is that before you could use a sorter, and have case-insensitive
+with `unique`.
 
 This was fixed by making unique a string value rather than a boolean. A value of
 `'exact'` will only remove exact duplicates, `'case-insensitive'` will remove
 case-insensitively.
 
-### Include sort-comments support:
+### Include sort-comments support
 
-Both the vscode extension and cli program used sort-comments, and the npm package should too.
-This also removes the repeated code.
+Both the vscode extension and cli program used sort-comments, and the npm
+package should too. This removes the repeated code.
 
 You can now use `sortComments()` to sort comments.
-It does not return just a string, but an object of errors, the comment sections, and the result
+It does not return just a string, but an object of errors, the comment sections,
+and the result
 
-This meant I had to make my own parser and string tokenizer (didn't want to include dependencies).
-Might have some bugs, but should work as long as you stick to a normal/reasonable user.
+This meant I had to make my own parser and string tokenizer (didn't want to
+include dependencies). Might have some bugs, but should work as long as you
+stick to a normal/reasonable user.
 
 ### Switch naming styling to x-sort rather than sort-by-x or sort-x
 
@@ -95,7 +104,8 @@ Mistakenly thought sorting naturally with regexs would not be useful.
 
 ### Allow i & g flag on regexs
 
-The i flag is now allowed on all regexs, the g flag is allowed on `.regexFilter` and `--regex`.
+The i flag is now allowed on all regexs, the g flag is allowed on `.regexFilter`
+and `--regex`.
 
 ### Add property & concept: sortGroups
 
@@ -117,7 +127,8 @@ of what gender should go before and after which
 
 ### Add property: fieldSeperator
 
-as mentioned in sortGroups, columns are determined by either a fieldSeperator or regex.
+as mentioned in sortGroups, columns are determined by either a fieldSeperator or
+regex.
 
 ### Add property: attachNonMatchingToBottom
 
@@ -128,8 +139,8 @@ to true, it will be at the bottom. Vise versa if
 
 ### Add sorters
 
--   none-sort: don't sort, might seem counterintuitive for a text sorter, but it's main
-    use case is with unique
+-   none-sort: don't sort, might seem counterintuitive for a text sorter, but
+    it's main use case is with unique
 -   month-sort: sort by month
 -   day-sort: sort by day
 
@@ -141,7 +152,7 @@ to help.
 
 section-seperator can be used to seperate sections with blank lines like so:
 
-```
+```text
 Website: Instagram
 Link: https://www.instagram.com
 Type: Social Media
@@ -167,7 +178,7 @@ sort(text, {
 
 which will result in the expected result of:
 
-```
+```text
 Website: Discord
 Link: https://discord.com
 Type: Social Media

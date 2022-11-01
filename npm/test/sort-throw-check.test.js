@@ -32,8 +32,8 @@ test('testing if throws', (t) => {
     );
 
     helper(
-        { regexFilter: /\d/, fieldSeperator: ' ' },
-        'throws on regex + field-seperator'
+        { regexFilter: /\d/, fieldSeparator: ' ' },
+        'throws on regex + field-separator'
     );
 
     helper(

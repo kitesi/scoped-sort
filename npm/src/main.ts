@@ -40,7 +40,7 @@ export interface SortOrder {
     /** An array of strings to determine what comes before and after. */
     values: string[];
     /**
-     * Compare the results case-insensitively. This does not modify `.values[]` in anyway.
+     * Compare the results case insensitively. This does not modify `.values[]` in anyway.
      * So if this is set to true, make sure all your elements in `.values[]` are all lowercase.
      */
     caseInsensitive?: boolean;
@@ -71,49 +71,62 @@ export interface Options {
      * Sets the sorter used. Some of these sorters have side-effects and sets values to other options.
      * If no sorter is specified, it will sort using the default `.sort()`.
      *
-     * case-insensitive: sorts case insensitively
+     * case-insensitive: sort case insensitively on the captured result.
      *
-     * natural: sorts based on the [natural sort](https://en.wikipedia.org/wiki/Natural_sort_order)
+     * natural: sort [naturally](https://en.wikipedia.org/wiki/Natural_sort_order) based on the captured result.
      *
-     * numerical: sorts based on the number of the captured result. if no regex is specified,
-     * it will sort by the first number in the line
+     * numerical: sort based on the number of the captured result. If no regex is
+     * specified, it will sort by the first number in the line.
      *
-     * float: sorts based on the float of the captured result. if no regex is specified
-     * it will sort by the first float in the line
+     * float: sort based on the float of the captured result. If no regex is
+     * specified, it will sort by the first float in the line.
      *
-     * length: sorts based on the length of the captured result, short to long
+     * length: sort based on the length of the captured result, short to long.
      *
-     * month: sorts by the month of the captured result (jan,feb,mar,..). if no regex or field-seperator
-     * is specified, it will sort by the first text that matches `/jan|feb|mar|../`
+     * month: sort by the month of the captured result (jan, feb, mar, ..). If
+     * no regex or field-separator is specified, it will sort by the first text
+     * that matches /jan|feb|mar|../.
      *
-     * day: sorts by the day of the captured result (mon,tue,wed,..). if no regex or field-seperator
-     * is specified, it will sort by the first text that matches `/mon|tue|wed|../`
+     * day: sort by the day of the captured result (mon, tue, wed,..). If no
+     * regex or field-separator is specified, it will sort by the first text
+     * that matches /mon|tue|wed|../.
      *
-     * none: don't sort, mainly used the unique option
+     * none: don't sort; mainly used the unique option
      *
-     * random: sorts randomly (psuedo)
+     * random: sort randomly (psuedo)
      */
     sorter?: Sorter;
     /**
-     * This project takes scope/indentation into account and does not just sort line by line.
+     * This project takes scope/indentation into consideration and does not just
+     * sort line by line.
      *
-     * By default nested content (indented) will be left in place and not sorted.
-     * By setting this option to true, it will sort all the inner items. By
-     * setting it to a number, it will sort all those items, up to that depth.
+     * By default, nested content (indented) will be left in place and not sorted.
+     * If set to true (no number argument), will sort inner sections recursively.
+     * Otherwise, will only sort sections up to the provided depth.
      */
     recursive?: boolean | number;
-    /** Reverses the sort comparasion. */
+    /** Reverse the sort comparasion. */
     reverse?: boolean;
-    /** Removes duplicate items. A value of 'exact' will only remove exact matches, 'case-insensitive' will remove without regard to casing. */
+    /**
+     * Remove duplicate lines. If “case-insensitive” is provided, duplicates
+     * will be removed without regard to casing.
+     */
     unique?: UniqueOptions;
-    /** Treats the text as a markdown list. You won’t need this option most of the time, but in certain instances you will. */
+    /** 
+     * Treat the text as a markdown list. You won’t need this option for most
+     * markdown lists but in certain instances you will.
+     
+     * Usually the program starts a new section if the indentation changes, but
+     * with this, it’ll wait for ”*”, ”-”, or ”+“.
+     */
     markdown?: boolean;
     /**
-     * A regex to match text in each item/line. By default the sorter will sort based on
-     * the text after the match. Text that do no match will be left in place,
-     * and will be at the top. The regex language is javascript.
-     *
-     * A global flag can be used, which will alter the way `.sortGroups` works.
+     * A regex to match text in each item. By default, the sorter will use the
+     * text after the match. Text that do no match will be left in place, and
+     * will be at the top. The regex language is JavaScript.
+     
+     * A global flag (g) can be used, which will alter the way #sort-groups
+     * works.  An “i” flag can also be used
      */
     regexFilter?: RegExp;
     /**
@@ -130,22 +143,31 @@ export interface Options {
      * ```
      */
     useMatchedRegex?: boolean;
-    /** This tells the program how to seperate sections as opposed to lines & identation. */
-    sectionSeperator?: RegExp;
-    /** This is a way to tell the program when to start a new section as opposed to just comparing indentations. */
+    /**
+     * Tell the program when to separate sections as opposed to lines &
+     * indentation. Lines are not read at all, and the text is split on every
+     * instance of the given value.
+     */
+    sectionSeparator?: RegExp;
+    /**
+     * Tell the program when to start a new section as opposed to lines &
+     * indentation. The difference it has with `.sectionSeparator` is that lines
+     * are still read through, and whenever a line tested against this regex
+     * passes, a new section is started.
+     */
     sectionStarter?: RegExp;
-    /** Tells the program how to rejoin sections, defaults to "\n". */
+    /** Tell the program how to rejoin sections, defaults to "\n". */
     sectionRejoiner?: string;
     /**
-     * The seperator used to determine columns, defaults to `/\s+/`.
-     * Used in combination with `.sortGroups`.
+     * The separator used to determine columns, defaults to /\s+/ if no regex is specified.
+     * Use in combination with `.sortGroups`
      */
-    fieldSeperator?: string | RegExp;
+    fieldSeparator?: string | RegExp;
     /**
-     * Determines what group to use when sorting.
-     * Used with `.regexFilter` or `.fieldSeperator`.
+     * Determines what group(s) to use when sorting.
+     * Used with `.regexFilter` or `.fieldseparator`.
      *
-     * If no regex or field-seperator is provided, field-seperator will default to `/\s+/`,
+     * If no regex or field-separator is provided, field-separator will default to `/\s+/`,
      * and groups will be split by whitespace.
      *
      * An input of the following:
@@ -160,18 +182,18 @@ export interface Options {
      * ```
      *
      * Would tell the program to sort lines by the second group's length.
-     * By default the first sort-group will inherit the uppermost option values
+     * The first sort-group will inherit the uppermost option values
      * (reverse, unique, sorter, attachNonMatchingToBottom, sortOrder).
      */
     sortGroups?: SortGroup[];
     /**
-     * By default items that do not match a sorter (numerical, float, ...), or
-     * don't match a regex will stay in place and be at the top. If this is set
-     * to true, it will be at the bottom. Vise versa if `reverse` is set to true.
+     * By default, items that do not match a sorter (numerical, float, …) or
+     * regex will stay in place and be set at the top. If this is set to true,
+     * it will be at the bottom. Vise versa if `.reverse` is set to true.
      */
     attachNonMatchingToBottom?: boolean;
     /**
-     * This is a property to help determine custom sorts. You
+     * Determine the sort order of the captured results. You
      * list the values you want to validate in the `.values[]` property,
      * and the program sorts based on the position of the captured result
      * in that list.
@@ -232,8 +254,8 @@ function validateOptions(options: Options) {
         errors.push("Can't use use-matched-regex and random-sort");
     }
 
-    if (options.regexFilter && options.fieldSeperator) {
-        errors.push("Can't use regex and field-seperator");
+    if (options.regexFilter && options.fieldSeparator) {
+        errors.push("Can't use regex and field-separator");
     }
 
     if (options.useMatchedRegex && options.sortGroups) {
@@ -404,7 +426,7 @@ function getModifiedSections(sections: string[], options: Options) {
                 section,
                 options.regexFilter
                     ? section.match(options.regexFilter) || []
-                    : section.split(options.fieldSeperator!)
+                    : section.split(options.fieldSeparator!)
             );
         }
 
@@ -626,7 +648,7 @@ export function sort(text: string, options: Options = {}) {
             looseness: 3,
         };
 
-        if (!options.regexFilter && !options.fieldSeperator) {
+        if (!options.regexFilter && !options.fieldSeparator) {
             options.regexFilter =
                 /jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i;
         }
@@ -645,7 +667,7 @@ export function sort(text: string, options: Options = {}) {
             looseness: 3,
         };
 
-        if (!options.regexFilter && !options.fieldSeperator) {
+        if (!options.regexFilter && !options.fieldSeparator) {
             options.regexFilter = /mon|tue|wed|thu|fri|sat|sun/i;
         }
 
@@ -666,8 +688,8 @@ export function sort(text: string, options: Options = {}) {
         options.useMatchedRegex = false;
     }
 
-    if (options.sortGroups && !options.fieldSeperator && !options.regexFilter) {
-        options.fieldSeperator = /\s+/;
+    if (options.sortGroups && !options.fieldSeparator && !options.regexFilter) {
+        options.fieldSeparator = /\s+/;
     }
 
     if (!options.sectionRejoiner) {
@@ -707,9 +729,9 @@ export function sort(text: string, options: Options = {}) {
 
     validateOptions(options);
 
-    if (options.sectionSeperator) {
+    if (options.sectionSeparator) {
         return getModifiedSections(
-            text.split(options.sectionSeperator),
+            text.split(options.sectionSeparator),
             options
         ).join(options.sectionRejoiner);
     }

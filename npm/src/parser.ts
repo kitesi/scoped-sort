@@ -536,13 +536,13 @@ export function parseArgsIntoOptions(
                 options.useMatchedRegex = assumedBoolValue;
                 consumedBool = true;
                 break;
-            case '--section-seperator':
+            case '--section-separator':
                 if (!requireNextArg(i)) {
                     continue;
                 }
 
                 try {
-                    options.sectionSeperator = parseStringAsRegex(
+                    options.sectionSeparator = parseStringAsRegex(
                         nextArg,
                         false
                     );
@@ -630,14 +630,14 @@ export function parseArgsIntoOptions(
 
                 break;
             }
-            case '--field-seperator':
+            case '--field-separator':
             case '-F':
                 if (!requireNextArg(i)) {
                     continue;
                 }
 
                 try {
-                    options.fieldSeperator = isRegexTest.test(nextArg)
+                    options.fieldSeparator = isRegexTest.test(nextArg)
                         ? parseStringAsRegex(nextArg, false)
                         : nextArg;
                 } catch (err: any) {

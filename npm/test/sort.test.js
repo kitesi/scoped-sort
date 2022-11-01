@@ -957,7 +957,7 @@ but there lies 1 only tales of it 27`,
     t.end();
 });
 
-test('field seperator', (t) => {
+test('field separator', (t) => {
     const csvTable = `Jake,Lil Peep,30
 Niel,The Neighbourhood,12
 Max,Arctic Monkeys,72
@@ -966,7 +966,7 @@ Jo,AJR,65`;
     testString(
         t,
         sort(csvTable, {
-            fieldSeperator: /,/,
+            fieldSeparator: /,/,
             sortGroups: [
                 {
                     group: 2,
@@ -984,7 +984,7 @@ Niel,The Neighbourhood,12`,
     testString(
         t,
         sort(csvTable, {
-            fieldSeperator: /,/,
+            fieldSeparator: /,/,
             sortGroups: [
                 {
                     group: 3,
@@ -1502,7 +1502,7 @@ Lydia  N/A N/A        120`,
     t.end();
 });
 
-test('seperator', (t) => {
+test('separator', (t) => {
     const sectionStarter = /^    <div/;
 
     testString(
@@ -1581,7 +1581,7 @@ test('seperator', (t) => {
     t.end();
 });
 
-test('seperation with blank lines', (t) => {
+test('separation with blank lines', (t) => {
     const text = `Website: Youtube
 Link: https://www.youtube.com
 Type: Social Media
@@ -1613,7 +1613,7 @@ Type: invalid
 Age: -23`;
 
     const options = {
-        sectionSeperator: /\n\n/,
+        sectionSeparator: /\n\n/,
         sectionRejoiner: '\n\n',
     };
 
@@ -1649,7 +1649,7 @@ Website: Youtube
 Link: https://www.youtube.com
 Type: Social Media
 Age: 12`,
-        'seperation by blank lines'
+        'separation by blank lines'
     );
 
     testString(
@@ -1772,7 +1772,7 @@ Kasey,05-Dec-2021`,
         t,
         sort(csvTableOfData, {
             sorter: 'month',
-            fieldSeperator: '-',
+            fieldSeparator: '-',
             sortGroups: [
                 {
                     group: 2,
@@ -1794,7 +1794,7 @@ Sabine,26-Oct-2021
 Kali,10-Nov-2021
 Westbrooke,30-Dec-2021
 Kasey,05-Dec-2021`,
-        'month sort with field seperator & sort group'
+        'month sort with field separator & sort group'
     );
 
     t.end();
