@@ -1,34 +1,31 @@
-# 2.0.1 (10/28/22)
+# Changelog
 
-<!-- prettier-ignore -->
-- remove accidental console.log 
-- use new `string-content-sort`'s callback for unknown arg
+## 2.0.1 (10/28/22)
 
-# 2.0.0 (10/23/22)
+-   remove accidental console.log
+-   use new `string-content-sort`'s callback for unknown argument
 
-<!-- prettier-ignore -->
-- update to `string-content-sort@2.1.0`, which added a
-lot of stuff. too much stuff to list out here, just read the new `--help | -H | -h`
-- help text is a lot better now, doesn't force you to
-read website documentation
+## 2.0.0 (10/23/22)
 
-# 1.2.1 (8/13/22)
+-   update to `string-content-sort@2.1.0`, which added a
+    lot of stuff. too much stuff to list out here, just read the new
+    `--help | -H | -h`
+-   help text is a lot better now, doesn't force you to
+    read website documentation
 
-<!-- prettier-ignore -->
-- add completions
+## 1.2.1 (8/13/22)
 
-# 1.2.0 (8/10/22)
+-   add completions
 
-<!-- prettier-ignore -->
-- move both commands into one command
-- default command + `--modify` + `--use-sort-comments | -c`
+## 1.2.0 (8/10/22)
 
-# 1.1.0 (2/6/22) (not published?)
+-   move both commands into one command
+-   default command + `--modify` + `--use-sort-comments | -c`
 
-<!-- prettier-ignore -->
-- fix issue with modifying files that have more than one sort-start and sort-end
+## 1.1.0 (2/6/22) (not published?)
 
-# 1.0.1 (2/6/22)
+-   fix issue with modifying files that have more than one sort-start and sort-end
 
-<!-- prettier-ignore -->
-- change repo to point to right username
+## 1.0.1 (2/6/22)
+
+-   change repo to point to right username
