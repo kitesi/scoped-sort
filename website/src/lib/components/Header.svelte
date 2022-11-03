@@ -113,6 +113,7 @@ back to /, :global() and :root styles from /docs or /examples remain
 	header > nav.show {
 		transform: translateX(0);
 		visibility: visible;
+		overflow: auto;
 	}
 
 	header > nav ul {
