@@ -1,27 +1,28 @@
-# Scoped Sort
+# scopedsort
 
 <p align="center">
     <img src="assets/banner.png" alt="banner: scoped sort" />
 </p>
 
-<p align="center"><b>A fetaure rich text sorter based on the unix sort. Avaliable on vscode, npm, cli and a website.</b></p>
+<p align="center">
 
-Scoped Sort is a project to help sort text. It differs from tools like the standard unix tool sort, by having a scoped and recursive sort.
+<b>A feature rich text sorter that takes indentation into
+account.</b>
 
-Here's what I mean:
+</p>
 
-![the problem with most sort implementation](assets/non-scope-problem.png)
+scopedsort is a feature rich text sorter that takes indentation into account. It
+contains an extensive amount of options and features.
 
-In that image you can also see how the items underneath editors and languages are also sorted in the expected part.
+I recommend reading the website's [introduction](https://scopedsort.netlify.app/docs#introduction).
 
-This repo contains all it's mediums, [the npm package](/npm), [the vscode package](/vscode), [the website](https://scopedsort.netlify.app/) and [the cli](/cli).
+This repo contains all its mediums:
+[the npm package](/npm), [the vscode extension](/vscode),
+[the website](https://scopedsort.netlify.app/) and
+[the cli tool](/cli).
 
-## Contributing / Help
+## Questions & Contribution
 
-Contributions are very welcome and appreciated.
-
-If you need help with something, found a bug, or want to request a feature,
-feel free to make an issue.
-
-If you want to fix a bug or contribute a feature, first create an issue, and
-then you can work on a pull request.
+This program might have some learning curve, so if you need any help, submit a
+GitHub issue, and I'll be glad to help. If you find any bugs or want to
+contribute you should also create a GitHub issue.
