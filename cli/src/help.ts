@@ -18,7 +18,7 @@ A feature rich text sorter that takes indentation into account.
 Need help or want to contribute?:
 Visit https://github.com/sixskys/scoped-sort`;
 
-export const longHelpText = `${boilerplateUsage}
+export const longHelpText = stripIfNeeded(`${boilerplateUsage}
 
 ${bold('OPTIONS: SORTERS')}
     You can only have one sorter at a time.
@@ -31,11 +31,11 @@ ${bold('OPTIONS: SORTERS')}
     
     ${bold('-n, --numerical-sort')}
         sort based on the number of the captured result. if no regex is
-        specified, it will sort by the first number in the line
+        specified, it will sort by the first number in the line.
     
     ${bold('-f, --float-sort')}
         sort based on the float of the captured result. if no regex is
-        specified, it will sort by the first float in the line
+        specified, it will sort by the first float in the line.
 
     ${bold('-l, --length-sort')}
         sort based on the length of the captured result, short to long.
@@ -64,7 +64,7 @@ ${bold('OPTIONS: UNIVERSAL MODIFIERS')}
         line by line.
         
         By default, nested content (indented) will be left in place and not
-        sorted. If s t to true (no number argument), will sort inner sections
+        sorted. If set to true (no number argument), will sort inner sections
         recursively. Otherwise, will only sort sections up to the provided depth.
 
     ${bold('-s, --reverse')}
@@ -116,7 +116,7 @@ ${bold('OPTIONS: ITEM SEARCH')}
             - o for --sort-order 
 
         If an option has an argument like 'u' (unique) you will need to separate
-        the name and argument with _: {2}sx_u=i, {2}u=i_x or {2}u=i
+        the name and argument with an underscore: {2}sx_u=i, {2}u=i_x or {2}u=i
 
         The only other option that takes an argument is 'o'. For example usage,
         look at --sort-order.
@@ -218,9 +218,9 @@ ${bold('OPTIONS: OTHER')}
         confirmation if not using --use-sort-comments or -y.
 
     ${bold('-y, --yes')}
-        Skip confirmation prompts.`;
+        Skip confirmation prompts.`);
 
-export const shortHelpText = `${boilerplateUsage}
+export const shortHelpText = stripIfNeeded(`${boilerplateUsage}
 
 ${bold('OPTIONS: SORTERS')}
     You can only have one sorter at a time.
@@ -265,4 +265,12 @@ ${bold('OPTIONS: OTHER')}
     ${spaceIfNoAlias}${bold('--modify')}
     ${bold('-y, --yes')}
 
-Use ${bold('--help')} or ${bold('-H')} for help with descriptions`;
+Use ${bold('--help')} or ${bold('-H')} for help with descriptions`);
+
+function stripIfNeeded(text: string) {
+    if (process.stdout.isTTY && !process.env.NO_COLOR) {
+        return text;
+    }
+
+    return ansiColors.unstyle(text);
+}

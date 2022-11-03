@@ -1,6 +1,6 @@
 {
     "name": "string-content-sort-cli",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "a cli for the npm package: string-content-sort",
     "homepage": "https://scopedsort.netlify.app",
     "repository": {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.2 (11/02/22)
+
+-   documentation updates
+-   respect `NO_COLOR` env & check if being piped
+
 ## 2.0.1 (10/28/22)
 
 -   remove accidental console.log
