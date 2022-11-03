@@ -145,12 +145,12 @@ suite('Extension suite Suite', function () {
             // on the command, but it doesn't work for some reason
             await new Promise((res) => setTimeout(res, 200));
 
-            test(message, function () {
-                assert.strictEqual(
-                    getAllText(editor.document),
-                    sort(input, options)
-                );
-            });
+            // test(message, function () {
+            assert.strictEqual(
+                getAllText(editor.document),
+                sort(input, options)
+            );
+            // });
 
             testIndex++;
         }
@@ -194,17 +194,17 @@ suite('Extension suite Suite', function () {
 
             await executeCommand('workbench.action.files.save');
 
-            test('works on save', function () {
-                assert.strictEqual(
-                    getAllText(editor.document),
-                    sortStartLine +
-                        sort(
-                            inputs.multiNestedList,
-                            parseStringArguments(stringArguments).options
-                        ) +
-                        sortEndLine
-                );
-            });
+            // test('works on save', function () {
+            assert.strictEqual(
+                getAllText(editor.document),
+                sortStartLine +
+                    sort(
+                        inputs.multiNestedList,
+                        parseStringArguments(stringArguments).options
+                    ) +
+                    sortEndLine
+            );
+            // });
 
             await changeAllText(
                 editor,
@@ -216,33 +216,33 @@ suite('Extension suite Suite', function () {
 
             await executeCommand('workbench.action.files.save');
 
-            test('should work with sort-file-ignore', function () {
-                assert.strictEqual(
-                    getAllText(editor.document),
-                    sortIgnoreFileLine +
-                        sortStartLine +
-                        inputs.multiNestedList +
-                        sortEndLine
-                );
-            });
+            // test('should work with sort-file-ignore', function () {
+            assert.strictEqual(
+                getAllText(editor.document),
+                sortIgnoreFileLine +
+                    sortStartLine +
+                    inputs.multiNestedList +
+                    sortEndLine
+            );
+            // });
         }
 
-        // test --section-seperator
+        // test --section-separator
         await changeAllText(editor, inputs.sectionStarter.divChildren);
         await executeCommand(
             'scoped-sort.sort',
-            '--section-seperator "/^    <div/"'
+            '--section-start "/^ {4}<div/"'
         );
         await new Promise((res) => setTimeout(res, 200));
 
-        test('should work with section seperator /^    <div/', function () {
-            assert.strictEqual(
-                getAllText(editor.document),
-                sort(inputs.sectionStarter.divChildren, {
-                    sectionStarter: /^    <div/,
-                })
-            );
-        });
+        // test('should work with section starter /^    <div/', function () {
+        assert.strictEqual(
+            getAllText(editor.document),
+            sort(inputs.sectionStarter.divChildren, {
+                sectionStarter: /^    <div/,
+            })
+        );
+        // });
 
         // test command: addSurroundingSortComments
         await changeAllText(editor, 'one\ntwo\nthree');
@@ -250,12 +250,12 @@ suite('Extension suite Suite', function () {
         await executeCommand('scoped-sort.addSurroundingSortComments');
         await new Promise((res) => setTimeout(res, 800));
 
-        test('addSurroundSortComments works on regular documents', function () {
-            assert.strictEqual(
-                getAllText(editor.document),
-                `// { sort-start ${addSurroundingSortCommentsDefaultArgs}}\none\ntwo\nthree\n// { sort-end }`
-            );
-        });
+        // test('addSurroundSortComments works on regular documents', function () {
+        assert.strictEqual(
+            getAllText(editor.document),
+            `// { sort-start ${addSurroundingSortCommentsDefaultArgs}}\none\ntwo\nthree\n// { sort-end }`
+        );
+        // });
 
         const tmpMarkdownDocument = await vscode.workspace.openTextDocument(
             tmpMarkdownDocumentPath
@@ -274,12 +274,12 @@ suite('Extension suite Suite', function () {
         await executeCommand('scoped-sort.addSurroundingSortComments');
         await new Promise((res) => setTimeout(res, 200));
 
-        test('addSurroundSortComments works on markdown documents', function () {
-            assert.strictEqual(
-                getAllText(editor.document),
-                `<!-- { sort-start ${addSurroundingSortCommentsDefaultArgs}} -->\none\ntwo\nthree\n<!-- { sort-end } -->`
-            );
-        });
+        // test('addSurroundSortComments works on markdown documents', function () {
+        assert.strictEqual(
+            getAllText(editor.document),
+            `<!-- { sort-start ${addSurroundingSortCommentsDefaultArgs}} -->\none\ntwo\nthree\n<!-- { sort-end } -->`
+        );
+        // });
 
         return;
     });

@@ -2,7 +2,7 @@
     "name": "scoped-sort",
     "displayName": "Scoped Sort",
     "description": "A feature rich sorter for vscode.",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
     "main": "./dist/extension.js",
@@ -93,6 +93,7 @@
         "lint": "eslint test/* src/*"
     },
     "devDependencies": {
+        "@types/mocha": "^10.0.0",
         "@types/node": "14.x",
         "@types/vscode": "^1.57.0",
         "@typescript-eslint/eslint-plugin": "^5.41.0",
@@ -105,6 +106,6 @@
         "tape": "^5.2.2"
     },
     "dependencies": {
-        "string-content-sort": "^2.2.0"
+        "string-content-sort": "^2.3.0"
     }
 }
