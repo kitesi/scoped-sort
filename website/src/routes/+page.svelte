@@ -1,6 +1,12 @@
 <script lang="ts">
 	import Header from '$lib/components/Header.svelte';
-	import { type Options, sort, parseArgsIntoOptions, tokenizeArgString } from 'string-content-sort';
+	import {
+		type Options,
+		sort,
+		parseArgsIntoOptions,
+		tokenizeArgString,
+		sortComments
+	} from 'string-content-sort';
 	import type { InputGroup } from './inputs.js';
 
 	import { isSidebarOpen } from '$lib/js/stores';
@@ -22,8 +28,10 @@
 		const recursive = formData.get('recursive');
 		const regex = formData.get('regex');
 		const sectionStarter = formData.get('section-starter');
-		const sectionSeperator = formData.get('section-seperator');
+		const sectionSeparator = formData.get('section-separator');
 		let sectionRejoiner = formData.get('section-rejoiner');
+
+		let useSortComments = false;
 
 		const args: string[] = [];
 		const argString = formData.get('other-args');
@@ -37,8 +45,8 @@
 			args.push('--regex', regex);
 		}
 
-		if (typeof sectionSeperator === 'string' && sectionSeperator) {
-			args.push('--section-seperator', sectionSeperator);
+		if (typeof sectionSeparator === 'string' && sectionSeparator) {
+			args.push('--section-separator', sectionSeparator);
 		}
 
 		if (typeof sectionStarter === 'string' && sectionStarter) {
@@ -57,7 +65,14 @@
 			errors: parsingErrors,
 			positionals,
 			options: additionalOptions
-		} = parseArgsIntoOptions(args);
+		} = parseArgsIntoOptions(args, (arg) => {
+			if (arg === '--use-sort-comments' || arg === '-c') {
+				useSortComments = true;
+				return 0;
+			}
+
+			return 1;
+		});
 
 		if (parsingErrors.length > 0) {
 			console.error('Recieved error(s): \n' + parsingErrors.join('\n'));
@@ -82,7 +97,18 @@
 		};
 
 		try {
-			content = sort(content, options);
+			if (useSortComments) {
+				const attemptAtSortComments = sortComments(content);
+
+				if (attemptAtSortComments.errors.length > 0) {
+					console.error('Recieved error(s): \n' + attemptAtSortComments.errors.join('\n'));
+					return;
+				}
+
+				content = attemptAtSortComments.result;
+			} else {
+				content = sort(content, options);
+			}
 		} catch (sortErrors: any) {
 			console.error('Recieved error(s): \n' + sortErrors.message);
 		}
@@ -234,11 +260,11 @@
 							/>
 						</div>
 						<div>
-							<label for="section-seperator">Section Seperator: </label>
+							<label for="section-separator">Section Separator: </label>
 							<input
 								type="text"
-								name="section-seperator"
-								id="section-seperator"
+								name="section-separator"
+								id="section-separator"
 								placeholder="/\n\n/"
 							/>
 						</div>
@@ -284,11 +310,6 @@
 		flex-direction: column;
 	}
 
-	h2 {
-		font-weight: 800;
-		font-size: 1.7rem;
-	}
-
 	h3,
 	textarea,
 	.text-inputs > div {
@@ -297,10 +318,6 @@
 
 	form {
 		padding: 18px;
-	}
-
-	form > div > p {
-		max-width: 60ch;
 	}
 
 	form > div > div {
@@ -393,8 +410,7 @@
 		}
 	}
 
-	input[type='text'],
-	input[type='number'] {
+	input[type='text'] {
 		background-color: var(--clr-bg-tertiary);
 		color: var(--clr-bg-tertiary-content);
 		border: 2px solid var(--clr-bg-secondary);

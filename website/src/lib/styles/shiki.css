@@ -42,8 +42,8 @@ pre.shiki div.highlight {
 pre.shiki div.highlight {
 	opacity: 1;
 	position: relative;
-	background-color: rgba(135, 203, 230, 0.09);
-	box-shadow: inset 0.12em 0 0 skyblue;
+	background-color: rgba(0, 81, 206, 0.09);
+	box-shadow: inset 0.16em 0 0 #0095e6;
 	width: 100%;
 }
 

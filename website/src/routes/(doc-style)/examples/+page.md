@@ -61,7 +61,7 @@ A general day-to-day nested markdown list.
 
 ## Removing Duplicates + Reverse
 
-- `unique` = `"exact`
+- `unique` = `"exact"`
 - `reverse` = `true`
 
 <div class="pre-container">
@@ -280,7 +280,7 @@ Mike   N/A male       N/A
 
 ## Sort By 2nd Column (CSV)
 
-- `field-seperator` = `","`
+- `field-separator` = `","`
 - `sort-group` = `"{2}"`
 
 <div class="pre-container">
@@ -358,7 +358,7 @@ Max,Arctic Monkeys,72
 
 ## Blank Line Separation
 
-- `section-seperator` = `/\n\n/`
+- `section-seaerator` = `/\n\n/`
 - `section-rejoiner` = `"\n\n"`
 
 <div class="pre-container">
@@ -404,7 +404,7 @@ Age: 12
 Sorts by the number in each section separated by
 a blank line.
 
-- `section-seperator` = `/\n\n/`
+- `section-separator` = `/\n\n/`
 - `section-rejoiner` = `"\n\n"`
 - `sorter` = `"numerical"`
 

@@ -5,7 +5,7 @@ It contains an extensive amount of options and features.
 
 ### Why
 
-#### Indentation awareness
+#### Indentation Awareness
 
 Most sorters do not keep track of indentation and simply sort line by line.
 
@@ -54,11 +54,17 @@ This project has a lot of options; all of which can be used together (provided
 they don't conflict logically). Other tools have a reasonable amount of options,
 but usually they don't provide a nice way to combine them.
 
-Some of the more extensive options this program implements are
+Some of the more extensive options this program implements include:
 custom-sort-orders, sort-by-column, sort-by-regex, etc...
 
-This is one of the less valid points though, since you won't often need these
-advanced options.
+This is one of the less valid points though, since you won't need these
+advanced options often.
+
+#### What This Project Is Not
+
+This extension is not meant for sorting words inside a line, nor is it trying
+to sort language specific things like imports or properties of an object
+(although it can sort them if they have a simple structure).
 
 #### Alternatives
 
@@ -279,7 +285,7 @@ Sort randomly (psuedo).
 ### Regex
 
 A regex to match text in each item. By default, the sorter will use
-the text after the match. Text that do no match will be left in
+the text after the match. Text that does not match will be left in
 place, and will be at the top. The regex language is JavaScript.
 
 A global flag (g) can be used, which will alter the way
@@ -376,15 +382,15 @@ rather than the text after. Shorthand for `--use-sort-group "{1}"`.
 
 Determine the sort order of the captured results. For example, let's
 say you have an CSV table of people and their info, and the third column
-contained their gender. If you wanted to sort by their gender, you could
-do:
+contained their gender. If you wanted to define a custom sort by gender,
+you could do:
 
 ```shell
 -o "male;female;non-binary;n/a" -F "," -k "{3}"
 ```
 
 NOTE: You would first have to capture the 3rd group, which is done
-with `-k {3}` or `-F ","`. Won't be included for the rest of the
+with `-k {3}` and `-F ","`. Won't be included for the rest of the
 examples.
 
 It's also possible the gender values are capitalized. You can set
@@ -406,7 +412,7 @@ be transformed at all, so make sure you have them correct if you are
 using case-insensitive or looseness.
 
 To summarize: you have a list of values separated by ';', and you can
-prefix that list with arguments followed by a colon. Those arguments
+prefix that list with arguments followed by a colon. The arguments
 can be either a number or 'i'.
 
 - type: `object` (npm), `string` (everything else)
@@ -484,7 +490,7 @@ of the cli program. Just make sure you have a space after the arguments (before
 the `{`).
 
 ```text {0,4}
-/* { sort-start --reverse --numeric-sort } */
+/* { sort-start --reverse --numerical-sort } */
 There are 220 guards.
 And only 50 of us.
 What is a man do, but to call his 7yo daughter.
