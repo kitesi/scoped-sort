@@ -256,7 +256,13 @@
 					<div class="text-inputs">
 						<div>
 							<label for="regex">Regex Filter:</label>
-							<input type="text" name="regex" id="regex" placeholder="/\d+ /i" />
+							<input
+								type="text"
+								name="regex"
+								id="regex"
+								placeholder="/\d+ /i"
+								pattern="^\/.+\/\w*$"
+							/>
 						</div>
 						<div>
 							<label for="section-starter">Section Starter: </label>
@@ -264,6 +270,7 @@
 								type="text"
 								name="section-starter"
 								id="section-starter"
+								pattern="^\/.+\/\w*$"
 								placeholder="/<div /"
 							/>
 						</div>
@@ -273,7 +280,7 @@
 								type="text"
 								name="section-separator"
 								id="section-separator"
-								placeholder="/\n\n/"
+								placeholder="\n\n"
 							/>
 						</div>
 						<div>
@@ -344,10 +351,16 @@
 		margin-bottom: 0.5em;
 	}
 
+	input[type='text']:invalid {
+		outline: 0.2em solid var(--clr-bg-error);
+		outline-offset: -0.2em;
+	}
+
 	.options-group input:focus-visible + label,
 	input[type='text']:focus-visible,
 	textarea:focus-visible {
 		outline: 0.2em solid var(--clr-accent-content);
+		outline-offset: -0.2em;
 	}
 
 	input[type='checkbox']:focus,

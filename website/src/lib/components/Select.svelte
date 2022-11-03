@@ -24,7 +24,7 @@
 		padding-left: 1rem;
 		padding-right: 2.5rem;
 		font-size: 0.875rem;
-		border: 0.2em solid var(--clr-bg-secondary);
+		border: 0.15em solid var(--clr-bg-secondary);
 		background-color: transparent;
 		font-weight: 600;
 		border-radius: 0.2rem;
@@ -40,6 +40,7 @@
 
 	select:focus-visible {
 		outline: 0.2em solid var(--clr-accent-content);
+		outline-offset: -0.2em;
 	}
 	option {
 		background-color: var(--clr-bg-secondary);
