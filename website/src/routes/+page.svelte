@@ -7,10 +7,13 @@
 		tokenizeArgString,
 		sortComments
 	} from 'string-content-sort';
-	import type { InputGroup } from './inputs.js';
 
-	import { isSidebarOpen } from '$lib/js/stores';
+	import { isSidebarOpen, errors as errorsStore } from '$lib/js/stores';
+
 	import Select from '$lib/components/Select.svelte';
+	import ErrrorPallete from '$lib/components/ErrrorPallete.svelte';
+
+	import type { InputGroup } from './inputs.js';
 
 	let form: HTMLFormElement;
 	let content = '';
@@ -76,10 +79,14 @@
 
 		if (parsingErrors.length > 0) {
 			console.error('Recieved error(s): \n' + parsingErrors.join('\n'));
+			errorsStore.set(parsingErrors);
+			return;
 		}
 
 		if (positionals.length > 0) {
 			console.error('Recieved positional(s): ' + positionals.join(', '));
+			errorsStore.set(['Recieved positional(s): ' + positionals.map((p) => `"${p}"`).join(', ')]);
+			return;
 		}
 
 		const options: Options = {
@@ -102,6 +109,7 @@
 
 				if (attemptAtSortComments.errors.length > 0) {
 					console.error('Recieved error(s): \n' + attemptAtSortComments.errors.join('\n'));
+					errorsStore.set(attemptAtSortComments.errors);
 					return;
 				}
 
@@ -111,6 +119,7 @@
 			}
 		} catch (sortErrors: any) {
 			console.error('Recieved error(s): \n' + sortErrors.message);
+			errorsStore.set([sortErrors.message]);
 		}
 	}
 
@@ -133,7 +142,7 @@
 		},
 		{
 			name: 'case-insensitive',
-			label: 'Case Ins'
+			label: 'Case Insensitive'
 		},
 		{
 			name: 'natural',
@@ -291,6 +300,8 @@
 		</form>
 	</main>
 </div>
+
+<ErrrorPallete />
 
 <style lang="scss">
 	@use '../lib/styles/sizes.scss' as *;
@@ -450,7 +461,6 @@
 		font-size: 1rem;
 		border-radius: 3px;
 		text-transform: uppercase;
-		cursor: pointer;
 		// credit to daisyui for animation
 		transition: 200ms transform cubic-bezier(0.4, 0, 0.2, 1);
 		animation: button-pop var(--animation-btn, 0.25s) ease-out;

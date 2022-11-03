@@ -125,8 +125,8 @@
 	nav.show {
 		transform: translateX(0);
 		box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
-		-webkit-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
-		-moz-box-shadow: 27px 0px 43px -3px 100vmax rgba(0, 0, 0, 0.77);
+		-webkit-box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
+		-moz-box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
 	}
 
 	hr {

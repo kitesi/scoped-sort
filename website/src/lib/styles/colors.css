@@ -8,7 +8,7 @@
 	--clr-bg-tertiary: #f0f0f0;
 	--clr-bg-tertiary-content: black;
 
-	--clr-bg-error: #9e1b32;
+	--clr-bg-error: #f42929;
 	--clr-bg-error-content: white;
 
 	--clr-accent-content: #35a5ff;
@@ -41,5 +41,6 @@
 		--clr-bg-inline-code-block-content: #eda1a1;
 
 		--clr-link: #74c3ff;
+		--clr-bg-error: #ff5455;
 	}
 }

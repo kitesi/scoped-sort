@@ -14,7 +14,7 @@
 
 <style>
 	select {
-		color: white;
+		color: var(--clr-bg-primary-content);
 		cursor: pointer;
 		-webkit-user-select: none;
 		user-select: none;
@@ -34,7 +34,7 @@
 		background-size: 4px 4px, 4px 4px;
 		background-repeat: no-repeat;
 		width: 100%;
-		max-width: 20rem;
+		max-width: 12rem;
 		margin-bottom: 1rem;
 	}
 
