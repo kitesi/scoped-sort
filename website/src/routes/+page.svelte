@@ -188,8 +188,7 @@
 
 <div class="main-container">
 	<Header />
-	<!-- temporary solution for disabling tabing on form elements since modal covers everything -->
-	<main style="display: {$isSidebarOpen ? 'none' : 'grid'};">
+	<main class:has-nav-shown={$isSidebarOpen}>
 		<form bind:this={form} on:submit|preventDefault={handleSubmit}>
 			<div>
 				<h3>Universal Modifiers</h3>
@@ -308,6 +307,11 @@
 	.main-container {
 		display: flex;
 		flex-direction: column;
+	}
+
+	.has-nav-shown {
+		overflow-y: hidden;
+		display: none;
 	}
 
 	h3,
@@ -469,7 +473,8 @@
 	}
 
 	@media screen and (min-width: $medium-screen) {
-		main {
+		main,
+		.has-nav-shown {
 			display: grid;
 			align-items: center;
 		}

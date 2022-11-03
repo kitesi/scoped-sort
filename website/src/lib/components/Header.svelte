@@ -100,13 +100,14 @@ back to /, :global() and :root styles from /docs or /examples remain
 	header > nav {
 		display: flex;
 		background-color: black;
-		position: absolute;
+		position: fixed;
 		inset: 0;
 		align-content: center;
 		justify-content: center;
 		transform: translateX(-100%);
 		transition: transform 100ms ease-in;
 		visibility: hidden;
+		z-index: 2;
 	}
 
 	header > nav.show {
