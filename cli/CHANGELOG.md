@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.3 (11/12/22)
+
+-   update to npm version 2.3.2 which patches issue #10 where starting blank
+    lines were not properly being handled
+
 ## 2.0.2 (11/02/22)
 
 -   documentation updates

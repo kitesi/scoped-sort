@@ -2,7 +2,7 @@
     "name": "scoped-sort",
     "displayName": "Scoped Sort",
     "description": "A feature rich sorter for vscode.",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
     "main": "./dist/extension.js",
@@ -106,6 +106,6 @@
         "tape": "^5.2.2"
     },
     "dependencies": {
-        "string-content-sort": "^2.3.0"
+        "string-content-sort": "^2.3.1"
     }
 }

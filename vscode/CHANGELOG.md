@@ -2,6 +2,11 @@
 
 # Changelog
 
+## 3.1.1 (11/12/22)
+
+-   update to npm version 2.3.2 which patches issue #10 where starting blank
+    lines were not properly being handled
+
 ## 3.1.0 (11/2/22)
 
 -   implement [string-content-sort@2.3.0](https://www.npmjs.com/package/string-content-sort),
