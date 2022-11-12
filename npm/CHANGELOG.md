@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.3.1 (11/12/22)
+
+Make parser recognize starting blank lines better.
+For example if you had the following text (notice the space at the start):
+
+<!-- prettier-ignore -->
+```text
+ 
+- some
+  - text
+```
+
+If you used `recursive`, the output would be:
+
+```text
+
+  - text
+- some
+```
+
 ## 2.3.0 (11/1/22)
 
 Some documentation changes & rename all typos of "seperate" to "separate".

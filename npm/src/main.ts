@@ -748,16 +748,22 @@ export function sort(text: string, options: Options = {}) {
         const indentation = match?.groups?.indentation || '';
         const listChar = match?.groups?.char;
 
+        const isBlankLine = isBlankLineRegexTest.test(line);
+
         if (typeof currentIndentation === 'undefined') {
-            currentIndentation = indentation;
+            if (isBlankLine) {
+                currentSection.push(line);
+                continue;
+            } else {
+                currentIndentation = indentation;
+            }
         }
 
         if (currentSection.length && (!options.markdown || listChar)) {
             if (
                 options.sectionStarter
                     ? options.sectionStarter.test(line)
-                    : !isBlankLineRegexTest.test(line) &&
-                      indentation === currentIndentation
+                    : !isBlankLine && indentation === currentIndentation
             ) {
                 sections.push(currentSection.join('\n'));
                 currentSection = [line];
