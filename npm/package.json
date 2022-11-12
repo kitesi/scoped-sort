@@ -1,6 +1,6 @@
 {
     "name": "string-content-sort",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "description": "sort the content inside of a string",
     "main": "dist/main.js",
     "homepage": "https://scopedsort.netlify.app",
@@ -27,6 +27,7 @@
     "author": "karizma",
     "license": "MIT",
     "devDependencies": {
+        "@types/tape": "^4.13.2",
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "@typescript-eslint/parser": "^5.40.1",
         "eslint": "^8.25.0",

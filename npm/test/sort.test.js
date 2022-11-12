@@ -1917,3 +1917,105 @@ zer`,
 
     t.end();
 });
+
+test('test starting blank lines', (t) => {
+    const textWithStartingSpace = ` 
+- [x] (a0)
+  - [x] (1)
+  - [x] (2)
+    - review [open tasks](searches\open-tasks.code-search)
+  - [x] (3)
+  - [x] (4)
+    - [x] 1)
+    - [x] 2)
+    - [x] 3)
+      - comment 1
+      - comment 2
+      - comment 3
+    - [x] 4)
+    - [x] 5)
+      - comment 1
+        - comment 1.a
+  
+- [ ] (a1)
+  - comment 1
+    - comment 1.a
+    - comment 2
+    - comment 3
+
+- [ ] (z)
+  - [ ] (1)
+    - comment 1
+      - comment 1.a
+  - [ ] (2)
+    comment 1
+    - comment 2
+  - [ ] (3)
+  - [ ] (4)
+  - [ ] (5)
+    - comment 1`;
+
+    testString(
+        t,
+        sort(textWithStartingSpace, { recursive: true }),
+        ` 
+- [ ] (a1)
+  - comment 1
+    - comment 1.a
+    - comment 2
+    - comment 3
+
+- [ ] (z)
+  - [ ] (1)
+    - comment 1
+      - comment 1.a
+  - [ ] (2)
+    - comment 2
+    comment 1
+  - [ ] (3)
+  - [ ] (4)
+  - [ ] (5)
+    - comment 1
+- [x] (a0)
+  - [x] (1)
+  - [x] (2)
+    - review [open tasks](searchesopen-tasks.code-search)
+  - [x] (3)
+  - [x] (4)
+    - [x] 1)
+    - [x] 2)
+    - [x] 3)
+      - comment 1
+      - comment 2
+      - comment 3
+    - [x] 4)
+    - [x] 5)
+      - comment 1
+        - comment 1.a
+  `,
+        'starting space'
+    );
+
+    testString(
+        t,
+        sort(`
+
+
+- hi there
+- this is some text
+  - yea?
+- oh yea
+  - temp`),
+        `
+
+
+- hi there
+- oh yea
+  - temp
+- this is some text
+  - yea?`,
+        'few empty lines at start'
+    );
+
+    t.end();
+});
