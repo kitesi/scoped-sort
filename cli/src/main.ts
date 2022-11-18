@@ -70,7 +70,7 @@ function takeinStdin(options: Options) {
     }
 
     process.stdin.on('close', printSortedAndExit);
-    process.stdin.on('exit', printSortedAndExit);
+    process.stdin.on('end', printSortedAndExit);
 }
 
 async function takeinFiles(

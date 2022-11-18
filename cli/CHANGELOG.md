@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.5 (11/18/22)
+
+-   actually do what v2.0.4 claims
+
 ## 2.0.4 (11/18/22)
 
 -   fix taking in standard input. Worked for the most part, but didn't take the
