@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.4 (11/18/22)
+
+-   fix taking in standard input. Worked for the most part, but didn't take the
+    "close" event into account. Which meant it didn't work on vim with: `:!ssort`
+
 ## 2.0.3 (11/12/22)
 
 -   update to npm version 2.3.2 which patches issue #10 where starting blank
