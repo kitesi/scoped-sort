@@ -18,6 +18,7 @@ const config = {
 			extensions: ['.md'],
 			// @ts-ignore
 			rehypePlugins: [rehypeSlug, rehypeAutolinkHeadings],
+			smartypants: { quotes: false },
 			highlight: {
 				highlighter(code, lang, meta) {
 					const lineHighlightsMatch = meta?.match(/{.+}/);

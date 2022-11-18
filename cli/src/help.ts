@@ -16,7 +16,7 @@ ${bold('DESCRIPTION')}
 A feature rich text sorter that takes indentation into account.
 
 Need help or want to contribute?:
-Visit https://github.com/sixskys/scoped-sort`;
+Visit https://github.com/kitesi/scoped-sort`;
 
 export const longHelpText = stripIfNeeded(`${boilerplateUsage}
 

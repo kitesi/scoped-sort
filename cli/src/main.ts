@@ -64,9 +64,13 @@ function takeinStdin(options: Options) {
         stdinData += data;
     });
 
-    process.stdin.on('close', () => {
+    function printSortedAndExit() {
         console.log(sort(stdinData, options));
-    });
+        process.exit(0);
+    }
+
+    process.stdin.on('close', printSortedAndExit);
+    process.stdin.on('exit', printSortedAndExit);
 }
 
 async function takeinFiles(

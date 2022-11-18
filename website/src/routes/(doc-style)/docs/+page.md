@@ -96,7 +96,7 @@ arguments (i.e. `--recursive 3`).
 The npm package also has some usage of this argument style through [sort-comments](#sort-comments).
 
 If there are any issues, suggestions or questions, you can create a github issue
-or email me at sixskys@proton.me.
+or email me at kitesi@proton.me.
 
 ### Philosophy & Speed
 

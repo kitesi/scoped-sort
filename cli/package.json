@@ -5,10 +5,10 @@
     "homepage": "https://scopedsort.netlify.app",
     "repository": {
         "type": "git",
-        "url": "https://github.com/sixskys/scoped-sort"
+        "url": "https://github.com/kitesi/scoped-sort"
     },
     "bugs": {
-        "url": "https://github.com/sixskys/scoped-sort/issues"
+        "url": "https://github.com/kitesi/scoped-sort/issues"
     },
     "scripts": {
         "test": "tape test/*.test.js",
