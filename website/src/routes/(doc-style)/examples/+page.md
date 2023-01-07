@@ -336,7 +336,7 @@ Lydia  N/A N/A        120
 
 ## Sort By 4th Column (number)
 
-- `sort-group` = `"{3}n"`
+- `sort-group` = `"{4}n"`
 
 <div class="pre-container">
 
