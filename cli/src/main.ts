@@ -215,9 +215,9 @@ async function takeinFiles(
             );
         }
 
-        console.log(sortCommentsResults.result);
+        process.stdout.write(sortCommentsResults.result);
     } else {
-        console.log(sort(allContent, options));
+        process.stdout.write(sort(allContent, options));
     }
 
     return;
