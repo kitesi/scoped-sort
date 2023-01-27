@@ -103,6 +103,24 @@ async function takeinFiles(
     const resolvedContent = await Promise.all(fileContents);
 
     if (modify) {
+        if (!useSortComments && !skipPrompts) {
+            let answer = await question(
+                'You are using --modify without --use-sort-comments, are you sure? (y/n): '
+            );
+
+            answer = answer.toLowerCase();
+
+            switch (answer) {
+                case 'y':
+                case 'yes':
+                case 'ya':
+                case 'ye':
+                    break;
+                default:
+                    process.exit(0);
+            }
+        }
+
         for (let i = 0; i < resolvedContent.length; i++) {
             const content = resolvedContent[i];
             const file = fileNames[i];
@@ -173,24 +191,6 @@ async function takeinFiles(
                 if (content === changedContent) {
                     console.log('No change.');
                     return;
-                }
-
-                if (!skipPrompts) {
-                    let answer = await question(
-                        'You are using --modify without --use-sort-comments, are you sure? (y/n): '
-                    );
-
-                    answer = answer.toLowerCase();
-
-                    switch (answer) {
-                        case 'y':
-                        case 'yes':
-                        case 'ya':
-                        case 'ye':
-                            break;
-                        default:
-                            process.exit(0);
-                    }
                 }
 
                 console.log('Writing to file: ' + file);
