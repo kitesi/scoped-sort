@@ -156,7 +156,7 @@ how could you do that`;
     checkAll(
         unfinishedSortStartOne,
         {
-            errors: ['Did not finish sort-start comment at line: 1'],
+            errors: ['Did not finish sort-start comment at line 1'],
             commentSections: [
                 { startLine: 0, endLine: null, hasChanged: false },
             ],
@@ -177,7 +177,9 @@ how could you do that`;
                     hasChanged: false,
                 },
             ],
-            errors: ['Recieved unknown positional arguments: ooga, booga'],
+            errors: [
+                'Recieved unknown positional arguments: ooga, booga at line 1',
+            ],
             result: positionalsInSortStart,
         },
         'positionals in sort start'
@@ -203,7 +205,7 @@ banana
                 },
             ],
             errors: [
-                "Recieved sort-start comment at line: 19 but didn't finish the one at 0",
+                "Recieved sort-start comment at line 19 but didn't finish the one at 0",
             ],
             result: unfinishedSortStartTwo,
         },

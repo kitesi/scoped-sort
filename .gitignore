@@ -14,3 +14,6 @@ npm/main.js
 cli/test/files/tmp/
 
 
+
+# Local Netlify folder
+.netlify

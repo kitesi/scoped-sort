@@ -830,7 +830,7 @@ export function sortComments(content: string): {
         if (commentRegexs.sortStart.test(line)) {
             if (typeof currentStartLine !== 'undefined') {
                 errors.push(
-                    `Recieved sort-start comment at line: ${
+                    `Recieved sort-start comment at line ${
                         i + 1
                     } but didn't finish the one at ${currentStartLine}`
                 );
@@ -848,7 +848,7 @@ export function sortComments(content: string): {
         } else if (commentRegexs.sortEnd.test(line)) {
             if (typeof currentStartLine === 'undefined') {
                 errors.push(
-                    `Recieved sort-end comment at line: ${
+                    `Recieved sort-end comment at line ${
                         i + 1
                     } but didn't receive any sort-start`
                 );
@@ -880,7 +880,9 @@ export function sortComments(content: string): {
                 if (optionsResult.positionals.length > 0) {
                     errors.push(
                         'Recieved unknown positional arguments: ' +
-                            optionsResult.positionals.join(', ')
+                            optionsResult.positionals.join(', ') +
+                            ' at line ' +
+                            (currentStartLine! + 1)
                     );
                 }
 
@@ -922,7 +924,7 @@ export function sortComments(content: string): {
 
     if (typeof currentStartLine !== 'undefined') {
         errors.push(
-            'Did not finish sort-start comment at line: ' +
+            'Did not finish sort-start comment at line ' +
                 (currentStartLine + 1)
         );
     }

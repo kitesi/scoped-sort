@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.2 (11/07/23)
+
+-   Make error code for unknown positional argument give context to line. Before it used to be ("Recieved unknown positional arguments: m" -> "Recieved unknown positional arguments: m at line 1")
+-   Remove "line: 1" -> "line 1"
+
 ## 2.3.1 (11/12/22)
 
 Make parser recognize starting blank lines better.
