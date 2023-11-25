@@ -45,6 +45,10 @@ async function pushContentFromDirectory(
     const files = await readdir(dir);
 
     for (const file of files) {
+        if (file === '.git') {
+            continue;
+        }
+
         const next = path.join(dir, file);
 
         if (statSync(next).isDirectory()) {
@@ -83,6 +87,10 @@ async function takeinFiles(
     const fileNames: string[] = [];
 
     for (const file of positionals) {
+        if (file == '.git') {
+            continue;
+        }
+
         if (!existsSync(file)) {
             printError(`${red('Error:')} File ${file} does not exist`);
             continue;
@@ -114,21 +122,23 @@ async function takeinFiles(
                     result,
                 } = sortComments(content);
 
-                console.log('File: ' + file);
+                if (commentSections.length === 0) {
+                    continue;
+                }
+
+                process.stdout.write('- ' + file + ': ');
 
                 if (commentSectionsErrors.length > 0) {
-                    printError(commentSectionsErrors.map(padString).join('\n'));
-
+                    console.log();
+                    printError(
+                        commentSectionsErrors
+                            .map((e) => red(padString(e)))
+                            .join('\n')
+                    );
                     continue;
                 }
 
-                if (commentSections.length === 0) {
-                    console.log(padString('[none]'));
-                    continue;
-                }
-
-                const sectionsThatHaveChanged: string[] = [];
-                const sectionsThatHaveNotChanged: string[] = [];
+                let atleastOneHasChange = false;
 
                 for (const {
                     hasChanged,
@@ -140,31 +150,17 @@ async function takeinFiles(
                     }`;
 
                     if (hasChanged) {
-                        sectionsThatHaveChanged.push(range);
+                        atleastOneHasChange = true;
+                        process.stdout.write(green(`{${range}}`) + ', ');
                     } else {
-                        sectionsThatHaveNotChanged.push(range);
+                        process.stdout.write(yellow(`{${range}}`) + ', ');
                     }
                 }
 
-                if (sectionsThatHaveChanged.length > 0) {
-                    console.log(
-                        padString(
-                            `${green('[changed]')}: ` +
-                                sectionsThatHaveChanged.join(', ')
-                        )
-                    );
-                }
+                // print newline
+                console.log();
 
-                if (sectionsThatHaveNotChanged.length > 0) {
-                    console.log(
-                        padString(
-                            `${yellow('[unchanged]')}: ` +
-                                sectionsThatHaveNotChanged.join(', ')
-                        )
-                    );
-                }
-
-                if (sectionsThatHaveChanged.length > 0) {
+                if (atleastOneHasChange) {
                     writeFile(file, result, 'utf-8');
                 }
             } else {
@@ -267,6 +263,7 @@ export async function main() {
         );
     }
 
+    // try sort options quickly
     try {
         sort('', options);
     } catch (optionsError: any) {
@@ -294,6 +291,10 @@ export async function main() {
 
         rl.close();
     } else {
+        if (modify) {
+            printErrorAndExit('Error: provided --modify with no files');
+        }
+
         takeinStdin(options);
     }
 }

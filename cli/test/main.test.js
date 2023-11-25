@@ -23,8 +23,7 @@ const {
 const path = require('path');
 const { sort, sortComments } = require('string-content-sort');
 
-const ansiColors = require('ansi-colors');
-const { unstyle } = ansiColors;
+const { unstyle } = require('ansi-colors');
 
 const testFilesPath = path.join(__dirname, 'files');
 const originalTestFilesPath = path.join(testFilesPath, 'original');
@@ -47,13 +46,18 @@ for (const originalTestFile of originalTestFiles) {
 
 /**
  * @param {string[]} args
+ * @param {boolean} shouldUnstyle
  * @returns
  */
-function runSync(args) {
-    const { stdout, stderr, error } = spawnSync('ssort', args);
+function runSync(args, shouldUnstyle = true) {
+    const { stdout, stderr, error } = spawnSync('node', [
+        './dist/main.js',
+        ...args,
+    ]);
+
     return {
-        stdout: unstyle(stdout.toString()),
-        stderr: unstyle(stderr.toString()),
+        stdout: shouldUnstyle ? unstyle(stdout.toString()) : stdout.toString(),
+        stderr: shouldUnstyle ? unstyle(stderr.toString()) : stderr.toString(),
         error,
     };
 }
@@ -88,19 +92,6 @@ const files = {
 getCachedContent('comment-sections');
 getCachedContent('nested-simple-items');
 getCachedContent('nested-with-description');
-
-// const x = spawn('ssort', [files['comment-sections'], '--modify']);
-// x.stdout.on('data', (e) => {
-//     console.log(e + '', 24);
-// });
-// x.stdin.on('data', (e) => {
-//     console.log(e + '');
-// });
-// // process.stdin.pipe(x.stdin, { end: false });
-// x.on('close', () => {});
-// setTimeout(() => x.stdin.write('n\n'), 100);
-// setTimeout(() => console.log(x.stdin.closed), 600);
-// process.exit(0);
 
 tape('non modifying', (t) => {
     t.deepEquals(
@@ -191,12 +182,15 @@ tape('non modifying', (t) => {
 
 // lot of possible race conditions, prob should write better
 tape('modifying', (t) => {
-    t.plan(7);
+    t.plan(10);
 
     t.deepEquals(
-        runSync([files['comment-sections'], '--modify', '--use-sort-comments']),
+        runSync(
+            [files['comment-sections'], '--modify', '--use-sort-comments'],
+            false
+        ),
         {
-            stdout: `File: ${files['comment-sections']}\n    [changed]: 1-9, 11-21\n`,
+            stdout: `- ${files['comment-sections']}: \x1B[32m{1-9}\x1B[39m, \x1B[32m{11-21}\x1B[39m, \n`,
             stderr: '',
             error: undefined,
         },
@@ -206,18 +200,49 @@ tape('modifying', (t) => {
     t.equals(
         readFileSync(files['comment-sections'], 'utf-8'),
         sortComments(getCachedContent('comment-sections')).result,
+        'one file with sort comments: check if matches function call changes'
+    );
+
+    t.equals(
+        readFileSync(files['comment-sections'], 'utf-8') ===
+            getCachedContent('comment-sections'),
+        false,
         'one file with sort comments: check if actually changes'
     );
 
-    runSync([files['nested-with-descriptions'], '--modify', '-y']),
-        t.equals(
-            readFileSync(files['nested-with-description'], 'utf-8'),
-            sortComments(getCachedContent('nested-with-description')).result,
-            'one file: check if modifies without user input when -y is provided'
-        );
+    runSync([
+        files['nested-with-description'],
+        '--modify',
+        '--recursive',
+        '-y',
+    ]);
+
+    t.equals(
+        readFileSync(files['nested-with-description'], 'utf-8'),
+        sort(getCachedContent('nested-with-description'), { recursive: true }),
+        'one file: check if modifies (matches function call) without user input when -y is provided'
+    );
+
+    t.equals(
+        readFileSync(files['nested-with-description'], 'utf-8') ===
+            getCachedContent('nested-with-description'),
+        false,
+        'one file: check if modifies (actual change) without user input when -y is provided'
+    );
+
+    t.deepEquals(
+        runSync(['--modify']),
+        {
+            stdout: '',
+            stderr: 'Error: provided --modify with no files\nUse -h (short) or --help (extensive) for help.\n',
+            error: undefined,
+        },
+        'specified --modify without a file'
+    );
 
     {
-        const subprocess = spawn('ssort', [
+        const subprocess = spawn('node', [
+            './dist/main.js',
             files['comment-sections'],
             '--modify',
         ]);
@@ -246,7 +271,8 @@ tape('modifying', (t) => {
     }
 
     {
-        const subprocess = spawn('ssort', [
+        const subprocess = spawn('node', [
+            './dist/main.js',
             files['nested-simple-items'],
             '--modify',
         ]);
