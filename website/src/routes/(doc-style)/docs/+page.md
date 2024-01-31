@@ -64,12 +64,12 @@ advanced options often.
 
 This extension is not meant for sorting words inside a line, nor is it trying
 to sort language specific things like imports or properties of an object
-(although it can sort them if they have a simple structure).
+(although it can sort them if they have a simple structure using regex).
 
 #### Alternatives
 
 This tool might have a bit of a learning curve and does require some reading.
-Some alternatives that might suit you better:
+Here are some alternatives that might suit you better:
 
 - vscode extension:
   [tyriar.sort-lines](https://marketplace.visualstudio.com/items?itemName=Tyriar.sort-lines)
@@ -82,18 +82,17 @@ Some alternatives that might suit you better:
 I recommend reading through everything sequentially first, and then using it as
 a reference.
 
-This page will serve as a reference for the website, the npm package, the cli command
-and the vscode extension.
+This page will serve as a reference for the website, the npm package, the cli command and the vscode extension.
 
 I will try to cover the options they all mutually have, but individual
 things like the vscode extension's 'sort-on-save' functionality or the extra
-command parameters should be covered in their respective README or
+command line options should be covered in their respective README or
 documentation.
 
 The website, vscode extension and command all share a cli-like style of providing
 arguments (i.e. `--recursive 3`).
 
-The npm package also has some usage of this argument style through [sort-comments](#sort-comments).
+The npm package also has some usage of this argument style when using [sort-comments](#sort-comments).
 
 If there are any issues, suggestions or questions, you can create a github issue
 or email me at kitesi@proton.me.
@@ -104,21 +103,20 @@ You can skip this section if you aren't interested.
 
 scopedsort started out as a vscode extension to sort nested lists. I had
 a variety of markdown lists that I wanted to sort, but none of the sorters
-took indentation into consideration. That is how the name "scopedsort" arose.
+took indentation into consideration.
 
 I realized the project could be helpful as a npm package, so I
 abstracted the functionality into npm, and then a command line tool, and lastly a
 website.
 
 It has evolved into something much more than merely just a "scoped sorter", but
-the name will stay.
+too late to change the name.
 
-scopedsort's language of choice is JavaScript. It is a slower language, but
-since this project is implemented on vscode, a website and the command line,
-it's easiest to just use JavaScript. There is WebAssembly and I could possibly
+scopedsort is written in JavaScript. It is a slower language, but
+since this project in so many places, it's easier to just use JavaScript. There is WebAssembly and I could possibly
 embed a command line tool into the vscode extension, but it's not worth the hassle.
 
-As for speed, it is obviously slower than the unix sort command, and possibly
+As for speed, it is obviously slower than the unix sort command, and probably
 more than other options. Speed is not the ultimate goal for this project, but I
 do take it into consideration.
 
@@ -168,13 +166,14 @@ line by line.
 
 By default, nested content (indented) will be left in place and not
 sorted. If set to true (no number argument), will sort inner sections
-recursively. Otherwise, will only sort sections up to the provided depth.
+recursively. If a number is set, it will only sort sections up whose depth is less than or equal to that number.
 
 Note: on the website version, there is no boolean option, only numbers.
 
 - type: `boolean` | `number`
 - object property: `.recursive`
 - cli parameter: `--recursive` | `-r`
+
 
 ### Reverse
 
@@ -208,7 +207,13 @@ changes, but with this, it'll wait for "\*", "-", or "+".
 
 ## Sorters
 
-You can only have one sorter. On npm, the property name is `"sorter"`.
+You can only have one sorter. On npm, the property name is `"sorter"`. Example:
+
+```js
+sort(someText, {
+    sorter: "case-insensitive"
+})
+```
 
 ### Case Insensitive
 
@@ -275,7 +280,7 @@ Don't sort; mainly used with the [#unique](#unique) option.
 
 ### Random Sort
 
-Sort randomly (psuedo).
+Sort (psuedo) randomly.
 
 - object property: `"random"`
 - cli parameter: `--random-sort` | `-z`
@@ -321,6 +326,10 @@ Next you have the options it should apply to those groups, i.e., `ls` or
 `xu`.
 
 Which would result in something like: `{2}ls` or `{5..6}xu`.
+
+```shell
+-k "{5..6}xu"
+```
 
 The allowed arguments are:
 
@@ -390,7 +399,7 @@ you could do:
 ```
 
 NOTE: You would first have to capture the 3rd group, which is done
-with `-k {3}` and `-F ","`. Won't be included for the rest of the
+with `-k {3}` and `-F ","`. These options won't be included for the rest of the
 examples.
 
 It's also possible the gender values are capitalized. You can set
@@ -407,7 +416,7 @@ argument, which will only compare the first x characters:
 -o "3i:mal;fem;non;n/a"
 ```
 
-NOTE: the values you provide ('mal', 'fem', ..) won't
+NOTE: the values you provide ('mal', 'fem', ...) won't
 be transformed at all, so make sure you have them correct if you are
 using case-insensitive or looseness.
 
@@ -467,8 +476,7 @@ can help if you have a list that is constantly being updated, and you don't want
 to have to keep manually sorting. In the vscode
 extension, it allows the user to turn on a feature called 'sort-on-save', which
 will like it states, sort the section on save. I personally would not recommend
-using the feature, as it adds the check for _every_ file, and does it on every
-save instance. Instead, I would suggest using the cli application.
+using the sort-on-save feature, as it adds the check for _every_ file, and does it on every save instance. Instead, I would suggest using the cli application.
 
 Example:
 
@@ -487,7 +495,7 @@ second line (sort-end) with `{ sort-end }`. Spacing and casing **do** matter.
 `{sort-start}` or `{ sort-START }` will not work. In the sort-start line you
 can also specify options after the text "sort-start". It uses the same syntax
 of the cli program. Just make sure you have a space after the arguments (before
-the `{`).
+the `}`).
 
 ```text {0,4}
 /* { sort-start --reverse --numerical-sort } */

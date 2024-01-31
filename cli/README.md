@@ -7,7 +7,7 @@ This is a CLI for the npm package [string-content-sort](https://www.npmjs.com/pa
 This cli tool is a part of a bigger project called
 [scopedsort](https://scopedsort.netlify.app/).
 [Documentation](https://scopedsort.netlify.app/docs) and
-[examples](https://scopedsort.netlify.app/examples) are mainly held there.
+[examples](https://scopedsort.netlify.app/examples) are mainly held on the website.
 
 ## Usage
 
@@ -84,8 +84,7 @@ import isIsOdd from 'is-is-odd';
 // { sort-end }
 ```
 
-Read the
-[actual documentation](https://scopedsort.netlify.app/docs#sort-comments) for more.
+Read the [actual documentation](https://scopedsort.netlify.app/docs#sort-comments) for more.
 
 ## Completions
 
