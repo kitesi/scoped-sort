@@ -13,7 +13,7 @@ import { readdir, readFile, writeFile } from 'fs/promises';
 import { EOL } from 'os';
 import * as path from 'path';
 
-import { longHelpText, shortHelpText } from './help.js';
+import { longHelpText, shortHelpText, versionText } from './help.js';
 
 interface ExtraOptions {
     modify: boolean;
@@ -237,6 +237,11 @@ export async function main() {
             case '-H':
             case '--help':
                 console.log(longHelpText);
+                process.exit(0);
+            /* eslint-disable-next-line no-fallthrough */
+            case '--version':
+            case '-v':
+                console.log(versionText);
                 process.exit(0);
             /* eslint-disable-next-line no-fallthrough */
             case '-c':

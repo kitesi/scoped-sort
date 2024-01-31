@@ -267,6 +267,8 @@ ${bold('OPTIONS: OTHER')}
 
 Use ${bold('--help')} or ${bold('-H')} for help with descriptions`);
 
+export const versionText = 'string-content-sort-cli (scoped-sort-cli) — v2.0.5';
+
 function stripIfNeeded(text: string) {
     if (process.stdout.isTTY && !process.env.NO_COLOR) {
         return text;
