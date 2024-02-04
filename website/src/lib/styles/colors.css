@@ -23,19 +23,19 @@
 
 	--clr-link: #be112e;
 	--clr-bg-hamburger-menu: var(--clr-bg-primary-content);
-	--clr-selection-bg: #e5a227;
+	--clr-selection-bg: #77bdfb;
 	--clr-selection-content: black;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--clr-bg-primary: #0e0f11;
+		--clr-bg-primary: #0d1117;
 		--clr-bg-primary-content: white;
 
-		--clr-bg-secondary: #2e333b;
+		--clr-bg-secondary: #161b22;
 		--clr-bg-secondary-content: white;
 
-		--clr-bg-tertiary: #131417;
+		--clr-bg-tertiary: #21262d;
 		--clr-bg-tertiary-content: white;
 
 		--clr-bg-inline-code-block-content: #eda1a1;

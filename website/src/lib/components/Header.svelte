@@ -23,7 +23,7 @@
 back to /, :global() and :root styles from /docs or /examples remain 
 -->
 
-<header data-sveltekit-reload>
+<header>
 	<h1>ScopedSort</h1>
 
 	<div class="links">
@@ -189,7 +189,7 @@ back to /, :global() and :root styles from /docs or /examples remain
 
 	@media (prefers-color-scheme: dark) {
 		header {
-			background-color: var(--clr-bg-primary);
+			background-color: var(--clr-bg-secondary);
 			border-bottom-color: var(--clr-bg-secondary);
 			color: var(--clr-bg-tertiary-content);
 		}

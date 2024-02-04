@@ -28,10 +28,12 @@
 	span,
 	span::before,
 	span::after {
-		width: 32px;
-		height: 3px;
+		width: 25px;
+		height: 1px;
 		background-color: var(--clr-bg-hamburger-menu);
-		transition: transform 350ms ease-in-out, opacity 200ms linear;
+		transition:
+			transform 350ms ease-in-out,
+			opacity 200ms linear;
 	}
 
 	span::before,

@@ -229,7 +229,7 @@
 				</div>
 
 				<div class="recursive-container">
-					<label for="recursive">Recursive:</label>
+					<label for="recursive">Recursive</label>
 					<input
 						type="text"
 						name="recursive"
@@ -388,7 +388,7 @@
 	.options-group input + label {
 		display: block;
 		padding-block: 0.5em;
-		border: 0.1em solid var(--clr-bg-secondary);
+		border: 0.1em solid var(--clr-bg-tertiary);
 		font-size: 1rem;
 		border-radius: 3px;
 		width: 100%;
@@ -400,6 +400,10 @@
 		-moz-user-select: none; /* Firefox */
 		-ms-user-select: none; /* IE10+/Edge */
 		user-select: none; /* Standard */
+	}
+
+	.unique-options input + label {
+		border-radius: 9999px;
 	}
 
 	.checkboxes {
@@ -443,24 +447,29 @@
 	}
 
 	input[type='text'] {
+		font-family: monospace;
 		background-color: var(--clr-bg-tertiary);
 		color: var(--clr-bg-tertiary-content);
-		border: 2px solid var(--clr-bg-secondary);
-		padding: 0.2em 0.5em;
+		border: 2px solid var(--clr-bg-tertiary);
+		border-radius: 0.2em;
+		// padding: 0.4em 0.5em;
+		// padding-left: 1me;
+		padding: 0.8em;
 		font-size: 1rem;
 		max-width: 100%;
 	}
 
 	input:checked + label {
-		background-color: var(--clr-bg-secondary);
-		color: var(--clr-bg-secondary-content);
+		background-color: var(--clr-bg-tertiary);
+		color: var(--clr-bg-tertiary-content);
 	}
 
 	textarea {
 		resize: vertical;
 		width: 100%;
 		height: 400px;
-		border: 2px solid var(--clr-bg-secondary);
+		// border: 2px solid var(--clr-bg-secondary);
+		border: none;
 		border-radius: 3px;
 		background-color: var(--clr-bg-tertiary);
 		color: var(--clr-bg-tertiary-content);
@@ -470,8 +479,8 @@
 
 	button {
 		display: block;
-		background-color: var(--clr-bg-secondary);
-		color: var(--clr-bg-secondary-content);
+		background-color: var(--clr-bg-tertiary);
+		color: var(--clr-bg-tertiary-content);
 		border: none;
 		padding: 0.8em 2em;
 		font-weight: 800;

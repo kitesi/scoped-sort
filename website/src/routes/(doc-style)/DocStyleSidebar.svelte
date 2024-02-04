@@ -75,7 +75,7 @@
 </div>
 
 <nav class:show={$isSidebarOpen}>
-	<ul data-sveltekit-reload>
+	<ul>
 		<li>
 			<a on:click={closeSidebar} href="/">Home</a>
 		</li>
@@ -111,8 +111,8 @@
 		height: 100%;
 		max-width: 100%;
 		width: var(--sidebar-width, unset);
-		background-color: var(--clr-bg-primary);
-		color: var(--clr-bg-primary-content);
+		background-color: var(--clr-bg-secondary);
+		color: var(--clr-bg-secondary-content);
 		border-right: 0.1em solid var(--clr-bg-code-block);
 		transform: translateX(-100%);
 		transition: transform 100ms ease-in;
