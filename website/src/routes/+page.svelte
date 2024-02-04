@@ -11,7 +11,7 @@
 	import { isSidebarOpen, errors as errorsStore } from '$lib/js/stores';
 
 	import Select from '$lib/components/Select.svelte';
-	import ErrrorPallete from '$lib/components/ErrrorPallete.svelte';
+	import ErrorPallete from '$lib/components/ErrorPallete.svelte';
 
 	import type { InputGroup } from './inputs.js';
 
@@ -195,6 +195,10 @@
 	];
 </script>
 
+<svelte:head>
+	<meta property="og:site_name" content="Scoped Sort" />
+</svelte:head>
+
 <div class="main-container">
 	<Header />
 	<main class:has-nav-shown={$isSidebarOpen}>
@@ -308,7 +312,7 @@
 	</main>
 </div>
 
-<ErrrorPallete />
+<ErrorPallete />
 
 <style lang="scss">
 	@use '../lib/styles/sizes.scss' as *;
