@@ -24,18 +24,14 @@
 		padding-left: 1rem;
 		padding-right: 2.5rem;
 		font-size: 0.875rem;
-		border: 0.15em solid var(--clr-bg-tertiary);
+		border: 0.15em solid var(--clr-bg-secondary);
 		background-color: var(--clr-bg-tertiary);
 		font-weight: 600;
 		border-radius: 0.2rem;
 		background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
 			linear-gradient(135deg, currentColor 50%, transparent 50%);
-		background-position:
-			calc(100% - 20px) calc(1px + 50%),
-			calc(100% - 16px) calc(1px + 50%);
-		background-size:
-			4px 4px,
-			4px 4px;
+		background-position: calc(100% - 20px) calc(1px + 50%), calc(100% - 16px) calc(1px + 50%);
+		background-size: 4px 4px, 4px 4px;
 		background-repeat: no-repeat;
 		width: 100%;
 		max-width: 12rem;

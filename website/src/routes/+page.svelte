@@ -14,7 +14,6 @@
 	import ErrorPallete from '$lib/components/ErrorPallete.svelte';
 
 	import type { InputGroup } from './inputs.js';
-
 	let form: HTMLFormElement;
 	let content = '';
 
@@ -195,10 +194,6 @@
 	];
 </script>
 
-<svelte:head>
-	<meta property="og:site_name" content="Scoped Sort" />
-</svelte:head>
-
 <div class="main-container">
 	<Header />
 	<main class:has-nav-shown={$isSidebarOpen}>
@@ -232,7 +227,7 @@
 				</div>
 
 				<div class="recursive-container">
-					<label for="recursive">Recursive</label>
+					<label for="recursive">Recursive:</label>
 					<input
 						type="text"
 						name="recursive"
@@ -421,10 +416,6 @@
 		user-select: none; /* Standard */
 	}
 
-	.unique-options input + label {
-		border-radius: 9999px;
-	}
-
 	.checkboxes {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
@@ -463,29 +454,24 @@
 	}
 
 	input[type='text'] {
-		font-family: monospace;
 		background-color: var(--clr-bg-tertiary);
 		color: var(--clr-bg-tertiary-content);
-		border: 2px solid var(--clr-bg-tertiary);
-		border-radius: 0.2em;
-		// padding: 0.4em 0.5em;
-		// padding-left: 1me;
-		padding: 0.8em;
+		border: 2px solid var(--clr-bg-secondary);
+		padding: 0.2em 0.5em;
 		font-size: 1rem;
 		max-width: 100%;
 	}
 
 	input:checked + label {
-		background-color: var(--clr-bg-tertiary);
-		color: var(--clr-bg-tertiary-content);
+		background-color: var(--clr-bg-secondary);
+		color: var(--clr-bg-secondary-content);
 	}
 
 	textarea {
 		resize: vertical;
 		width: 100%;
 		height: 400px;
-		// border: 2px solid var(--clr-bg-secondary);
-		border: none;
+		border: 2px solid var(--clr-bg-secondary);
 		border-radius: 3px;
 		background-color: var(--clr-bg-tertiary);
 		color: var(--clr-bg-tertiary-content);
