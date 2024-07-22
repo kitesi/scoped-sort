@@ -368,7 +368,7 @@
 
 	form > div > div > div {
 		position: relative;
-		margin-bottom: 0.5em;
+		margin-bottom: 1.2em;
 	}
 
 	input[type='text']:invalid {
@@ -429,7 +429,7 @@
 	}
 
 	.text-inputs label {
-		margin-bottom: 0.3em;
+		margin-bottom: 0.5em;
 	}
 
 	.item-search .text-inputs {
