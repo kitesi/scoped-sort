@@ -39,7 +39,6 @@
 		background-repeat: no-repeat;
 		width: 100%;
 		max-width: 12rem;
-		margin-bottom: 1rem;
 	}
 
 	select:focus-visible {

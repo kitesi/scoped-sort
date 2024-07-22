@@ -204,28 +204,31 @@
 	<main class:has-nav-shown={$isSidebarOpen}>
 		<form bind:this={form} on:submit|preventDefault={handleSubmit}>
 			<div>
-				<h3>Universal Modifiers</h3>
-
-				<div class="modifiers options-group">
-					{#each universalModifiers as modifier (modifier.name)}
-						{@const id = 'modifiers-' + modifier.name}
-						<div>
-							<input type="checkbox" name={modifier.name} {id} />
-							<label for={id}>{modifier.label}</label>
-						</div>
-					{/each}
+				<div>
+					<h2>Universal Modifiers</h2>
+					<div class="modifiers options-group">
+						{#each universalModifiers as modifier (modifier.name)}
+							{@const id = 'modifiers-' + modifier.name}
+							<div>
+								<input type="checkbox" name={modifier.name} {id} />
+								<label for={id}>{modifier.label}</label>
+							</div>
+						{/each}
+					</div>
 				</div>
 
-				<h3>Unique</h3>
+				<div>
+					<h2>Unique</h2>
 
-				<div class="unique-options options-group">
-					{#each uniqueOptions as option (option.name)}
-						{@const id = 'unique-' + option.name}
-						<div>
-							<input type="radio" name="unique" value={option.value ?? option.name} {id} />
-							<label for={id}>{option.label}</label>
-						</div>
-					{/each}
+					<div class="unique-options options-group">
+						{#each uniqueOptions as option (option.name)}
+							{@const id = 'unique-' + option.name}
+							<div>
+								<input type="radio" name="unique" value={option.value ?? option.name} {id} />
+								<label for={id}>{option.label}</label>
+							</div>
+						{/each}
+					</div>
 				</div>
 
 				<div class="recursive-container">
@@ -240,12 +243,13 @@
 					/>
 				</div>
 
-				<h3>Sorter</h3>
-
-				<Select options={sorters} id="sorter" name="sorter" />
+				<div class="sorter-container">
+					<label for="sorter">Sorter: </label>
+					<Select options={sorters} id="sorter" name="sorter" />
+				</div>
 
 				<div class="item-search options-group">
-					<h3>Item Search Modifiers</h3>
+					<h2>Item Search Modifiers</h2>
 					<div class="checkboxes">
 						<div>
 							<input type="checkbox" name="use-matched-regex" id="use-matched-regex" />
@@ -304,7 +308,8 @@
 				</div>
 			</div>
 
-			<div>
+			<div class="textarea-container">
+				<label for="content">Content:</label>
 				<textarea spellcheck="false" id="content" name="content" bind:value={content} />
 				<button type="submit">Modify</button>
 			</div>
@@ -336,10 +341,24 @@
 		display: none;
 	}
 
-	h3,
-	textarea,
+	h2,
+	label {
+		font-size: 1.1rem;
+		font-weight: 400;
+	}
+
+	h2,
 	.text-inputs > div {
 		margin-bottom: 0.5em;
+	}
+
+	.textarea-container {
+		display: flex;
+		flex-direction: column;
+	}
+
+	textarea {
+		margin-block: 1em 1em;
 	}
 
 	form {
@@ -348,11 +367,12 @@
 
 	form > div > div {
 		max-width: 100%;
+		margin-bottom: 1.2em;
 	}
 
 	form > div > div > div {
 		position: relative;
-		margin-bottom: 0.5em;
+		margin-bottom: 1.2em;
 	}
 
 	input[type='text']:invalid {
@@ -388,8 +408,7 @@
 	.options-group input + label {
 		display: block;
 		padding-block: 0.5em;
-		border: 0.1em solid var(--clr-bg-tertiary);
-		font-size: 1rem;
+		border: 0.1em solid var(--clr-bg-secondary);
 		border-radius: 3px;
 		width: 100%;
 		max-width: 12.5rem;
@@ -417,12 +436,8 @@
 		display: block;
 	}
 
-	label {
-		font-weight: 600;
-	}
-
 	.text-inputs label {
-		margin-bottom: 0.3em;
+		margin-bottom: 0.5em;
 	}
 
 	.item-search .text-inputs {
@@ -432,6 +447,11 @@
 		column-gap: 20px;
 	}
 
+	.sorter-container {
+		display: flex;
+		gap: 1rem;
+	}
+
 	.recursive-container {
 		display: flex;
 		gap: 1rem;
@@ -439,10 +459,6 @@
 
 		input {
 			width: 4rem;
-		}
-
-		label {
-			font-size: 1.2rem;
 		}
 	}
 
@@ -479,8 +495,9 @@
 
 	button {
 		display: block;
-		background-color: var(--clr-bg-tertiary);
-		color: var(--clr-bg-tertiary-content);
+		background-color: var(--clr-bg-secondary);
+		max-width: 10em;
+		color: var(--clr-bg-secondary-content);
 		border: none;
 		padding: 0.8em 2em;
 		font-weight: 800;

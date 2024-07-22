@@ -85,7 +85,7 @@
 		<li>
 			<a on:click={closeSidebar} href="/examples">Examples</a>
 		</li>
-		<hr />
+		<hr aria-hidden="true" />
 		{#if headings}
 			{#each transformOutlineHeadings(headings).children as heading}
 				<SidebarOutlineItem item={heading} />
@@ -111,9 +111,9 @@
 		height: 100%;
 		max-width: 100%;
 		width: var(--sidebar-width, unset);
-		background-color: var(--clr-bg-secondary);
-		color: var(--clr-bg-secondary-content);
-		border-right: 0.1em solid var(--clr-bg-code-block);
+		background-color: var(--clr-bg-primary);
+		color: var(--clr-bg-primary-content);
+		border-right: 0.1em solid var(--clr-bg-secondary);
 		transform: translateX(-100%);
 		transition: transform 100ms ease-in;
 		z-index: 1;
@@ -130,13 +130,11 @@
 	}
 
 	hr {
-		border-color: white;
+		border-color: var(--clr-bg-secondary);
 		margin: 10px 0;
 		box-sizing: content-box;
 		overflow: hidden;
-		background: transparent;
-		background-color: #30363d;
-		border: 0;
+		transform: scale(1.15);
 	}
 
 	ul:not(:first-child) {
