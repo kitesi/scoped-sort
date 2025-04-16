@@ -1,10 +1,11 @@
-<script>
+<script lang="ts">
 	import GithubIcon from './icons/GithubIcon.svelte';
 	import NpmIcon from './icons/NPMIcon.svelte';
 	import TerminalIcon from './icons/TerminalIcon.svelte';
 	import VscodeIcon from './icons/VscodeIcon.svelte';
 	import HamburgerMenu from './HamburgerMenu.svelte';
 	import { isSidebarOpen } from '$lib/js/stores';
+	import { onMount } from 'svelte';
 
 	const routes = {
 		github: 'https://github.com/kitesi/scoped-sort',
@@ -16,182 +17,162 @@
 	function closeSidebar() {
 		isSidebarOpen.set(false);
 	}
+
+	// Resources dropdown functionality
+	let dropdownOpen = false;
+	
+	function toggleDropdown() {
+		dropdownOpen = !dropdownOpen;
+	}
+	
+	function closeDropdown() {
+		dropdownOpen = false;
+	}
+
+	// Close dropdown when clicking outside
+	onMount(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			const resourcesDropdown = document.getElementById('resources-dropdown');
+			const resourcesButton = document.getElementById('resources-button');
+			
+			if (resourcesDropdown && resourcesButton && 
+				!resourcesDropdown.contains(event.target as Node) && 
+				!resourcesButton.contains(event.target as Node)) {
+				closeDropdown();
+			}
+		};
+
+		document.addEventListener('click', handleClickOutside);
+		
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+		};
+	});
 </script>
 
-<!-- 
-	have to use reload because when navigating to /docs /examples and coming
-back to /, :global() and :root styles from /docs or /examples remain 
--->
+<header class="w-full bg-black border-b-2 border-black text-white dark:bg-[var(--clr-bg-primary)] dark:border-[var(--clr-bg-secondary)] dark:text-[var(--clr-bg-tertiary-content)]">
+	<div class="max-w-7xl mx-auto flex justify-between items-center p-3 lg:p-4">
+		<a href="/" class="hover:opacity-80 transition-opacity">
+			<h1 class="uppercase font-extrabold text-base">ScopedSort</h1>
+		</a>
 
-<header>
-	<h1>ScopedSort</h1>
-
-	<div class="links">
-		<div class="same-website-pages">
-			<nav>
-				<ul>
-					<li><a on:click={closeSidebar} href="/docs">Docs</a></li>
-					<li><a on:click={closeSidebar} href="/examples">Examples</a></li>
+		<div class="flex items-center">
+			<nav class="hidden sm:block">
+				<ul class="flex items-center gap-2">
+					<li class="list-none font-medium text-base">
+						<a on:click={closeSidebar} href="/docs" class="inline-block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200">Docs</a>
+					</li>
+					<li class="list-none font-medium text-base">
+						<a on:click={closeSidebar} href="/examples" class="inline-block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200">Examples</a>
+					</li>
+					
+					<!-- Resources Dropdown - Visible on md screens and up -->
+					<li class="list-none font-medium text-base hidden md:block relative">
+						<button 
+							id="resources-button"
+							class="flex items-center gap-1 px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200" 
+							on:click|stopPropagation={toggleDropdown}
+						>
+							Resources
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300 {dropdownOpen ? 'rotate-180' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+							</svg>
+						</button>
+						
+						{#if dropdownOpen}
+							<!-- Dropdown Menu -->
+							<div 
+								id="resources-dropdown"
+								class="absolute top-full mt-1 right-0 bg-black dark:bg-[var(--clr-bg-primary)] border border-gray-700 rounded shadow-lg py-3 px-4 z-20 w-64"
+							>
+								<ul class="flex flex-col gap-3">
+									<li>
+										<a 
+											href={routes.github} 
+											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
+											on:click={closeDropdown}
+										>
+											<div class="w-6 h-6 flex items-center justify-center"><GithubIcon size="24" /></div>
+											<span>Github</span>
+										</a>
+									</li>
+									<li>
+										<a 
+											href={routes.vscode} 
+											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
+											on:click={closeDropdown}
+										>
+											<div class="w-6 h-6 flex items-center justify-center text-[#007ACC]"><VscodeIcon size="24" /></div>
+											<span>VS Code Extension</span>
+										</a>
+									</li>
+									<li>
+										<a 
+											href={routes.npm} 
+											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
+											on:click={closeDropdown}
+										>
+											<div class="w-6 h-6 flex items-center justify-center text-[#CB3837]"><NpmIcon size="24" /></div>
+											<span>NPM Package</span>
+										</a>
+									</li>
+									<li>
+										<a 
+											href={routes.cli} 
+											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
+											on:click={closeDropdown}
+										>
+											<div class="w-6 h-6 flex items-center justify-center"><TerminalIcon size="24" /></div>
+											<span>CLI Tool</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						{/if}
+					</li>
 				</ul>
 			</nav>
-		</div>
 
-		<div class="other-websites">
-			<nav>
-				<ul>
-					<li><a on:click={closeSidebar} href={routes.github}>Github</a></li>
-					<li><a on:click={closeSidebar} href={routes.vscode}>Vscode</a></li>
-					<li><a on:click={closeSidebar} href={routes.npm}>NPM</a></li>
-					<li><a on:click={closeSidebar} href={routes.cli}>CLI</a></li>
-				</ul>
-			</nav>
+			<!-- Hidden on medium screens and up since we're using the Resources dropdown -->
+			<div class="md:hidden ml-2">
+				<HamburgerMenu />
+			</div>
 		</div>
-
-		<HamburgerMenu />
 	</div>
 
-	<nav class:show={$isSidebarOpen}>
-		<ul>
-			<li><a on:click={closeSidebar} href="/docs">Docs</a></li>
-			<li><a on:click={closeSidebar} href="/examples">Examples</a></li>
-			<li class="has-icon">
-				<a on:click={closeSidebar} href={routes.vscode} title="vscode package">
-					<VscodeIcon size="1.4rem" />
-					<span>Vscode</span>
+	<!-- Mobile sidebar navigation -->
+	<nav class="{$isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:hidden flex bg-black fixed inset-0 items-center justify-center transition-transform duration-100 ease-in z-10 overflow-auto">
+		<ul class="flex flex-col items-start justify-center gap-5">
+			<li class="list-none font-medium text-base">
+				<a on:click={closeSidebar} href="/docs" class="px-3 py-2 rounded hover:bg-white/10 transition-colors">Docs</a>
+			</li>
+			<li class="list-none font-medium text-base">
+				<a on:click={closeSidebar} href="/examples" class="px-3 py-2 rounded hover:bg-white/10 transition-colors">Examples</a>
+			</li>
+			<li class="list-none font-medium text-base">
+				<a on:click={closeSidebar} href={routes.vscode} title="vscode package" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
+					<div class="w-6 h-6 flex items-center justify-center text-[#007ACC]"><VscodeIcon size="24" /></div>
+					<span>VS Code Extension</span>
 				</a>
 			</li>
-			<li>
-				<a on:click={closeSidebar} href={routes.github} title="github repo">
-					<GithubIcon size="1.4rem" />
-					<span>Github</span>
+			<li class="list-none font-medium text-base">
+				<a on:click={closeSidebar} href={routes.github} title="github repo" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
+					<div class="w-6 h-6 flex items-center justify-center"><GithubIcon size="24" /></div>
+					<span>GitHub Repository</span>
 				</a>
 			</li>
-			<li>
-				<a on:click={closeSidebar} href={routes.npm} title="npm package">
-					<NpmIcon size="1.4rem" />
-					<span>NPM</span>
+			<li class="list-none font-medium text-base">
+				<a on:click={closeSidebar} href={routes.npm} title="npm package" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
+					<div class="w-6 h-6 flex items-center justify-center text-[#CB3837]"><NpmIcon size="24" /></div>
+					<span>NPM Package</span>
 				</a>
 			</li>
-			<li>
-				<a on:click={closeSidebar} href={routes.cli} title="cli on npm">
-					<TerminalIcon size="1.4rem" />
-					<span>CLI</span></a
-				>
+			<li class="list-none font-medium text-base">
+				<a on:click={closeSidebar} href={routes.cli} title="cli on npm" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
+					<div class="w-6 h-6 flex items-center justify-center"><TerminalIcon size="24" /></div>
+					<span>CLI Tool</span>
+				</a>
 			</li>
 		</ul>
 	</nav>
 </header>
-
-<style lang="scss">
-	@use '../styles/sizes.scss' as *;
-
-	.links {
-		display: grid;
-		align-items: center;
-		grid-auto-flow: column;
-		gap: 20px;
-	}
-
-	ul {
-		display: flex;
-		gap: 13px;
-	}
-
-	header > nav {
-		display: flex;
-		background-color: black;
-		position: fixed;
-		inset: 0;
-		align-content: center;
-		justify-content: center;
-		transform: translateX(-100%);
-		transition: transform 100ms ease-in;
-		visibility: hidden;
-		z-index: 2;
-	}
-
-	header > nav.show {
-		transform: translateX(0);
-		visibility: visible;
-		overflow: auto;
-	}
-
-	header > nav ul {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		justify-content: center;
-		gap: 20px;
-	}
-
-	li {
-		list-style-type: none;
-		font-weight: 500;
-	}
-
-	.same-website-pages li {
-		text-transform: none;
-	}
-
-	a[title] {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-
-	header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.8em 1em;
-		background-color: black;
-		border-bottom: 2px solid black;
-		color: white;
-	}
-
-	h1 {
-		text-transform: uppercase;
-		font-weight: 800;
-	}
-
-	h1,
-	li {
-		font-size: 1rem;
-	}
-
-	.same-website-pages,
-	.other-websites {
-		display: none;
-	}
-
-	@media screen and (min-width: $small-screen) {
-		.same-website-pages {
-			display: block;
-			justify-self: flex-end;
-		}
-	}
-
-	@media screen and (min-width: $medium-screen) {
-		.other-websites {
-			display: block;
-		}
-
-		header :global(button) {
-			display: none;
-		}
-
-		header > nav.show {
-			transform: translateX(-100%);
-			visibility: hidden;
-		}
-	}
-
-	@media (prefers-color-scheme: dark) {
-		header {
-			background-color: var(--clr-bg-primary);
-			border-bottom-color: var(--clr-bg-secondary);
-			color: var(--clr-bg-tertiary-content);
-		}
-	}
-</style>

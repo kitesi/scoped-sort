@@ -1,552 +1,198 @@
 <script lang="ts">
 	import Header from '$lib/components/Header.svelte';
-	import {
-		type Options,
-		sort,
-		parseArgsIntoOptions,
-		tokenizeArgString,
-		sortComments
-	} from 'string-content-sort';
-
-	import { isSidebarOpen, errors as errorsStore } from '$lib/js/stores';
-
-	import Select from '$lib/components/Select.svelte';
+	import { isSidebarOpen } from '$lib/js/stores';
 	import ErrorPallete from '$lib/components/ErrorPallete.svelte';
-
-	import type { InputGroup } from './inputs.js';
-	let form: HTMLFormElement;
-	let content = '';
-
-	function getCheckboxValue(val: any) {
-		return val === 'on';
-	}
-
-	function handleSubmit() {
-		if (!form) {
-			return;
-		}
-
-		const formData = new FormData(form);
-		const recursive = formData.get('recursive');
-		const regex = formData.get('regex');
-		const sectionStarter = formData.get('section-starter');
-		const sectionSeparator = formData.get('section-separator');
-		let sectionRejoiner = formData.get('section-rejoiner');
-
-		let useSortComments = false;
-
-		const args: string[] = [];
-		const argString = formData.get('other-args');
-
-		// FormDataEntry can be file, don't have any file inputs though
-		if (typeof recursive === 'string' && recursive) {
-			args.push('--recursive', recursive);
-		}
-
-		if (typeof regex === 'string' && regex) {
-			args.push('--regex', regex);
-		}
-
-		if (typeof sectionSeparator === 'string' && sectionSeparator) {
-			args.push('--section-separator', sectionSeparator);
-		}
-
-		if (typeof sectionStarter === 'string' && sectionStarter) {
-			args.push('--section-starter', sectionStarter);
-		}
-
-		if (typeof argString === 'string' && argString) {
-			args.push(...tokenizeArgString(argString));
-		}
-
-		if (typeof sectionRejoiner === 'string') {
-			sectionRejoiner = sectionRejoiner.replaceAll('\\n', '\n');
-		}
-
-		const {
-			errors: parsingErrors,
-			positionals,
-			options: additionalOptions
-		} = parseArgsIntoOptions(args, (arg) => {
-			if (arg === '--use-sort-comments' || arg === '-c') {
-				useSortComments = true;
-				return 0;
-			}
-
-			return 1;
-		});
-
-		if (parsingErrors.length > 0) {
-			console.error('Recieved error(s): \n' + parsingErrors.join('\n'));
-			errorsStore.set(parsingErrors);
-			return;
-		}
-
-		if (positionals.length > 0) {
-			console.error('Recieved positional(s): ' + positionals.join(', '));
-			errorsStore.set(['Recieved positional(s): ' + positionals.map((p) => `"${p}"`).join(', ')]);
-			return;
-		}
-
-		const options: Options = {
-			markdown: getCheckboxValue(formData.get('markdown')),
-			reverse: getCheckboxValue(formData.get('reverse')),
-			// @ts-ignore
-			unique: formData.get('unique') || undefined,
-			// @ts-ignore
-			sorter: formData.get('sorter') || undefined,
-			useMatchedRegex: getCheckboxValue(formData.get('use-matched-regex')),
-			attachNonMatchingToBottom: getCheckboxValue(formData.get('attach-nmtb')),
-			// @ts-ignore
-			sectionRejoiner,
-			...additionalOptions
-		};
-
-		try {
-			if (useSortComments) {
-				const attemptAtSortComments = sortComments(content);
-
-				if (attemptAtSortComments.errors.length > 0) {
-					console.error('Recieved error(s): \n' + attemptAtSortComments.errors.join('\n'));
-					errorsStore.set(attemptAtSortComments.errors);
-					return;
-				}
-
-				content = attemptAtSortComments.result;
-			} else {
-				content = sort(content, options);
-			}
-		} catch (sortErrors: any) {
-			console.error('Recieved error(s): \n' + sortErrors.message);
-			errorsStore.set([sortErrors.message]);
-		}
-	}
-
-	const universalModifiers: InputGroup = [
-		{
-			name: 'markdown',
-			label: 'Markdown'
-		},
-		{
-			name: 'reverse',
-			label: 'Reverse'
-		}
-	];
-
-	const sorters: InputGroup = [
-		{
-			name: 'normal',
-			label: 'Normal',
-			value: ''
-		},
-		{
-			name: 'case-insensitive',
-			label: 'Case Insensitive'
-		},
-		{
-			name: 'natural',
-			label: 'Natural'
-		},
-		{
-			name: 'numerical',
-			label: 'Numerical'
-		},
-		{
-			name: 'random',
-			label: 'Random'
-		},
-		{
-			name: 'float',
-			label: 'Float'
-		},
-		{
-			name: 'length',
-			label: 'Length'
-		},
-		{
-			name: 'month',
-			label: 'Month'
-		},
-		{
-			name: 'day',
-			label: 'Day'
-		},
-		{
-			name: 'none',
-			label: 'None'
-		}
-	];
-
-	const uniqueOptions: InputGroup = [
-		{
-			name: 'none',
-			label: 'None',
-			value: ''
-		},
-		{
-			name: 'exact',
-			label: 'Exact'
-		},
-		{
-			name: 'case-insensitive',
-			label: 'Case Ins'
-		}
-	];
 </script>
 
-<div class="main-container">
-	<Header />
-	<main class:has-nav-shown={$isSidebarOpen}>
-		<form bind:this={form} on:submit|preventDefault={handleSubmit}>
-			<div>
-				<div>
-					<h2>Universal Modifiers</h2>
-					<div class="modifiers options-group">
-						{#each universalModifiers as modifier (modifier.name)}
-							{@const id = 'modifiers-' + modifier.name}
-							<div>
-								<input type="checkbox" name={modifier.name} {id} />
-								<label for={id}>{modifier.label}</label>
+<!-- Define a simple arrow right SVG component -->
+<svg class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
+</svg>
+
+<svelte:head>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</svelte:head>
+
+<!-- Hero Section -->
+<section class="relative py-20 min-h-screen flex items-center overflow-hidden bg-bg-primary">
+  <div class="absolute w-[500px] h-[500px] top-[-250px] left-[-250px] rounded-full" style="background: radial-gradient(circle, rgba(58,134,255,0.15) 0%, rgba(58,134,255,0) 70%);"></div>
+  <div class="container mx-auto px-6 max-w-7xl w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
+      <div class="relative z-10">
+        <h1 class="text-5xl md:text-6xl xl:text-7xl font-bold mb-6 leading-tight tracking-tighter gradient-text">ScopedSort</h1>
+        <h2 class="text-xl md:text-2xl font-normal text-text-secondary mb-8 tracking-tight max-w-[550px]">A powerful sorting tool for everyone</h2>
+        <p class="text-lg text-text-tertiary mb-12 max-w-[500px] leading-relaxed">
+          Sort content within scopes and sections of your text with precision and flexibility.
+          Perfect for organizing imports, lists, and structured data.
+        </p>
+        <div class="flex flex-wrap gap-6">
+          <a href="/playground" class="inline-block px-8 py-3 text-base font-medium bg-accent text-white rounded-lg shadow-lg hover:bg-[#619bff] hover:-translate-y-0.5 transition-all duration-300 hover:shadow-[0_6px_25px_rgba(58,134,255,0.4)]">Try Online</a>
+          <a href="/docs" class="inline-block px-8 py-3 text-base font-medium bg-transparent border border-border-color text-text-primary rounded-lg hover:bg-white/5 hover:-translate-y-0.5 transition-all duration-300">Documentation</a>
+					</div>
+				</div>
+
+      <div class="relative z-10">
+        <div class="grid grid-cols-1 gap-6">
+          <!-- Before sorting block -->
+          <div class="bg-bg-code rounded-xl overflow-hidden shadow-custom border border-border-color" style="transform: perspective(1000px) rotateY(-2deg);">
+            <div class="flex items-center p-4 bg-white bg-opacity-5 border-b border-border-color">
+              <div class="flex gap-2 mr-4">
+                <span class="w-3 h-3 rounded-full bg-[#FF5F56]"></span>
+                <span class="w-3 h-3 rounded-full bg-[#FFBD2E]"></span>
+                <span class="w-3 h-3 rounded-full bg-[#27C93F]"></span>
+              </div>
+              <div class="text-sm text-text-tertiary font-mono">Before sorting</div>
 							</div>
-						{/each}
+            <div class="p-6 font-mono text-sm leading-relaxed code-content">
+              <div>Sam&nbsp;&nbsp;&nbsp;&nbsp;18&nbsp;&nbsp;Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;140</div>
+              <div>Jack&nbsp;&nbsp;&nbsp;23&nbsp;&nbsp;Non-Binary&nbsp;120</div>
+              <div>Niel&nbsp;&nbsp;&nbsp;16&nbsp;&nbsp;Female&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>Max&nbsp;&nbsp;&nbsp;&nbsp;17&nbsp;&nbsp;Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>Jane&nbsp;&nbsp;&nbsp;22&nbsp;&nbsp;Female&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100</div>
+              <div>max&nbsp;&nbsp;&nbsp;&nbsp;17&nbsp;&nbsp;male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>Jones&nbsp;&nbsp;17&nbsp;&nbsp;male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>Lydia&nbsp;&nbsp;N/A&nbsp;N/A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;120</div>
+              <div>Mike&nbsp;&nbsp;&nbsp;N/A&nbsp;male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N/A</div>
 					</div>
 				</div>
 
-				<div>
-					<h2>Unique</h2>
+          <!-- After sorting block -->
+          <div class="bg-bg-code rounded-xl overflow-hidden shadow-custom border border-border-color" style="transform: perspective(1000px) rotateY(-2deg);">
+            <div class="flex items-center p-4 bg-white bg-opacity-5 border-b border-border-color">
+              <div class="flex gap-2 mr-4">
+                <span class="w-3 h-3 rounded-full bg-[#FF5F56]"></span>
+                <span class="w-3 h-3 rounded-full bg-[#FFBD2E]"></span>
+                <span class="w-3 h-3 rounded-full bg-[#27C93F]"></span>
+              </div>
+              <div class="text-sm text-text-tertiary font-mono">After sorting (by gender)</div>
+            </div>
+            <div class="p-6 font-mono text-sm leading-relaxed code-content">
+              <div>Niel&nbsp;&nbsp;&nbsp;16&nbsp;&nbsp;Female&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>Jane&nbsp;&nbsp;&nbsp;22&nbsp;&nbsp;Female&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100</div>
+              <div>Jack&nbsp;&nbsp;&nbsp;23&nbsp;&nbsp;Non-Binary&nbsp;120</div>
+              <div>Sam&nbsp;&nbsp;&nbsp;&nbsp;18&nbsp;&nbsp;Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;140</div>
+              <div>Max&nbsp;&nbsp;&nbsp;&nbsp;17&nbsp;&nbsp;Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>max&nbsp;&nbsp;&nbsp;&nbsp;17&nbsp;&nbsp;male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>Jones&nbsp;&nbsp;17&nbsp;&nbsp;male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;135</div>
+              <div>Mike&nbsp;&nbsp;&nbsp;N/A&nbsp;male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N/A</div>
+              <div>Lydia&nbsp;&nbsp;N/A&nbsp;N/A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;120</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-					<div class="unique-options options-group">
-						{#each uniqueOptions as option (option.name)}
-							{@const id = 'unique-' + option.name}
-							<div>
-								<input type="radio" name="unique" value={option.value ?? option.name} {id} />
-								<label for={id}>{option.label}</label>
-							</div>
-						{/each}
+<!-- Features Section -->
+<section class="py-24 bg-bg-primary">
+  <div class="container mx-auto px-6 max-w-7xl">
+    <h2 class="text-4xl font-bold mb-3 text-center gradient-text">Key Features</h2>
+    <p class="text-xl text-text-secondary mb-16 text-center max-w-3xl mx-auto">A powerful solution for organizing and sorting your code with precision</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
+      <div class="bg-bg-card rounded-xl p-8 border border-border-color transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)] relative overflow-hidden group">
+        <div class="absolute inset-x-0 top-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(to right, #3A86FF, transparent);"></div>
+        <div class="w-14 h-14 flex items-center justify-center text-3xl rounded-xl mb-6" style="background-color: rgba(58, 134, 255, 0.1);">🔍</div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">Scoped Sorting</h3>
+        <p class="text-text-secondary leading-relaxed">Sort content only within specific scopes or sections of your text, maintaining the structure of your code.</p>
+      </div>
+      
+      <div class="bg-bg-card rounded-xl p-8 border border-border-color transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)] relative overflow-hidden group">
+        <div class="absolute inset-x-0 top-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(to right, #3A86FF, transparent);"></div>
+        <div class="w-14 h-14 flex items-center justify-center text-3xl rounded-xl mb-6" style="background-color: rgba(58, 134, 255, 0.1);">🔄</div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">Multiple Algorithms</h3>
+        <p class="text-text-secondary leading-relaxed">Choose from various sorting algorithms: natural, case-insensitive, numerical, and more to meet your specific needs.</p>
+				</div>
+
+      <div class="bg-bg-card rounded-xl p-8 border border-border-color transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)] relative overflow-hidden group">
+        <div class="absolute inset-x-0 top-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(to right, #3A86FF, transparent);"></div>
+        <div class="w-14 h-14 flex items-center justify-center text-3xl rounded-xl mb-6" style="background-color: rgba(58, 134, 255, 0.1);">⚙️</div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">Regex Support</h3>
+        <p class="text-text-secondary leading-relaxed">Use regular expressions to define sections and control what gets sorted with powerful pattern matching.</p>
+				</div>
+
+      <div class="bg-bg-card rounded-xl p-8 border border-border-color transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)] relative overflow-hidden group">
+        <div class="absolute inset-x-0 top-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(to right, #3A86FF, transparent);"></div>
+        <div class="w-14 h-14 flex items-center justify-center text-3xl rounded-xl mb-6" style="background-color: rgba(58, 134, 255, 0.1);">🌐</div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">Cross-Platform</h3>
+        <p class="text-text-secondary leading-relaxed">Available as a library, CLI tool, and VS Code extension to fit seamlessly into your workflow.</p>
+						</div>
+						</div>
 					</div>
-				</div>
+</section>
 
-				<div class="recursive-container">
-					<label for="recursive">Recursive:</label>
-					<input
-						type="text"
-						name="recursive"
-						id="recursive"
-						placeholder="4"
-						inputmode="numeric"
-						pattern="\d*"
-					/>
-				</div>
+<!-- Integrations Section -->
+<section class="py-24 bg-bg-secondary">
+  <div class="container mx-auto px-6 max-w-7xl">
+    <h2 class="text-4xl font-bold mb-3 text-center gradient-text">Available Integrations</h2>
+    <p class="text-xl text-text-secondary mb-16 text-center max-w-3xl mx-auto">Use ScopedSort however you want, wherever you need it</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
+      <a href="https://www.npmjs.com/package/string-content-sort" class="bg-bg-card rounded-xl p-8 border border-border-color flex flex-col items-start text-text-primary no-underline transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)]">
+        <div class="text-4xl mb-6">📦</div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">NPM Package</h3>
+        <p class="text-text-secondary">Use directly in your JavaScript projects</p>
+      </a>
+      
+      <a href="https://www.npmjs.com/package/string-content-sort-cli" class="bg-bg-card rounded-xl p-8 border border-border-color flex flex-col items-start text-text-primary no-underline transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)]">
+        <div class="text-4xl mb-6">⌨️</div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">CLI Tool</h3>
+        <p class="text-text-secondary">Perfect for scripts and command line usage</p>
+      </a>
+      
+      <a href="https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort" class="bg-bg-card rounded-xl p-8 border border-border-color flex flex-col items-start text-text-primary no-underline transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)]">
+        <div class="text-4xl mb-6">💻</div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">VS Code Extension</h3>
+        <p class="text-text-secondary">Sort directly in your editor</p>
+      </a>
+      
+      <a
+        href="https://github.com/kitesi/scopedsort"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="bg-bg-card rounded-xl p-8 border border-border-color flex flex-col items-start text-text-primary no-underline transition-all duration-300 hover:-translate-y-[5px] hover:border-[rgba(58,134,255,0.3)]"
+      >
+        <div class="text-4xl mb-6">
+          <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="size-12" fill="currentColor">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-semibold mb-4 tracking-tight">GitHub Repository</h3>
+        <p class="text-text-secondary">Browse the source code, report issues, and contribute</p>
+      </a>
+						</div>
+						</div>
+</section>
 
-				<div class="sorter-container">
-					<label for="sorter">Sorter: </label>
-					<Select options={sorters} id="sorter" name="sorter" />
-				</div>
-
-				<div class="item-search options-group">
-					<h2>Item Search Modifiers</h2>
-					<div class="checkboxes">
-						<div>
-							<input type="checkbox" name="use-matched-regex" id="use-matched-regex" />
-							<label for="use-matched-regex">Use Matched</label>
+<!-- Get Started Section -->
+<section class="py-24 bg-bg-primary text-center relative">
+  <div class="container mx-auto px-6 max-w-7xl">
+    <div class="bg-bg-card rounded-2xl p-8 md:p-16 border border-border-color max-w-5xl mx-auto relative overflow-hidden">
+      <div class="absolute w-[500px] h-[500px] top-[-250px] right-[-250px] rounded-full" style="background: radial-gradient(circle, rgba(58,134,255,0.1) 0%, rgba(58,134,255,0) 70%);"></div>
+      
+      <div class="relative z-10">
+        <h2 class="text-4xl font-bold mb-6 gradient-text">Get Started in Seconds</h2>
+        <p class="text-xl text-text-secondary mb-10 max-w-2xl mx-auto">Install ScopedSort to start organizing your code more efficiently</p>
+        
+        <div class="bg-bg-code rounded-xl p-6 my-8 max-w-2xl mx-auto text-left font-mono text-sm leading-relaxed border border-border-color code-content">
+          <div><span class="comment"># Install via npm</span></div>
+          <div>npm install string-content-sort</div>
+          <div class="my-2"></div>
+          <div><span class="comment"># Or use the CLI</span></div>
+          <div>npm install -g string-content-sort-cli</div>
 						</div>
-						<div>
-							<input type="checkbox" name="attach-nmtb" id="attach-nmtb" />
-							<label for="attach-nmtb">Attach NMTB</label>
-						</div>
-					</div>
-
-					<div class="text-inputs">
-						<div>
-							<label for="regex">Regex Filter:</label>
-							<input
-								type="text"
-								name="regex"
-								id="regex"
-								placeholder="/\d+ /i"
-								pattern="^\/.+\/\w*$"
-							/>
-						</div>
-						<div>
-							<label for="section-starter">Section Starter: </label>
-							<input
-								type="text"
-								name="section-starter"
-								id="section-starter"
-								pattern="^\/.+\/\w*$"
-								placeholder="/<div /"
-							/>
-						</div>
-						<div>
-							<label for="section-separator">Section Separator: </label>
-							<input
-								type="text"
-								name="section-separator"
-								id="section-separator"
-								placeholder="\n\n"
-							/>
-						</div>
-						<div>
-							<label for="section-rejoiner">Section Rejoiner: </label>
-							<input type="text" name="section-rejoiner" id="section-rejoiner" placeholder="\n\n" />
-						</div>
-						<div>
-							<label for="other-args">Other Args: </label>
-							<input
-								type="text"
-								name="other-args"
-								id="other-args"
-								placeholder="-c --sort-order a;z;b"
-							/>
+        
+        <p class="text-xl text-text-secondary mb-8">Ready to try it out online?</p>
+        
+        <div class="flex justify-center">
+          <a href="/playground" class="inline-block px-8 py-3 text-base font-medium bg-accent text-white rounded-lg shadow-lg hover:bg-[#619bff] hover:-translate-y-0.5 transition-all duration-300 hover:shadow-[0_6px_25px_rgba(58,134,255,0.4)]">Try the Playground</a>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<div class="textarea-container">
-				<label for="content">Content:</label>
-				<textarea spellcheck="false" id="content" name="content" bind:value={content} />
-				<button type="submit">Modify</button>
-			</div>
-		</form>
-	</main>
-</div>
+</section>
 
 <ErrorPallete />
-
-<style lang="scss">
-	@use '../lib/styles/sizes.scss' as *;
-
-	:root {
-		--clr-bg-hamburger-menu: white;
-	}
-
-	main,
-	.main-container {
-		height: 100%;
-	}
-
-	.main-container {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.has-nav-shown {
-		overflow-y: hidden;
-		display: none;
-	}
-
-	h2,
-	label {
-		font-size: 1.1rem;
-		font-weight: 400;
-	}
-
-	h2,
-	.text-inputs > div {
-		margin-bottom: 0.5em;
-	}
-
-	.textarea-container {
-		display: flex;
-		flex-direction: column;
-	}
-
-	textarea {
-		margin-block: 1em 1em;
-	}
-
-	form {
-		padding: 18px;
-	}
-
-	form > div > div {
-		max-width: 100%;
-		margin-bottom: 1.2em;
-	}
-
-	form > div > div > div {
-		position: relative;
-		margin-bottom: 1.2em;
-	}
-
-	input[type='text']:invalid {
-		outline: 0.2em solid var(--clr-bg-error);
-		outline-offset: -0.2em;
-	}
-
-	.options-group input:focus-visible + label,
-	input[type='text']:focus-visible,
-	textarea:focus-visible {
-		outline: 0.2em solid var(--clr-accent-content);
-		outline-offset: -0.2em;
-	}
-
-	input[type='checkbox']:focus,
-	input[type='radio']:focus {
-		outline: none;
-	}
-
-	input[type='checkbox'],
-	input[type='radio'] {
-		position: absolute;
-		appearance: none;
-	}
-
-	.options-group:not(.item-search) {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0.6em;
-		max-width: 24.8rem;
-	}
-
-	.options-group input + label {
-		display: block;
-		padding-block: 0.5em;
-		border: 0.1em solid var(--clr-bg-secondary);
-		border-radius: 3px;
-		width: 100%;
-		max-width: 12.5rem;
-		text-align: center;
-		cursor: pointer;
-		transition: background-color 200ms ease-in;
-		-webkit-user-select: none; /* Safari */
-		-moz-user-select: none; /* Firefox */
-		-ms-user-select: none; /* IE10+/Edge */
-		user-select: none; /* Standard */
-	}
-
-	.checkboxes {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 10px;
-		max-width: 24.8rem;
-	}
-
-	.item-search label {
-		display: block;
-	}
-
-	.text-inputs label {
-		margin-bottom: 0.5em;
-	}
-
-	.item-search .text-inputs {
-		display: flex;
-		flex-wrap: wrap;
-		max-width: 35rem;
-		column-gap: 20px;
-	}
-
-	.sorter-container {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.recursive-container {
-		display: flex;
-		gap: 1rem;
-		max-width: 24.8rem;
-
-		input {
-			width: 4rem;
-		}
-	}
-
-	input[type='text'] {
-		background-color: var(--clr-bg-tertiary);
-		color: var(--clr-bg-tertiary-content);
-		border: 2px solid var(--clr-bg-secondary);
-		padding: 0.2em 0.5em;
-		font-size: 1rem;
-		max-width: 100%;
-	}
-
-	input:checked + label {
-		background-color: var(--clr-bg-secondary);
-		color: var(--clr-bg-secondary-content);
-	}
-
-	textarea {
-		resize: vertical;
-		width: 100%;
-		height: 400px;
-		border: 2px solid var(--clr-bg-secondary);
-		border-radius: 3px;
-		background-color: var(--clr-bg-tertiary);
-		color: var(--clr-bg-tertiary-content);
-		padding: 1em;
-		font-size: 1rem;
-	}
-
-	button {
-		display: block;
-		background-color: var(--clr-bg-secondary);
-		max-width: 10em;
-		color: var(--clr-bg-secondary-content);
-		border: none;
-		padding: 0.8em 2em;
-		font-weight: 800;
-		font-size: 1rem;
-		border-radius: 3px;
-		text-transform: uppercase;
-		// credit to daisyui for animation
-		transition: 200ms transform cubic-bezier(0.4, 0, 0.2, 1);
-		animation: button-pop var(--animation-btn, 0.25s) ease-out;
-
-		&:focus-visible {
-			outline: 0.1em solid var(--clr-bg-secondary);
-			outline-offset: 0.15em;
-		}
-
-		&:active:hover,
-		&:active:focus {
-			animation: none;
-			transform: scale(0.95);
-		}
-	}
-
-	:root {
-		// might cause bugs in future
-		font-size: clamp(16px, 2vw, 22px);
-	}
-
-	@media screen and (min-width: $medium-screen) {
-		main,
-		.has-nav-shown {
-			display: grid;
-			align-items: center;
-		}
-
-		form > div:first-child {
-			margin-inline: 5%;
-		}
-
-		form > div {
-			flex: 1;
-		}
-
-		form {
-			display: flex;
-			flex-direction: row;
-		}
-
-		textarea {
-			width: 90%;
-			max-width: unset;
-			height: 80%;
-		}
-	}
-
-	@keyframes button-pop {
-		0% {
-			transform: scale(var(--btn-focus-scale, 0.95));
-		}
-		40% {
-			transform: scale(1.02);
-		}
-		to {
-			transform: scale(1);
-		}
-	}
-</style>

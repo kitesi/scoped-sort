@@ -1,0 +1,379 @@
+<script lang="ts">
+	import Header from '$lib/components/Header.svelte';
+	import {
+		type Options,
+		sort,
+		parseArgsIntoOptions,
+		tokenizeArgString,
+		sortComments
+	} from 'string-content-sort';
+
+	import { isSidebarOpen, errors as errorsStore } from '$lib/js/stores';
+
+	import Select from '$lib/components/Select.svelte';
+	import ErrorPallete from '$lib/components/ErrorPallete.svelte';
+
+	import type { InputGroup } from './inputs.js';
+	let form: HTMLFormElement;
+	let content = '';
+
+	function getCheckboxValue(val: any) {
+		return val === 'on';
+	}
+
+	function handleSubmit() {
+		if (!form) {
+			return;
+		}
+
+		const formData = new FormData(form);
+		const recursive = formData.get('recursive');
+		const regex = formData.get('regex');
+		const sectionStarter = formData.get('section-starter');
+		const sectionSeparator = formData.get('section-separator');
+		let sectionRejoiner = formData.get('section-rejoiner');
+
+		let useSortComments = false;
+
+		const args: string[] = [];
+		const argString = formData.get('other-args');
+
+		// FormDataEntry can be file, don't have any file inputs though
+		if (typeof recursive === 'string' && recursive) {
+			args.push('--recursive', recursive);
+		}
+
+		if (typeof regex === 'string' && regex) {
+			args.push('--regex', regex);
+		}
+
+		if (typeof sectionSeparator === 'string' && sectionSeparator) {
+			args.push('--section-separator', sectionSeparator);
+		}
+
+		if (typeof sectionStarter === 'string' && sectionStarter) {
+			args.push('--section-starter', sectionStarter);
+		}
+
+		if (typeof argString === 'string' && argString) {
+			args.push(...tokenizeArgString(argString));
+		}
+
+		if (typeof sectionRejoiner === 'string') {
+			sectionRejoiner = sectionRejoiner.replaceAll('\\n', '\n');
+		}
+
+		const {
+			errors: parsingErrors,
+			positionals,
+			options: additionalOptions
+		} = parseArgsIntoOptions(args, (arg) => {
+			if (arg === '--use-sort-comments' || arg === '-c') {
+				useSortComments = true;
+				return 0;
+			}
+
+			return 1;
+		});
+
+		if (parsingErrors.length > 0) {
+			console.error('Recieved error(s): \n' + parsingErrors.join('\n'));
+			errorsStore.set(parsingErrors);
+			return;
+		}
+
+		if (positionals.length > 0) {
+			console.error('Recieved positional(s): ' + positionals.join(', '));
+			errorsStore.set(['Recieved positional(s): ' + positionals.map((p) => `"${p}"`).join(', ')]);
+			return;
+		}
+
+		const options: Options = {
+			markdown: getCheckboxValue(formData.get('markdown')),
+			reverse: getCheckboxValue(formData.get('reverse')),
+			// @ts-ignore
+			unique: formData.get('unique') || undefined,
+			// @ts-ignore
+			sorter: formData.get('sorter') || undefined,
+			useMatchedRegex: getCheckboxValue(formData.get('use-matched-regex')),
+			attachNonMatchingToBottom: getCheckboxValue(formData.get('attach-nmtb')),
+			// @ts-ignore
+			sectionRejoiner,
+			...additionalOptions
+		};
+
+		try {
+			if (useSortComments) {
+				const attemptAtSortComments = sortComments(content);
+
+				if (attemptAtSortComments.errors.length > 0) {
+					console.error('Recieved error(s): \n' + attemptAtSortComments.errors.join('\n'));
+					errorsStore.set(attemptAtSortComments.errors);
+					return;
+				}
+
+				content = attemptAtSortComments.result;
+			} else {
+				content = sort(content, options);
+			}
+		} catch (sortErrors: any) {
+			console.error('Recieved error(s): \n' + sortErrors.message);
+			errorsStore.set([sortErrors.message]);
+		}
+	}
+
+	const universalModifiers: InputGroup = [
+		{
+			name: 'markdown',
+			label: 'Markdown'
+		},
+		{
+			name: 'reverse',
+			label: 'Reverse'
+		}
+	];
+
+	const sorters: InputGroup = [
+		{
+			name: 'normal',
+			label: 'Normal',
+			value: ''
+		},
+		{
+			name: 'case-insensitive',
+			label: 'Case Insensitive'
+		},
+		{
+			name: 'natural',
+			label: 'Natural'
+		},
+		{
+			name: 'numerical',
+			label: 'Numerical'
+		},
+		{
+			name: 'random',
+			label: 'Random'
+		},
+		{
+			name: 'float',
+			label: 'Float'
+		},
+		{
+			name: 'length',
+			label: 'Length'
+		},
+		{
+			name: 'month',
+			label: 'Month'
+		},
+		{
+			name: 'day',
+			label: 'Day'
+		},
+		{
+			name: 'none',
+			label: 'None'
+		}
+	];
+
+	const uniqueOptions: InputGroup = [
+		{
+			name: 'none',
+			label: 'None',
+			value: ''
+		},
+		{
+			name: 'exact',
+			label: 'Exact'
+		},
+		{
+			name: 'case-insensitive',
+			label: 'Case Ins'
+		}
+	];
+</script>
+
+<div class="flex flex-col h-full bg-black text-white">
+	<Header />
+	<main class="h-full flex items-center justify-center" class:has-nav-shown={$isSidebarOpen}>
+		<form bind:this={form} on:submit|preventDefault={handleSubmit} class="p-4 md:p-6 lg:p-8 md:flex md:flex-row md:h-auto w-full max-w-7xl my-4">
+			<div class="md:w-1/2 md:pr-6 lg:pr-8">
+				<div class="mb-6">
+					<h2 class="text-xl font-normal mb-3">Universal Modifiers</h2>
+					<div class="grid grid-cols-3 gap-2 max-w-md">
+						{#each universalModifiers as modifier (modifier.name)}
+							{@const id = 'modifiers-' + modifier.name}
+							<div class="relative">
+								<input type="checkbox" name={modifier.name} {id} class="absolute appearance-none peer" />
+								<label for={id} class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+                                    {modifier.label}
+                                </label>
+							</div>
+						{/each}
+					</div>
+				</div>
+
+				<div class="mb-6">
+					<h2 class="text-xl font-normal mb-3">Unique</h2>
+					<div class="grid grid-cols-3 gap-2 max-w-md">
+						{#each uniqueOptions as option (option.name)}
+							{@const id = 'unique-' + option.name}
+							<div class="relative">
+								<input type="radio" name="unique" value={option.value ?? option.name} {id} class="absolute appearance-none peer" />
+								<label for={id} class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+                                    {option.label}
+                                </label>
+							</div>
+						{/each}
+					</div>
+				</div>
+
+				<div class="flex items-center mb-6">
+					<label for="recursive" class="text-xl font-normal w-32">Recursive:</label>
+					<input
+						type="text"
+						name="recursive"
+						id="recursive"
+						placeholder="4"
+						inputmode="numeric"
+						pattern="\d*"
+						class="w-16 bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md"
+					/>
+				</div>
+
+				<div class="flex items-center mb-6">
+					<label for="sorter" class="text-xl font-normal w-32">Sorter:</label>
+					<Select options={sorters} id="sorter" name="sorter" />
+				</div>
+
+				<div class="mb-6">
+					<h2 class="text-xl font-normal mb-3">Item Search Modifiers</h2>
+					<div class="grid grid-cols-2 gap-2 max-w-md mb-4">
+						<div class="relative">
+							<input type="checkbox" name="use-matched-regex" id="use-matched-regex" class="absolute appearance-none peer" />
+							<label for="use-matched-regex" class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+                                Use Matched
+                            </label>
+						</div>
+						<div class="relative">
+							<input type="checkbox" name="attach-nmtb" id="attach-nmtb" class="absolute appearance-none peer" />
+							<label for="attach-nmtb" class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+                                Attach NMTB
+                            </label>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+						<div>
+							<label for="regex" class="block text-lg font-normal mb-2">Regex Filter:</label>
+							<input
+								type="text"
+								name="regex"
+								id="regex"
+								placeholder="/\d+ /i"
+								pattern="^\/.+\/\w*$"
+								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+							/>
+						</div>
+						<div>
+							<label for="section-starter" class="block text-lg font-normal mb-2">Section Starter:</label>
+							<input
+								type="text"
+								name="section-starter"
+								id="section-starter"
+								pattern="^\/.+\/\w*$"
+								placeholder="/<div /"
+								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+							/>
+						</div>
+						<div>
+							<label for="section-separator" class="block text-lg font-normal mb-2">Section Separator:</label>
+							<input
+								type="text"
+								name="section-separator"
+								id="section-separator"
+								placeholder="\n\n"
+								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+							/>
+						</div>
+						<div>
+							<label for="section-rejoiner" class="block text-lg font-normal mb-2">Section Rejoiner:</label>
+							<input 
+                                type="text" 
+                                name="section-rejoiner" 
+                                id="section-rejoiner" 
+                                placeholder="\n\n" 
+                                class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+                            />
+						</div>
+						<div class="md:col-span-2">
+							<label for="other-args" class="block text-lg font-normal mb-2">Other Args:</label>
+							<input
+								type="text"
+								name="other-args"
+								id="other-args"
+								placeholder="-c --sort-order a;z;b"
+								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="md:w-1/2 md:pl-6 lg:pl-8 flex flex-col">
+				<label for="content" class="text-xl font-normal mb-2">Content:</label>
+				<textarea 
+                    spellcheck="false" 
+                    id="content" 
+                    name="content" 
+                    bind:value={content} 
+                    class="resize-y h-[300px] md:h-[450px] mb-4 border-2 border-white/20 rounded-md bg-[#111] text-white p-4 text-base hover:border-white/30 focus:border-[#5c9aed]"
+                ></textarea>
+				<button 
+                    type="submit" 
+                    class="self-start bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-md uppercase transform transition-transform active:scale-95"
+                >
+                    Modify
+                </button>
+			</div>
+		</form>
+	</main>
+</div>
+
+<ErrorPallete />
+
+<style>
+    /* Keep minimal custom styling for focus states and invalid inputs */
+    input[type='text']:invalid {
+        outline: 0.2em solid #f87171;
+        outline-offset: -0.2em;
+    }
+
+    .peer:focus-visible + label,
+    input[type='text']:focus-visible,
+    textarea:focus-visible {
+        outline: 0.2em solid #5c9aed;
+        outline-offset: -0.2em;
+    }
+
+    @keyframes button-pop {
+        0% {transform: scale(0.95);}
+        40% {transform: scale(1.02);}
+        to {transform: scale(1);}
+    }
+
+
+	.has-nav-shown {
+		overflow-y: hidden;
+		display: none;
+	}
+
+
+	@media screen and (min-width: 768px) {
+		main,
+		.has-nav-shown {
+			display: flex;
+		}
+	}
+</style>

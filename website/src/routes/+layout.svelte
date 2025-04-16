@@ -1,14 +1,8 @@
 <script lang="ts">
-	import '$lib/styles/app.scss';
-	import '$lib/styles/colors.css';
+	import '../app.css';
+	import '$lib/styles/global.css';
 </script>
 
-<div>
+<div class="h-full">
 	<slot />
 </div>
-
-<style>
-	div {
-		height: 100%;
-	}
-</style>

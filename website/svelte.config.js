@@ -13,7 +13,12 @@ const highlighter = await createShikiHighlighter({
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: [
-		preprocess(),
+		preprocess({
+			postcss: true,
+			scss: {
+				prependData: '@use "src/variables.scss" as *;'
+			}
+		}),
 		mdsvex({
 			extensions: ['.md'],
 			// @ts-ignore

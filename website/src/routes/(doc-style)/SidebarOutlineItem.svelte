@@ -9,14 +9,14 @@
 	}
 </script>
 
-<li>
-	<a href="#{item.id}" on:click={closeSidebar}>
+<li class="list-none py-1 px-1 pl-4">
+	<a href="#{item.id}" on:click={closeSidebar} class="flex items-center gap-2 text-text-primary hover:text-accent">
 		<!-- <Icon name="hash" /> -->
 		<span>{item.name}</span>
 	</a>
 
 	{#if item.children}
-		<ul>
+		<ul class="ml-2.5 list-none">
 			{#each item.children as child (child.name)}
 				<svelte:self item={child} />
 			{/each}

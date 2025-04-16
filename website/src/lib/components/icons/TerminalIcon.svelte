@@ -1,6 +1,6 @@
 <!-- feathericons: https://feathericons.com/?query=terminal -->
 <script lang="ts">
-	export let size: string;
+	export const size = "24";
 </script>
 
 <svg

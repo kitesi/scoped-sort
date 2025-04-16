@@ -5,9 +5,7 @@
 	import { afterUpdate } from 'svelte';
 
 	import '$lib/styles/shiki.css';
-	import '$lib/styles/app.scss';
-	import '$lib/styles/colors.css';
-	import '$lib/styles/doc-style-page.scss';
+	import '$lib/styles/global.css';
 	import { browser } from '$app/environment';
 
 	import type { LayoutData } from './$types';
@@ -24,11 +22,11 @@
 </script>
 
 {#key data.currentRoute}
-	<div class="layout" in:fade={{ duration: 150, delay: 150 }} out:fade={{ duration: 150 }}>
-		<main>
+	<div class="h-full bg-bg-primary" in:fade={{ duration: 150, delay: 150 }} out:fade={{ duration: 150 }}>
+		<main class="flex min-h-screen overflow-auto">
 			<DocStyleSidebar headings={outlineHeadings} />
-			<section>
-				<div>
+			<section class="flex-1 px-4 md:px-8 lg:px-16 py-8 ">
+				<div class="max-w-5xl mx-auto prose">
 					<slot />
 				</div>
 			</section>
@@ -37,20 +35,11 @@
 {/key}
 
 <style>
-	.layout {
-		height: 100%;
+	:global(.pre-container) {
+		@apply flex flex-wrap gap-4 my-4;
 	}
 
-	.layout :global(.pre-container) {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1em;
-		margin-block: 1em;
-	}
-
-	.layout :global(pre) {
-		flex: 1;
-		min-width: 20em;
-		margin: 0 !important;
+	:global(pre) {
+		@apply flex-1 min-w-[20em] m-0;
 	}
 </style>

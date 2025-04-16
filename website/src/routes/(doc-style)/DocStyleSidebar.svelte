@@ -70,22 +70,22 @@
 	}
 </script>
 
-<div>
+<div class="fixed top-4 right-4 z-10">
 	<HamburgerMenu />
 </div>
 
-<nav class:show={$isSidebarOpen}>
+<nav class={`fixed w-80 md:static top-0 left-0 h-full bg-bg-primary text-text-primary border-r border-border-color transform transition-transform duration-100 ease-in z-10 p-4 text-xl md:text-lg overflow-y-auto ${$isSidebarOpen ? 'translate-x-0 shadow-[0_0_0_100vmax_rgba(0,0,0,0.77)] md:shadow-none' : '-translate-x-full md:translate-x-0'}`}>
 	<ul>
-		<li>
-			<a on:click={closeSidebar} href="/">Home</a>
+		<li class="list-none p-1 pl-4 max-w-[90%]">
+			<a on:click={closeSidebar} href="/" class="text-text-primary hover:text-accent">Home</a>
 		</li>
-		<li>
-			<a on:click={closeSidebar} href="/docs">Documentation</a>
+		<li class="list-none p-1 pl-4 max-w-[90%]">
+			<a on:click={closeSidebar} href="/docs" class="text-text-primary hover:text-accent">Documentation</a>
 		</li>
-		<li>
-			<a on:click={closeSidebar} href="/examples">Examples</a>
+		<li class="list-none p-1 pl-4 max-w-[90%]">
+			<a on:click={closeSidebar} href="/examples" class="text-text-primary hover:text-accent">Examples</a>
 		</li>
-		<hr aria-hidden="true" />
+		<hr aria-hidden="true" class="border-border-color my-2.5 scale-115 box-content overflow-hidden" />
 		{#if headings}
 			{#each transformOutlineHeadings(headings).children as heading}
 				<SidebarOutlineItem item={heading} />
@@ -94,75 +94,18 @@
 	</ul>
 </nav>
 
-<style lang="scss">
-	@use '../../lib/styles/sizes.scss' as *;
-
-	div {
-		position: fixed;
-		top: 1em;
-		right: 1em;
-		z-index: 2;
-	}
-
-	nav {
-		position: fixed;
-		top: 0;
-		left: 0;
-		height: 100%;
-		max-width: 100%;
-		width: var(--sidebar-width, unset);
-		background-color: var(--clr-bg-primary);
-		color: var(--clr-bg-primary-content);
-		border-right: 0.1em solid var(--clr-bg-secondary);
-		transform: translateX(-100%);
-		transition: transform 100ms ease-in;
-		z-index: 1;
-		padding: 1em;
-		font-size: min(1.25rem, 20px);
-		overflow-y: auto;
-	}
-
-	nav.show {
-		transform: translateX(0);
-		box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
-		-webkit-box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
-		-moz-box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
-	}
-
-	hr {
-		border-color: var(--clr-bg-secondary);
-		margin: 10px 0;
-		box-sizing: content-box;
-		overflow: hidden;
-		transform: scale(1.15);
-	}
-
-	ul:not(:first-child) {
-		margin-left: 16px;
-	}
-
-	li {
-		list-style: none;
-		padding: 5px;
-		padding-left: 15px;
-		max-width: 90%;
-	}
-
-	@media screen and (min-width: $medium-screen) {
+<style>
+	@media screen and (min-width: 768px) {
 		div :global(button) {
 			display: none;
 		}
-
-		nav {
-			position: static;
-			transform: translateX(0);
-			overflow-y: auto;
-		}
-
-		nav.show {
-			box-shadow: none;
-			-webkit-box-shadow: none;
-			-moz-box-shadow: none;
-		}
+	}
+	
+	.scale-115 {
+		transform: scale(1.15);
+	}
+	
+	:global(ul:not(:first-child)) {
+		margin-left: 16px;
 	}
 </style>

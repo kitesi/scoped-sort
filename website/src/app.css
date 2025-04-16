@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	html {
+		font-family: 'Inter', system-ui, sans-serif;
+		background-color: var(--clr-bg-primary);
+		color: var(--clr-bg-primary-content);
+	}
+}
+
+/* Custom styles that can't be easily done with utilities */
+@layer components {
+	.gradient-text {
+		@apply bg-gradient-to-r text-transparent bg-clip-text;
+		background-image: linear-gradient(to right, #ffffff, #bbdefb);
+	}
+}
+
+/* Code highlighting styles */
+.code-content {
+	color: #e1e1e1;
+	background-color: #1e1e1e;
+}
+
+.code-content .comment {
+	color: #6a737d; /* Using direct color value instead of text-code-comment */
+}
+
+.code-content .keyword {
+	color: #ff79c6;
+}
+
+.code-content .string {
+	color: #a2e57b;
+}
+
+.code-content .variable {
+	color: #bbdefb;
+}
+
+:root {
+	--clr-bg-primary: white;
+	--clr-bg-primary-content: black;
+
+	--clr-bg-secondary: black;
+	--clr-bg-secondary-content: white;
+
+	--clr-bg-tertiary: #f0f0f0;
+	--clr-bg-tertiary-content: black;
+
+	--clr-bg-error: #f42929;
+	--clr-bg-error-content: white;
+
+	--clr-accent-content: #35a5ff;
+
+	--clr-bg-code-block: black;
+	--clr-bg-code-block-content: white;
+
+	--clr-bg-code-block: #161b22;
+	--clr-bg-code-block-content: white;
+	--clr-bg-inline-code-block: var(--clr-bg-code-block);
+	--clr-bg-inline-code-block-content: white;
+
+	--clr-link: #be112e;
+	--clr-bg-hamburger-menu: var(--clr-bg-primary-content);
+	--clr-selection-bg: #0c77a1;
+	--clr-selection-content: white;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--clr-bg-primary: #0e0f11;
+		--clr-bg-primary-content: white;
+
+		--clr-bg-secondary: #2e333b;
+		--clr-bg-secondary-content: white;
+
+		--clr-bg-tertiary: #131417;
+		--clr-bg-tertiary-content: white;
+
+		--clr-bg-inline-code-block-content: #eda1a1;
+
+		--clr-link: #74c3ff;
+		--clr-bg-error: #ff5455;
+	}
+}
