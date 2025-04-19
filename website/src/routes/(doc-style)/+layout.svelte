@@ -6,6 +6,8 @@
 
 	import '$lib/styles/shiki.css';
 	import '$lib/styles/global.css';
+	import '../../app.css';
+	import '$lib/styles/doc-style-page.scss';
 	import { browser } from '$app/environment';
 
 	import type { LayoutData } from './$types';
@@ -22,11 +24,11 @@
 </script>
 
 {#key data.currentRoute}
-	<div class="h-full bg-bg-primary" in:fade={{ duration: 150, delay: 150 }} out:fade={{ duration: 150 }}>
-		<main class="flex min-h-screen overflow-auto">
+	<div class="h-full overflow-y-auto" in:fade={{ duration: 150, delay: 150 }} out:fade={{ duration: 150 }}>
+		<main>
 			<DocStyleSidebar headings={outlineHeadings} />
-			<section class="flex-1 px-4 md:px-8 lg:px-16 py-8 ">
-				<div class="max-w-5xl mx-auto prose">
+			<section>
+				<div>
 					<slot />
 				</div>
 			</section>
@@ -35,11 +37,11 @@
 {/key}
 
 <style>
-	:global(.pre-container) {
+	.layout :global(.pre-container) {
 		@apply flex flex-wrap gap-4 my-4;
 	}
 
-	:global(pre) {
+	.layout :global(pre) {
 		@apply flex-1 min-w-[20em] m-0;
 	}
 </style>

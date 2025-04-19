@@ -174,7 +174,6 @@ Note: on the website version, there is no boolean option, only numbers.
 - object property: `.recursive`
 - cli parameter: `--recursive` | `-r`
 
-
 ### Reverse
 
 Reverse the sort comparisons.
@@ -211,8 +210,8 @@ You can only have one sorter. On npm, the property name is `"sorter"`. Example:
 
 ```js
 sort(someText, {
-    sorter: "case-insensitive"
-})
+	sorter: 'case-insensitive'
+});
 ```
 
 ### Case Insensitive

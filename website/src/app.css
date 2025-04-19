@@ -7,6 +7,11 @@
 		font-family: 'Inter', system-ui, sans-serif;
 		background-color: var(--clr-bg-primary);
 		color: var(--clr-bg-primary-content);
+		height: 100%;
+	}
+
+	body {
+		height: 100%;
 	}
 }
 

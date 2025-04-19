@@ -30,6 +30,12 @@ h2:not(:first-of-type) {
 
 h2 {
 	font-size: 1.75rem;
+	font-weight: 600;
+}
+
+h3,
+h4 {
+	font-weight: 600;
 }
 
 h2 + h3,
@@ -83,10 +89,6 @@ section {
 		background-color: var(--clr-bg-code-block) !important;
 		color: var(--clr-bg-code-block-content) !important;
 	}
-}
-
-:root {
-	font-size: clamp(16px, 2vw, 22px);
 }
 
 @media screen and (min-width: $small-screen) {
