@@ -5,9 +5,9 @@
 
 <p align="center"><b>A feature rich text sorter that takes indentation into account.</b></p>
 
-[![version](https://vsmarketplacebadge.apphb.com/version/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
-[![installs](https://vsmarketplacebadge.apphb.com/installs-short/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
-[![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort)
+<!-- [![version](https://vsmarketplacebadges.dev/version/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort) -->
+<!-- [![installs](https://vsmarketplacebadges.dev/installs/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort) -->
+<!-- [![downloads](https://vsmarketplacebadges.dev/downloads/karizma.scoped-sort.svg)](https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort) -->
 
 This is a vscode extension to help sort text & lists in a scoped manner. It's
 part of a bigger project called [scopedsort](https://scopedsort.netlify.app/).
@@ -253,6 +253,11 @@ For example:
 -   Theme in the demo is [Ayu Mirage](https://github.com/ayu-theme/vscode-ayu)
 -   Font in banner is [Ordinary](https://www.dafont.com/ordinary.font)
 -   Font in previews is [Cascadia Code](https://github.com/microsoft/cascadia-code)
+
+## Telemetry
+
+A small amount of telemetry is recorded to see how many active users there are for each version.
+IP address is taken in as the unique key but then hashed with SHA256.
 
 ## Questions & Contribution
 

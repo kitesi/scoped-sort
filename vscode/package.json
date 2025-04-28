@@ -1,18 +1,18 @@
 {
     "name": "scoped-sort",
     "displayName": "Scoped Sort",
-    "description": "A feature rich sorter for vscode.",
-    "version": "3.1.1",
+    "description": "A feature-rich VSCode extension to smartly sort text, lists, code blocks, imports, arrays, and more — all while respecting indentation and structure.",
+    "version": "4.0.0",
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
     "main": "./dist/extension.js",
     "homepage": "https://scopedsort.netlify.app",
     "repository": {
         "type": "git",
-        "url": "https://github.com/sixskys/scoped-sort"
+        "url": "https://github.com/kitesi/scoped-sort"
     },
     "bugs": {
-        "url": "https://github.com/sixskys/scoped-sort/issues"
+        "url": "https://github.com/kitesi/scoped-sort/issues"
     },
     "engines": {
         "vscode": "^1.57.0"
@@ -23,11 +23,39 @@
     ],
     "keywords": [
         "sort",
+        "scoped",
+        "sort lines",
+        "sort list",
+        "sort selection",
+        "sort text",
+        "sort lines selection",
         "markdown",
         "list",
         "nested",
         "recursive",
-        "scoped"
+        "selection sort",
+        "sort text editor",
+        "sort multiple lines",
+        "smart sort",
+        "advanced sort",
+        "sort indentation",
+        "sort structured text",
+        "sort lists recursively",
+        "hierarchical sort",
+        "vscode sort plugin",
+        "vscode formatter",
+        "vscode extensions",
+        "sort document",
+        "sort block",
+        "sort sections",
+        "sort on save",
+        "sort imports",
+        "sort JSON",
+        "sort YAML",
+        "sort markdown lists",
+        "sort arrays",
+        "sort code snippets",
+        "sort comments"
     ],
     "activationEvents": [
         "onStartupFinished",

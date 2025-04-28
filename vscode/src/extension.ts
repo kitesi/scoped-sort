@@ -98,32 +98,36 @@ async function sortCommand(
 }
 
 async function sortCommentsCommand(editor: vscode.TextEditor) {
-    editor.edit((edit) => {
-        if (editor.selections.length === 1 && editor.selections[0].isEmpty) {
-            const location = getWholeDocumentRange(editor);
-            const { result, errors } = sortComments(
-                editor.document.getText(location)
-            );
+    if (editor.selections.length === 1 && editor.selections[0].isEmpty) {
+        const location = getWholeDocumentRange(editor);
+        const { result, errors } = sortComments(
+            editor.document.getText(location)
+        );
 
-            if (errors.length > 0) {
-                return vscode.window.showErrorMessage(errors.join('. '));
-            }
-
-            edit.replace(location, result);
+        if (errors.length > 0) {
+            return vscode.window.showErrorMessage(errors.join('. '));
         }
 
+        await editor.edit((edit) => {
+            edit.replace(location, result);
+        });
+    } else {
+        // Handle each selection separately
         for (const selection of editor.selections) {
             const { result, errors } = sortComments(
                 editor.document.getText(selection)
             );
 
             if (errors.length > 0) {
-                return vscode.window.showErrorMessage(errors.join('. '));
+                await vscode.window.showErrorMessage(errors.join('. '));
+                continue;
             }
 
-            edit.replace(selection, result);
+            await editor.edit((edit) => {
+                edit.replace(selection, result);
+            });
         }
-    });
+    }
 }
 
 function onWillSaveTextDocument(ev: vscode.TextDocumentWillSaveEvent) {
@@ -222,7 +226,49 @@ function addSurroundSortCommentsCommand(editor: vscode.TextEditor) {
     });
 }
 
+async function pingActiveUser(version: string) {
+    try {
+        await fetch('https://scopedsort.netlify.app/api/ping', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ version }),
+        });
+    } catch (error) {
+        console.error('Failed to ping active user:', error);
+    }
+}
+const RATING_KEY = 'scoped-sort.ratingPromptShown';
+
 function activate(context: vscode.ExtensionContext) {
+    // Check if we already showed the prompt
+    const hasPrompted = context.globalState.get<boolean>(RATING_KEY);
+
+    if (!hasPrompted) {
+        pingActiveUser(context.extension.packageJSON.version);
+        // Optional: wait a few seconds so it doesn't pop up immediately
+        setTimeout(() => {
+            vscode.window
+                .showInformationMessage(
+                    'Enjoying Scoped Sort? Please consider rating it on the VSCode Marketplace!',
+                    'Rate Now',
+                    'Maybe Later'
+                )
+                .then((selection) => {
+                    if (selection === 'Rate Now') {
+                        vscode.env.openExternal(
+                            vscode.Uri.parse(
+                                'https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort'
+                            )
+                        );
+                    }
+                    // Save that we prompted them (whether or not they clicked)
+                    context.globalState.update(RATING_KEY, true);
+                });
+        }, 5000); // 5 seconds after activation
+    }
+
     const _mainCommand = vscode.commands.registerTextEditorCommand(
         'scoped-sort.sort',
         sortCommand

@@ -2,6 +2,11 @@
 
 # Changelog
 
+## 4.0.0 (4/28/25)
+
+-   not really a big update, just fixed up some old code with new VSCode API + added a quick reminder to rate this extension if you find it helpful + add small analytic
+    to check active user count
+
 ## 3.1.1 (11/12/22)
 
 -   update to npm version 2.3.2 which patches issue #10 where starting blank
