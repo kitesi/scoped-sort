@@ -1,5 +1,5 @@
 // @ts-check
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-netlify';
 import preprocess from 'svelte-preprocess';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -31,7 +31,8 @@ const config = {
 					const lineHighlights = {};
 
 					if (lineHighlightsMatch && lineHighlightsMatch[0]) {
-						for (const innerMatch of lineHighlightsMatch[0].match(/(\d+-?\d*)/g) || []) {
+						for (const innerMatch of lineHighlightsMatch[0].match(/(\d+-?\d*)/g) ||
+							[]) {
 							lineHighlights[innerMatch] = true;
 						}
 					}
