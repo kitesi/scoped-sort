@@ -196,8 +196,8 @@
 
 <div class="flex flex-col h-full bg-black text-white">
 	<Header />
-	<main class="h-full flex items-center justify-center" class:has-nav-shown={$isSidebarOpen}>
-		<form bind:this={form} on:submit|preventDefault={handleSubmit} class="p-4 md:p-6 lg:p-8 md:flex md:flex-row md:h-auto w-full max-w-7xl my-4">
+	<main class="h-full flex " class:has-nav-shown={$isSidebarOpen}>
+		<form bind:this={form} on:submit|preventDefault={handleSubmit} class="p-4 md:flex md:flex-row md:h-auto w-full max-w-7xl my-auto mx-auto">
 			<div class="md:w-1/2 md:pr-6 lg:pr-8">
 				<div class="mb-6">
 					<h2 class="text-xl font-normal mb-3">Universal Modifiers</h2>
@@ -206,7 +206,7 @@
 							{@const id = 'modifiers-' + modifier.name}
 							<div class="relative">
 								<input type="checkbox" name={modifier.name} {id} class="absolute appearance-none peer" />
-								<label for={id} class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+								<label for={id} class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
                                     {modifier.label}
                                 </label>
 							</div>
@@ -221,7 +221,7 @@
 							{@const id = 'unique-' + option.name}
 							<div class="relative">
 								<input type="radio" name="unique" value={option.value ?? option.name} {id} class="absolute appearance-none peer" />
-								<label for={id} class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+								<label for={id} class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
                                     {option.label}
                                 </label>
 							</div>
@@ -252,13 +252,13 @@
 					<div class="grid grid-cols-2 gap-2 max-w-md mb-4">
 						<div class="relative">
 							<input type="checkbox" name="use-matched-regex" id="use-matched-regex" class="absolute appearance-none peer" />
-							<label for="use-matched-regex" class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+							<label for="use-matched-regex" class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
                                 Use Matched
                             </label>
 						</div>
 						<div class="relative">
 							<input type="checkbox" name="attach-nmtb" id="attach-nmtb" class="absolute appearance-none peer" />
-							<label for="attach-nmtb" class="block py-2 px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:bg-white/5">
+							<label for="attach-nmtb" class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
                                 Attach NMTB
                             </label>
 						</div>

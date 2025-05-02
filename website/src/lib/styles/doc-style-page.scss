@@ -1,10 +1,10 @@
 @use './sizes.scss' as *;
 
-main {
+#document-page main {
 	height: 100%;
 }
 
-section {
+#document-page section {
 	padding: 2em;
 	height: 100%;
 	width: 100%;
@@ -14,52 +14,52 @@ section {
 	scroll-padding-top: 20em;
 }
 
-section::-webkit-scrollbar {
+#document-page section::-webkit-scrollbar {
 	display: none;
 }
 
-section > div {
+#document-page section > div {
 	max-width: var(--max-content-width);
 	margin-inline: auto;
 	padding-block: min(100px, calc((100% - var(--max-content-width)) / 2));
 }
 
-h2:not(:first-of-type) {
+#document-page h2:not(:first-of-type) {
 	margin-top: 1.4em;
 }
 
-h2 {
+#document-page  h2 {
 	font-size: 1.75rem;
 	font-weight: 600;
 }
 
-h3,
-h4 {
+#document-page h3,
+#document-page h4 {
 	font-weight: 600;
 }
 
-h2 + h3,
-h3 + h4 {
+#document-page h2 + h3,
+#document-page h3 + h4 {
 	margin-top: 0.5em;
 }
 
-p {
+#document-page p {
 	margin: 1em 0;
 	line-height: 1.6rem;
 	font-weight: 400;
 }
 
-section ul {
+#document-page section ul {
 	padding-left: 1.5rem;
 	margin: 10px 0;
 	line-height: 1.8rem;
 }
 
-section li {
+#document-page section li {
 	font-size: 0.9rem;
 }
 
-section {
+#document-page section {
 	*:not(.code-container) > code {
 		display: inline-block;
 		background-color: var(--clr-bg-inline-code-block) !important;
@@ -92,7 +92,7 @@ section {
 }
 
 @media screen and (min-width: $small-screen) {
-	main {
+	#document-page main {
 		display: flex;
 	}
 }
