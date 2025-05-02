@@ -63,6 +63,14 @@
         "onCommand:scoped-sort.sortComments",
         "onCommand:scoped-sort.addSurroundingSortComments"
     ],
+    "files": [
+        "dist/**",
+        "assets/**",
+        "test/**",
+        "README.md",
+        "CHANGELOG.md",
+        "LICENSE"
+    ],
     "contributes": {
         "configuration": {
             "title": "scoped-sort",

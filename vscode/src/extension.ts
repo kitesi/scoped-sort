@@ -245,9 +245,12 @@ function activate(context: vscode.ExtensionContext) {
     // Check if we already showed the prompt
     const hasPrompted = context.globalState.get<boolean>(RATING_KEY);
 
+    // Save that we prompted them (whether or not they clicked)
     if (!hasPrompted) {
         pingActiveUser(context.extension.packageJSON.version);
-        // Optional: wait a few seconds so it doesn't pop up immediately
+        context.globalState.update(RATING_KEY, true);
+
+        // wait a few seconds so it doesn't pop up immediately
         setTimeout(() => {
             vscode.window
                 .showInformationMessage(
@@ -263,8 +266,6 @@ function activate(context: vscode.ExtensionContext) {
                             )
                         );
                     }
-                    // Save that we prompted them (whether or not they clicked)
-                    context.globalState.update(RATING_KEY, true);
                 });
         }, 5000); // 5 seconds after activation
     }
