@@ -60,8 +60,8 @@
 #document-page section {
 	*:not(.code-container) > code {
 		display: inline-block;
-		background-color: var(--clr-bg-inline-code-block) !important;
-		color: var(--clr-bg-inline-code-block-content);
+		background-color: var(--color-muted) !important;
+		color: var(--color-foreground);
 		padding: 0.2em 0.4em;
 		margin: 0.2em 0.1em;
 		white-space: pre-warp;
@@ -80,12 +80,13 @@
 	}
 
 	a {
-		color: var(--clr-link);
+		color: var(--color-link);
+		text-decoration: underline;
 	}
 
 	pre {
-		background-color: var(--clr-bg-code-block) !important;
-		color: var(--clr-bg-code-block-content) !important;
+		background-color: var(--color-muted) !important;
+		color: var(--color-foreground) !important;
 	}
 }
 

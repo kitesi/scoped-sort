@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DocStyleSidebar from './DocStyleSidebar.svelte';
+	import DocStyleSidebar from '$lib/components/DocStyleSidebar.svelte';
 
 	import { fade } from 'svelte/transition';
 	import { afterUpdate } from 'svelte';
@@ -22,7 +22,12 @@
 </script>
 
 {#key data.currentRoute}
-	<div id="document-page" class="h-full overflow-y-auto" in:fade={{ duration: 150, delay: 150 }} out:fade={{ duration: 150 }}>
+	<div
+		id="document-page"
+		class="h-full overflow-y-auto"
+		in:fade={{ duration: 150, delay: 150 }}
+		out:fade={{ duration: 150 }}
+	>
 		<main>
 			<DocStyleSidebar headings={outlineHeadings} />
 			<section>
@@ -33,4 +38,3 @@
 		</main>
 	</div>
 {/key}
-

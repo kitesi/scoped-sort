@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HamburgerMenu from '$lib/components/HamburgerMenu.svelte';
-	import SidebarOutlineItem from './SidebarOutlineItem.svelte';
+	import SidebarOutlineItem from '$lib/components/SidebarOutlineItem.svelte';
 
 	import { isSidebarOpen } from '$lib/js/stores';
 
@@ -77,16 +77,22 @@
 <nav class:show={$isSidebarOpen}>
 	<ul>
 		<li>
-			<a on:click={closeSidebar} href="/">Home</a>
+			<a on:click={closeSidebar} href="/" class="text-foreground hover:text-link">Home</a>
 		</li>
 		<li>
-			<a on:click={closeSidebar} href="/playground">Playground</a>
+			<a on:click={closeSidebar} href="/playground" class="text-foreground hover:text-link"
+				>Playground</a
+			>
 		</li>
 		<li>
-			<a on:click={closeSidebar} href="/docs">Documentation</a>
+			<a on:click={closeSidebar} href="/docs" class="text-foreground hover:text-link"
+				>Documentation</a
+			>
 		</li>
 		<li>
-			<a on:click={closeSidebar} href="/examples">Examples</a>
+			<a on:click={closeSidebar} href="/examples" class="text-foreground hover:text-link"
+				>Examples</a
+			>
 		</li>
 		<hr aria-hidden="true" />
 		{#if headings}
@@ -112,15 +118,16 @@
 		height: 100%;
 		max-width: 100%;
 		width: var(--sidebar-width, unset);
-		background-color: var(--clr-bg-primary);
-		color: var(--clr-bg-primary-content);
-		border-right: 0.1em solid var(--clr-bg-secondary);
+		background-color: var(--color-sidebar);
+		color: var(--color-sidebar-foreground);
+		border-right: 0.1em solid var(--color-sidebar-border);
 		transform: translateX(-100%);
 		transition: transform 100ms ease-in;
 		z-index: 1;
 		padding: 1em;
 		font-size: min(1rem, 20px);
 		overflow-y: auto;
+		overflow-x: hidden;
 	}
 
 	nav.show {
@@ -131,7 +138,7 @@
 	}
 
 	hr {
-		border-color: var(--clr-bg-secondary);
+		border-color: var(--color-sidebar-border);
 		margin: 10px 0;
 		box-sizing: content-box;
 		overflow: hidden;
@@ -146,7 +153,8 @@
 		list-style: none;
 		padding: 5px;
 		padding-left: 15px;
-		max-width: 90%;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
 	}
 
 	@media screen and (min-width: 768px) {
@@ -158,6 +166,7 @@
 			position: static;
 			transform: translateX(0);
 			overflow-y: auto;
+			overflow-x: hidden;
 		}
 
 		nav.show {

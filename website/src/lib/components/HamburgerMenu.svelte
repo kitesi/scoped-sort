@@ -22,7 +22,7 @@
 	span::after {
 		width: 25px;
 		height: 1px;
-		background-color: var(--clr-bg-hamburger-menu);
+		background-color: var(--color-foreground);
 		transition:
 			transform 350ms ease-in-out,
 			opacity 200ms linear;
