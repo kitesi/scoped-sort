@@ -24,7 +24,7 @@
 	{/if}
 </li>
 
-<style lang="scss">
+<style>
 	ul {
 		margin-left: 10px;
 		list-style-type: none;

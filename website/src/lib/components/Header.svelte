@@ -6,13 +6,7 @@
 	import HamburgerMenu from './HamburgerMenu.svelte';
 	import { isSidebarOpen } from '$lib/js/stores';
 	import { onMount } from 'svelte';
-
-	const routes = {
-		github: 'https://github.com/kitesi/scoped-sort',
-		npm: 'https://www.npmjs.com/package/string-content-sort',
-		cli: 'https://www.npmjs.com/package/string-content-sort-cli',
-		vscode: 'https://marketplace.visualstudio.com/items?itemName=karizma.scoped-sort'
-	};
+    import { urls } from '$lib/js/urls';
 
 	function closeSidebar() {
 		isSidebarOpen.set(false);
@@ -50,90 +44,119 @@
 	});
 </script>
 
-<header class="w-full bg-black border-b-2 border-black text-white dark:bg-[var(--clr-bg-primary)] dark:border-[var(--clr-bg-secondary)] dark:text-[var(--clr-bg-tertiary-content)]">
-	<div class="max-w-7xl mx-auto flex justify-between items-center p-3 lg:p-4">
-		<a href="/" class="hover:opacity-80 transition-opacity">
-			<h1 class="uppercase font-extrabold text-base">ScopedSort</h1>
+<header class="w-full bg-[#0e0f11] border-b border-[#2e333b] text-white shadow-lg">
+	<div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+		<!-- Logo/Brand -->
+		<a href="/" class="group flex items-center space-x-3 hover:opacity-90 transition-all duration-300">
+			<div class="w-10 h-10 bg-[#2e333b] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+				<span class="text-white font-bold text-lg">S</span>
+			</div>
+			<div class="flex flex-col">
+				<h1 class="font-bold text-xl text-white">
+					SCOPEDSORT
+				</h1>
+				<p class="text-xs text-slate-400 font-medium tracking-wide">Text Manipulation Tool</p>
+			</div>
 		</a>
 
-		<div class="flex items-center">
-			<nav class="hidden sm:block">
-				<ul class="flex items-center gap-2">
-					<li class="list-none font-medium text-base">
-						<a on:click={closeSidebar} href="/docs" class="inline-block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200">Docs</a>
-					</li>
-					<li class="list-none font-medium text-base">
-						<a on:click={closeSidebar} href="/examples" class="inline-block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200">Examples</a>
-					</li>
-					
-					<!-- Resources Dropdown - Visible on md screens and up -->
-					<li class="list-none font-medium text-base hidden md:block relative">
-						<button 
-							id="resources-button"
-							class="flex items-center gap-1 px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200" 
-							on:click|stopPropagation={toggleDropdown}
+		<div class="flex items-center space-x-1">
+			<!-- Desktop Navigation -->
+			<nav class="hidden sm:flex items-center space-x-1">
+				<a 
+					on:click={closeSidebar} 
+					href="/docs" 
+					class="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium text-sm"
+				>
+					Docs
+				</a>
+				<a 
+					on:click={closeSidebar} 
+					href="/examples" 
+					class="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium text-sm"
+				>
+					Examples
+				</a>
+				
+				<!-- Resources Dropdown -->
+				<div class="relative hidden md:block">
+					<button 
+						id="resources-button"
+						class="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium text-sm" 
+						on:click|stopPropagation={toggleDropdown}
+					>
+						Resources
+						<svg 
+							xmlns="http://www.w3.org/2000/svg" 
+							class="h-4 w-4 transition-transform duration-300 {dropdownOpen ? 'rotate-180' : ''}" 
+							fill="none" 
+							viewBox="0 0 24 24" 
+							stroke="currentColor"
 						>
-							Resources
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300 {dropdownOpen ? 'rotate-180' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-							</svg>
-						</button>
-						
-						{#if dropdownOpen}
-							<!-- Dropdown Menu -->
-							<div 
-								id="resources-dropdown"
-								class="absolute top-full mt-1 right-0 bg-black dark:bg-[var(--clr-bg-primary)] border border-gray-700 rounded shadow-lg py-3 px-4 z-20 w-64"
-							>
-								<ul class="flex flex-col gap-3">
-									<li>
-										<a 
-											href={routes.github} 
-											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
-											on:click={closeDropdown}
-										>
-											<div class="w-6 h-6 flex items-center justify-center"><GithubIcon size="24" /></div>
-											<span>Github</span>
-										</a>
-									</li>
-									<li>
-										<a 
-											href={routes.vscode} 
-											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
-											on:click={closeDropdown}
-										>
-											<div class="w-6 h-6 flex items-center justify-center text-[#007ACC]"><VscodeIcon size="24" /></div>
-											<span>VS Code Extension</span>
-										</a>
-									</li>
-									<li>
-										<a 
-											href={routes.npm} 
-											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
-											on:click={closeDropdown}
-										>
-											<div class="w-6 h-6 flex items-center justify-center text-[#CB3837]"><NpmIcon size="24" /></div>
-											<span>NPM Package</span>
-										</a>
-									</li>
-									<li>
-										<a 
-											href={routes.cli} 
-											class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors w-full"
-											on:click={closeDropdown}
-										>
-											<div class="w-6 h-6 flex items-center justify-center"><TerminalIcon size="24" /></div>
-											<span>CLI Tool</span>
-										</a>
-									</li>
-								</ul>
-							</div>
-						{/if}
-					</li>
-				</ul>
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</button>
+					
+					{#if dropdownOpen}
+						<div 
+							id="resources-dropdown"
+							class="absolute top-full mt-2 right-0 bg-[#131417] border border-[#2e333b] rounded-xl shadow-2xl py-3 px-2 z-20 w-64"
+						>
+							<ul class="flex flex-col gap-1">
+								<li>
+									<a 
+										href={urls.github} 
+										class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#2e333b] transition-all duration-200 w-full text-sm"
+										on:click={closeDropdown}
+									>
+										<div class="w-5 h-5 flex items-center justify-center text-slate-300">
+											<GithubIcon size="24" />
+										</div>
+										<span class="text-slate-300">GitHub</span>
+									</a>
+								</li>
+								<li>
+									<a 
+										href={urls.vscode} 
+										class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#2e333b] transition-all duration-200 w-full text-sm"
+										on:click={closeDropdown}
+									>
+										<div class="w-5 h-5 flex items-center justify-center text-[#007ACC]">
+											<VscodeIcon size="24" />
+										</div>
+										<span class="text-slate-300">VS Code Extension</span>
+									</a>
+								</li>
+								<li>
+									<a 
+										href={urls.npm} 
+										class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#2e333b] transition-all duration-200 w-full text-sm"
+										on:click={closeDropdown}
+									>
+										<div class="w-5 h-5 flex items-center justify-center text-[#CB3837]">
+											<NpmIcon size="24" />
+										</div>
+										<span class="text-slate-300">NPM Package</span>
+									</a>
+								</li>
+								<li>
+									<a 
+										href={urls.cli} 
+										class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#2e333b] transition-all duration-200 w-full text-sm"
+										on:click={closeDropdown}
+									>
+										<div class="w-5 h-5 flex items-center justify-center text-slate-300">
+											<TerminalIcon size="24" />
+										</div>
+										<span class="text-slate-300">CLI Tool</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+					{/if}
+				</div>
 			</nav>
 
-			<!-- Hidden on medium screens and up since we're using the Resources dropdown -->
+			<!-- Mobile Menu Button -->
 			<div class="md:hidden ml-2">
 				<HamburgerMenu />
 			</div>
@@ -141,35 +164,75 @@
 	</div>
 
 	<!-- Mobile sidebar navigation -->
-	<nav class="{$isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:hidden flex bg-black fixed inset-0 items-center justify-center transition-transform duration-100 ease-in z-10 overflow-auto">
-		<ul class="flex flex-col items-start justify-center gap-5">
-			<li class="list-none font-medium text-base">
-				<a on:click={closeSidebar} href="/docs" class="px-3 py-2 rounded hover:bg-white/10 transition-colors">Docs</a>
+	<nav class="{$isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:hidden flex bg-[#0e0f11] fixed inset-0 items-center justify-center transition-transform duration-300 ease-out z-10 overflow-auto">
+		<ul class="flex flex-col items-start justify-center gap-2 p-6 w-full max-w-sm">
+			<li class="w-full">
+				<a 
+					on:click={closeSidebar} 
+					href="/docs" 
+					class="block w-full px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium"
+				>
+					Docs
+				</a>
 			</li>
-			<li class="list-none font-medium text-base">
-				<a on:click={closeSidebar} href="/examples" class="px-3 py-2 rounded hover:bg-white/10 transition-colors">Examples</a>
+			<li class="w-full">
+				<a 
+					on:click={closeSidebar} 
+					href="/examples" 
+					class="block w-full px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium"
+				>
+					Examples
+				</a>
 			</li>
-			<li class="list-none font-medium text-base">
-				<a on:click={closeSidebar} href={routes.vscode} title="vscode package" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
-					<div class="w-6 h-6 flex items-center justify-center text-[#007ACC]"><VscodeIcon size="24" /></div>
+			<li class="w-full">
+				<a 
+					on:click={closeSidebar} 
+					href={urls.vscode} 
+					title="vscode package" 
+					class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium"
+				>
+					<div class="w-5 h-5 flex items-center justify-center text-[#007ACC]">
+						<VscodeIcon size="24" />
+					</div>
 					<span>VS Code Extension</span>
 				</a>
 			</li>
-			<li class="list-none font-medium text-base">
-				<a on:click={closeSidebar} href={routes.github} title="github repo" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
-					<div class="w-6 h-6 flex items-center justify-center"><GithubIcon size="24" /></div>
+			<li class="w-full">
+				<a 
+					on:click={closeSidebar} 
+					href={urls.github} 
+					title="github repo" 
+					class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium"
+				>
+					<div class="w-5 h-5 flex items-center justify-center text-slate-300">
+						<GithubIcon size="24" />
+					</div>
 					<span>GitHub Repository</span>
 				</a>
 			</li>
-			<li class="list-none font-medium text-base">
-				<a on:click={closeSidebar} href={routes.npm} title="npm package" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
-					<div class="w-6 h-6 flex items-center justify-center text-[#CB3837]"><NpmIcon size="24" /></div>
+			<li class="w-full">
+				<a 
+					on:click={closeSidebar} 
+					href={urls.npm} 
+					title="npm package" 
+					class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium"
+				>
+					<div class="w-5 h-5 flex items-center justify-center text-[#CB3837]">
+						<NpmIcon size="24" />
+					</div>
 					<span>NPM Package</span>
 				</a>
 			</li>
-			<li class="list-none font-medium text-base">
-				<a on:click={closeSidebar} href={routes.cli} title="cli on npm" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-white/10 transition-colors">
-					<div class="w-6 h-6 flex items-center justify-center"><TerminalIcon size="24" /></div>
+			<li class="w-full">
+				<a 
+					on:click={closeSidebar} 
+					href={urls.cli} 
+					title="cli on npm" 
+					class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-[#2e333b] transition-all duration-200 font-medium"
+				>
+					<div class="w-5 h-5 flex items-center justify-center text-slate-300">
+						<TerminalIcon size="24" />
+					</div>
 					<span>CLI Tool</span>
 				</a>
 			</li>

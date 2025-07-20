@@ -11,10 +11,7 @@
 	<span></span>
 </button>
 
-<style lang="scss">
-	
-	$hamburger-gap: 7px;
-
+<style>
 	span {
 		display: block;
 		position: relative;
@@ -39,11 +36,11 @@
 	}
 
 	span::before {
-		top: $hamburger-gap;
+		top: 7px;
 	}
 
 	span::after {
-		bottom: $hamburger-gap;
+		bottom: 7px;
 	}
 
 	button[aria-pressed='true'] > span {
@@ -55,6 +52,6 @@
 	}
 
 	button[aria-pressed='true'] > span::after {
-		transform: rotate(90deg) translateX($hamburger-gap);
+		transform: rotate(90deg) translateX(7px);
 	}
 </style>

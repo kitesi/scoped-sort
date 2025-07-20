@@ -5,9 +5,8 @@
 	import { afterUpdate } from 'svelte';
 
 	import '$lib/styles/shiki.css';
-	import '$lib/styles/global.css';
-	import '../../app.css';
-	import '$lib/styles/doc-style-page.scss';
+	import '$lib/styles/doc-style-page.css';
+	import '$lib/styles/app.css';
 	import { browser } from '$app/environment';
 
 	import type { LayoutData } from './$types';

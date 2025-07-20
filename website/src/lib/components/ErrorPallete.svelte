@@ -1,81 +1,50 @@
-<script>
+<script lang="ts">
 	import { errors } from '$lib/js/stores';
+	import { onMount } from 'svelte';
 
 	function removeErrors() {
+		console.log('removeErrors');
 		errors.set([]);
 	}
 
-	function handleKeyDown(event) {
+	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			removeErrors();
 		}
 	}
+	
+
+	// add event listener on keydown to body to remove errors
+	onMount(() => {
+		window.addEventListener('keydown', handleKeyDown);
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	});
 </script>
 
-<section 
-	role="dialog" 
-	aria-label="Error messages" 
-	on:click|self={removeErrors} 
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<div
+	role="dialog"
+	aria-label="Error messages"
+	on:click|self={removeErrors}
 	on:keydown={handleKeyDown}
-	class={`fixed inset-0 ${$errors.length > 0 ? 'grid' : 'hidden'} place-items-center bg-black/80 z-50`}
-	tabindex="0"
+	class={`fixed inset-0 ${$errors.length > 0 ? 'grid' : 'hidden'} place-items-center bg-black/20 z-50`}
 >
-	<div class="bg-black min-w-[80vw] p-4 border-2 border-red-500 border-t-[10px]">
+	<div class="bg-bg-primary min-w-[80vw] p-4 border-2 border-bg-error border-t-[10px] rounded-none shadow-[0_0_0_100vmax_rgba(0,0,0,0.77)]">
 		<h2 class="text-xl font-bold mb-2 text-white">Errors</h2>
-		<nav class="ml-8 mb-4">
+		<div class="ml-8 mb-4">
 			<ul class="list-disc text-white">
 				{#each $errors as error}
 					<li>{error}</li>
 				{/each}
 			</ul>
-		</nav>
+		</div>
 		<button 
-            on:click={removeErrors}
-            class="px-8 py-2 text-base font-extrabold uppercase rounded bg-red-500 text-white border-none mt-4"
-        >
-            Close
-        </button>
+			on:click={removeErrors}
+			class="px-8 py-2 text-base font-extrabold uppercase rounded bg-gray-800 text-white border-none mt-4"
+		>
+			Close
+		</button>
 	</div>
-</section>
-
-<style>
-	section {
-		display: none;
-		place-items: center;
-		position: fixed;
-		inset: 0;
-	}
-
-	.show {
-		display: grid;
-	}
-
-	div {
-		background-color: var(--clr-bg-primary);
-		min-width: 80vw;
-		padding: 1em;
-		transform: translateX(0);
-		box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.77);
-		-webkit-box-shadow: 0 0 0 0 100vmax rgba(0, 0, 0, 0.77);
-		-moz-box-shadow: 0 0 0 0 100vmax rgba(0, 0, 0, 0.77);
-		border: 2px solid var(--clr-bg-error);
-		border-top-width: 10px;
-		border-radius: 0em;
-	}
-
-	nav {
-		margin-left: 2em;
-	}
-
-	button {
-		padding: 0.5em 2em;
-		font-size: 1rem;
-		font-weight: 800;
-		text-transform: uppercase;
-		border-radius: 0.1em;
-		background-color: var(--clr-bg-error);
-		color: var(--clr-bg-error-content);
-		border: none;
-		margin-top: 1em;
-	}
-</style>
+</div>

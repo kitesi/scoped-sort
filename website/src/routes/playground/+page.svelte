@@ -194,19 +194,19 @@
 	];
 </script>
 
-<div class="flex flex-col h-full bg-black text-white">
+<div class="flex flex-col h-full bg-[#0e0f11] text-white">
 	<Header />
-	<main class="h-full flex " class:has-nav-shown={$isSidebarOpen}>
-		<form bind:this={form} on:submit|preventDefault={handleSubmit} class="p-4 md:flex md:flex-row md:h-auto w-full max-w-7xl my-auto mx-auto">
-			<div class="md:w-1/2 md:pr-6 lg:pr-8">
-				<div class="mb-6">
-					<h2 class="text-xl font-normal mb-3">Universal Modifiers</h2>
-					<div class="grid grid-cols-3 gap-2 max-w-md">
+	<main class="h-full flex" class:has-nav-shown={$isSidebarOpen}>
+		<form bind:this={form} on:submit|preventDefault={handleSubmit} class="p-6 md:flex md:flex-row md:h-auto w-full max-w-7xl my-auto mx-auto">
+			<div class="md:w-1/2 md:pr-8 lg:pr-12">
+				<div class="mb-8">
+					<h2 class="text-xl font-semibold mb-4 text-slate-200">Universal Modifiers</h2>
+					<div class="grid grid-cols-3 gap-3 max-w-md">
 						{#each universalModifiers as modifier (modifier.name)}
 							{@const id = 'modifiers-' + modifier.name}
 							<div class="relative">
 								<input type="checkbox" name={modifier.name} {id} class="absolute appearance-none peer" />
-								<label for={id} class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
+								<label for={id} class="block py-3 px-3 sm:px-4 border border-[#2e333b] rounded-lg w-full text-center cursor-pointer transition-all duration-200 select-none peer-checked:bg-[#2e333b] peer-checked:border-[#2e333b] peer-checked:text-white peer-hover:not(:checked):bg-[#131417] peer-hover:checked:bg-[#2e333b] text-sm sm:text-base whitespace-nowrap overflow-hidden font-medium">
                                     {modifier.label}
                                 </label>
 							</div>
@@ -214,14 +214,14 @@
 					</div>
 				</div>
 
-				<div class="mb-6">
-					<h2 class="text-xl font-normal mb-3">Unique</h2>
-					<div class="grid grid-cols-3 gap-2 max-w-md">
+				<div class="mb-8">
+					<h2 class="text-xl font-semibold mb-4 text-slate-200">Unique</h2>
+					<div class="grid grid-cols-3 gap-3 max-w-md">
 						{#each uniqueOptions as option (option.name)}
 							{@const id = 'unique-' + option.name}
 							<div class="relative">
 								<input type="radio" name="unique" value={option.value ?? option.name} {id} class="absolute appearance-none peer" />
-								<label for={id} class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
+								<label for={id} class="block py-3 px-3 sm:px-4 border border-[#2e333b] rounded-lg w-full text-center cursor-pointer transition-all duration-200 select-none peer-checked:bg-[#2e333b] peer-checked:border-[#2e333b] peer-checked:text-white peer-hover:not(:checked):bg-[#131417] peer-hover:checked:bg-[#2e333b] text-sm sm:text-base whitespace-nowrap overflow-hidden font-medium">
                                     {option.label}
                                 </label>
 							</div>
@@ -229,8 +229,8 @@
 					</div>
 				</div>
 
-				<div class="flex items-center mb-6">
-					<label for="recursive" class="text-xl font-normal w-32">Recursive:</label>
+				<div class="flex items-center mb-8">
+					<label for="recursive" class="text-xl font-semibold w-32 text-slate-200">Recursive:</label>
 					<input
 						type="text"
 						name="recursive"
@@ -238,101 +238,101 @@
 						placeholder="4"
 						inputmode="numeric"
 						pattern="\d*"
-						class="w-16 bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md"
+						class="w-20 bg-[#131417] text-white border border-[#2e333b] py-2 px-3 rounded-lg focus:border-[#2e333b] focus:ring-2 focus:ring-[#2e333b]/20 transition-all duration-200"
 					/>
 				</div>
 
-				<div class="flex items-center mb-6">
-					<label for="sorter" class="text-xl font-normal w-32">Sorter:</label>
+				<div class="flex items-center mb-8">
+					<label for="sorter" class="text-xl font-semibold w-32 text-slate-200">Sorter:</label>
 					<Select options={sorters} id="sorter" name="sorter" />
 				</div>
 
-				<div class="mb-6">
-					<h2 class="text-xl font-normal mb-3">Item Search Modifiers</h2>
-					<div class="grid grid-cols-2 gap-2 max-w-md mb-4">
+				<div class="mb-8">
+					<h2 class="text-xl font-semibold mb-4 text-slate-200">Item Search Modifiers</h2>
+					<div class="grid grid-cols-2 gap-3 max-w-md mb-6">
 						<div class="relative">
 							<input type="checkbox" name="use-matched-regex" id="use-matched-regex" class="absolute appearance-none peer" />
-							<label for="use-matched-regex" class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
+							<label for="use-matched-regex" class="block py-3 px-3 sm:px-4 border border-[#2e333b] rounded-lg w-full text-center cursor-pointer transition-all duration-200 select-none peer-checked:bg-[#2e333b] peer-checked:border-[#2e333b] peer-checked:text-white peer-hover:not(:checked):bg-[#131417] peer-hover:checked:bg-[#2e333b] text-sm sm:text-base whitespace-nowrap overflow-hidden font-medium">
                                 Use Matched
                             </label>
 						</div>
 						<div class="relative">
 							<input type="checkbox" name="attach-nmtb" id="attach-nmtb" class="absolute appearance-none peer" />
-							<label for="attach-nmtb" class="block py-2 px-2 sm:px-4 border-2 border-white/20 rounded-md w-full text-center cursor-pointer transition-colors duration-200 select-none peer-checked:bg-gray-700 peer-checked:text-white peer-hover:not(:checked):bg-white/5 peer-hover:checked:bg-gray-600 text-sm sm:text-base whitespace-nowrap overflow-hidden">
+							<label for="attach-nmtb" class="block py-3 px-3 sm:px-4 border border-[#2e333b] rounded-lg w-full text-center cursor-pointer transition-all duration-200 select-none peer-checked:bg-[#2e333b] peer-checked:border-[#2e333b] peer-checked:text-white peer-hover:not(:checked):bg-[#131417] peer-hover:checked:bg-[#2e333b] text-sm sm:text-base whitespace-nowrap overflow-hidden font-medium">
                                 Attach NMTB
                             </label>
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+					<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 						<div>
-							<label for="regex" class="block text-lg font-normal mb-2">Regex Filter:</label>
+							<label for="regex" class="block text-lg font-semibold mb-3 text-slate-200">Regex Filter:</label>
 							<input
 								type="text"
 								name="regex"
 								id="regex"
 								placeholder="/\d+ /i"
 								pattern="^\/.+\/\w*$"
-								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+								class="w-full bg-[#131417] text-white border border-[#2e333b] py-3 px-4 rounded-lg hover:border-[#2e333b] focus:border-[#2e333b] focus:ring-2 focus:ring-[#2e333b]/20 transition-all duration-200"
 							/>
 						</div>
 						<div>
-							<label for="section-starter" class="block text-lg font-normal mb-2">Section Starter:</label>
+							<label for="section-starter" class="block text-lg font-semibold mb-3 text-slate-200">Section Starter:</label>
 							<input
 								type="text"
 								name="section-starter"
 								id="section-starter"
 								pattern="^\/.+\/\w*$"
 								placeholder="/<div /"
-								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+								class="w-full bg-[#131417] text-white border border-[#2e333b] py-3 px-4 rounded-lg hover:border-[#2e333b] focus:border-[#2e333b] focus:ring-2 focus:ring-[#2e333b]/20 transition-all duration-200"
 							/>
 						</div>
 						<div>
-							<label for="section-separator" class="block text-lg font-normal mb-2">Section Separator:</label>
+							<label for="section-separator" class="block text-lg font-semibold mb-3 text-slate-200">Section Separator:</label>
 							<input
 								type="text"
 								name="section-separator"
 								id="section-separator"
 								placeholder="\n\n"
-								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+								class="w-full bg-[#131417] text-white border border-[#2e333b] py-3 px-4 rounded-lg hover:border-[#2e333b] focus:border-[#2e333b] focus:ring-2 focus:ring-[#2e333b]/20 transition-all duration-200"
 							/>
 						</div>
 						<div>
-							<label for="section-rejoiner" class="block text-lg font-normal mb-2">Section Rejoiner:</label>
+							<label for="section-rejoiner" class="block text-lg font-semibold mb-3 text-slate-200">Section Rejoiner:</label>
 							<input 
                                 type="text" 
                                 name="section-rejoiner" 
                                 id="section-rejoiner" 
                                 placeholder="\n\n" 
-                                class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+                                class="w-full bg-[#131417] text-white border border-[#2e333b] py-3 px-4 rounded-lg hover:border-[#2e333b] focus:border-[#2e333b] focus:ring-2 focus:ring-[#2e333b]/20 transition-all duration-200"
                             />
 						</div>
 						<div class="md:col-span-2">
-							<label for="other-args" class="block text-lg font-normal mb-2">Other Args:</label>
+							<label for="other-args" class="block text-lg font-semibold mb-3 text-slate-200">Other Args:</label>
 							<input
 								type="text"
 								name="other-args"
 								id="other-args"
 								placeholder="-c --sort-order a;z;b"
-								class="w-full bg-[#111] text-white border-2 border-white/20 py-2 px-3 rounded-md hover:border-white/30 focus:border-[#5c9aed]"
+								class="w-full bg-[#131417] text-white border border-[#2e333b] py-3 px-4 rounded-lg hover:border-[#2e333b] focus:border-[#2e333b] focus:ring-2 focus:ring-[#2e333b]/20 transition-all duration-200"
 							/>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="md:w-1/2 md:pl-6 lg:pl-8 flex flex-col">
-				<label for="content" class="text-xl font-normal mb-2">Content:</label>
+			<div class="md:w-1/2 md:pl-8 lg:pl-12 flex flex-col">
+				<label for="content" class="text-xl font-semibold mb-3 text-slate-200">Content:</label>
 				<textarea 
                     spellcheck="false" 
                     id="content" 
                     name="content" 
                     bind:value={content} 
-                    class="resize-y h-[300px] md:h-[450px] mb-4 border-2 border-white/20 rounded-md bg-[#111] text-white p-4 text-base hover:border-white/30 focus:border-[#5c9aed]"
+                    class="resize-y h-[300px] md:h-[450px] mb-6 border border-[#2e333b] rounded-lg bg-[#131417] text-white p-4 text-base hover:border-[#2e333b] focus:border-[#2e333b] focus:ring-2 focus:ring-[#2e333b]/20 transition-all duration-200"
                 ></textarea>
 				<button 
                     type="submit" 
-                    class="self-start bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-md uppercase transform transition-transform active:scale-95"
+                    class="self-start bg-[#2e333b] hover:bg-[#2e333b]/80 text-white font-semibold py-3 px-8 rounded-lg uppercase tracking-wide transform transition-all duration-200 active:scale-95 shadow-lg hover:shadow-xl"
                 >
                     Modify
                 </button>

@@ -97,9 +97,7 @@
 	</ul>
 </nav>
 
-<style lang="scss">
-	@use '../../lib/styles/sizes.scss' as *;
-
+<style>
 	div {
 		position: fixed;
 		top: 1em;
@@ -151,7 +149,7 @@
 		max-width: 90%;
 	}
 
-	@media screen and (min-width: $medium-screen) {
+	@media screen and (min-width: 768px) {
 		div :global(button) {
 			display: none;
 		}

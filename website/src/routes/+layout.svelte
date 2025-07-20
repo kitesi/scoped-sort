@@ -1,6 +1,5 @@
 <script lang="ts">
-	import '../app.css';
-	import '$lib/styles/global.css';
+	import '$lib/styles/app.css';
 </script>
 
 <div class="h-full">
