@@ -2,7 +2,7 @@
     "name": "scoped-sort",
     "displayName": "Scoped Sort",
     "description": "A feature-rich VSCode extension to smartly sort text, lists, code blocks, imports, arrays, and more — all while respecting indentation and structure.",
-    "version": "4.0.0",
+    "version": "4.1.0",
     "publisher": "karizma",
     "icon": "assets/scoped-sort-red-circle.png",
     "main": "./dist/extension.js",
@@ -79,6 +79,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "decides if the program should try to format sort comment sections on save"
+                },
+                "scoped-sort.selectionSortsOnLines": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "decides if the program should sort entire lines when there is a selection (vs sorting only within the selection)"
                 },
                 "scoped-sort.defaultArgs": {
                     "type": "object",

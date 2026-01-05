@@ -27,6 +27,20 @@ function getWholeDocumentRange(editor: vscode.TextEditor) {
     );
 }
 
+function expandSelectionToFullLines(
+    document: vscode.TextDocument,
+    selection: vscode.Selection
+): vscode.Range {
+    const startLine = selection.start.line;
+    const endLine = selection.end.line;
+
+    const start = new vscode.Position(startLine, 0);
+    const endLineText = document.lineAt(endLine).text;
+    const end = new vscode.Position(endLine, endLineText.length);
+
+    return new vscode.Range(start, end);
+}
+
 async function sortCommand(
     editor: vscode.TextEditor,
     _edit: vscode.TextEditorEdit,
@@ -91,8 +105,21 @@ async function sortCommand(
         }
 
         for (const selection of editor.selections) {
-            const content = editor.document.getText(selection);
-            edit.replace(selection, sort(content, options));
+            const selectionSortsOnLines = config.get(
+                'scoped-sort.selectionSortsOnLines'
+            ) as boolean;
+
+            let rangeToSort: vscode.Range = selection;
+
+            if (!selection.isEmpty && selectionSortsOnLines) {
+                rangeToSort = expandSelectionToFullLines(
+                    editor.document,
+                    selection
+                );
+            }
+
+            const content = editor.document.getText(rangeToSort);
+            edit.replace(rangeToSort, sort(content, options));
         }
     });
 }
