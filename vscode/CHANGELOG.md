@@ -2,6 +2,10 @@
 
 # Changelog
 
+## 4.1.0 (1/5/26)
+
+-   add config `scoped-sort.selectionSortsOnLines`: decides if the program should sort entire lines when there is a selection (vs sorting only within the selection)
+
 ## 4.0.1 (5/2/25)
 
 -   fix "rate me" popup on every startup?
