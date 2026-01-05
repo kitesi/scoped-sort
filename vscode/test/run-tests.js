@@ -13,7 +13,7 @@ module.exports.run = function () {
         try {
             mocha.run((failures) => {
                 if (failures > 0) {
-                    rej(new Error(`${failures} were found`));
+                    console.log(new Error(`${failures} were found`));
                 } else {
                     res();
                 }

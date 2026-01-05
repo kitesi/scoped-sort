@@ -15,7 +15,7 @@
         "url": "https://github.com/kitesi/scoped-sort/issues"
     },
     "engines": {
-        "vscode": "^1.57.0"
+        "vscode": "^1.85.0"
     },
     "categories": [
         "Other",
@@ -57,12 +57,7 @@
         "sort code snippets",
         "sort comments"
     ],
-    "activationEvents": [
-        "onStartupFinished",
-        "onCommand:scoped-sort.sort",
-        "onCommand:scoped-sort.sortComments",
-        "onCommand:scoped-sort.addSurroundingSortComments"
-    ],
+    "activationEvents": [],
     "files": [
         "dist/**",
         "assets/**",
@@ -124,22 +119,25 @@
         ]
     },
     "scripts": {
+        "build": "tsc -p ./",
         "test": "node ./test/runner.js",
         "pretty": "prettier --write src/* test/*",
         "lint": "eslint test/* src/*"
     },
     "devDependencies": {
         "@types/mocha": "^10.0.0",
-        "@types/node": "14.x",
-        "@types/vscode": "^1.57.0",
+        "@types/node": "18.19.130",
+        "@types/vscode": "^1.107.0",
         "@typescript-eslint/eslint-plugin": "^5.41.0",
         "@typescript-eslint/parser": "^5.41.0",
-        "@vscode/test-electron": "^2.2.0",
+        "@vscode/test-cli": "^0.0.12",
+        "@vscode/test-electron": "^2.5.2",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
         "mocha": "^10.1.0",
         "prettier": "^2.3.2",
-        "tape": "^5.2.2"
+        "tape": "^5.2.2",
+        "typescript": "^5.9.3"
     },
     "dependencies": {
         "string-content-sort": "^2.3.1"
